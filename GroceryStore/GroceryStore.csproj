@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.json" />
+    <None Remove="src\background.png" />
+    <None Remove="src\big_menu_background.png" />
+    <None Remove="src\category_grid_background.png" />
+    <None Remove="src\category_page_menu_background.png" />
+    <None Remove="src\main_menu_background.png" />
+    <None Remove="src\small_menu_background.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="9.0.0" />
+    <PackageReference Include="MaterialDesignColors" Version="1.2.3" />
+    <PackageReference Include="MaterialDesignThemes" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.1.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GroceryStore.Core\GroceryStore.Core.csproj" />
+    <ProjectReference Include="..\GroceryStore.DAL\GroceryStore.DAL.csproj" />
+    <ProjectReference Include="..\GroceryStore.Services\GroceryStore.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="src\background.png" />
+    <Resource Include="src\big_menu_background.png" />
+    <Resource Include="src\category_grid_background.png" />
+    <Resource Include="src\category_page_menu_background.png" />
+    <Resource Include="src\main_menu_background.png" />
+    <Resource Include="src\small_menu_background.png" />
+  </ItemGroup>
+
+</Project>
