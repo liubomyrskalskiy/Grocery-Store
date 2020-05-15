@@ -6,7 +6,7 @@ namespace GroceryStore.Core.DTO
     {
         public int Id { get; set; }
         public DateTime? Date { get; set; }
-        public double? Total { get; set; }
+        public string Total { get; set; }
         public string CheckNumber { get; set; }
         public string AccountNumber { get; set; }
         public string Login { get; set; }

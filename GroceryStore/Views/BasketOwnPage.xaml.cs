@@ -27,7 +27,8 @@ namespace GroceryStore.Views
 
         public List<BasketOwnDTO> BasketOwnDtos { get; set; }
 
-        public BasketOwnPage(IBasketOwnService basketOwnService, ISaleService saleService, IGoodsInMarketOwnService goodsInMarketOwnService, IOptions<AppSettings> settings, IMapper mapper)
+        public BasketOwnPage(IBasketOwnService basketOwnService, ISaleService saleService,
+            IGoodsInMarketOwnService goodsInMarketOwnService, IOptions<AppSettings> settings, IMapper mapper)
         {
             _basketOwnService = basketOwnService;
             _saleService = saleService;
@@ -69,6 +70,7 @@ namespace GroceryStore.Views
                 ProductCodeTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 
@@ -107,7 +109,8 @@ namespace GroceryStore.Views
 
             if ((tempGimo = _goodsInMarketOwnService.GetAll()
                     .FirstOrDefault(gim =>
-                        gim.IdProductionNavigation?.IdGoodsOwnNavigation.ProductCode == ProductCodeTextBox.Text && gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) ==
+                        gim.IdProductionNavigation?.IdGoodsOwnNavigation.ProductCode == ProductCodeTextBox.Text &&
+                        gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) ==
                 null)
             {
                 MessageBox.Show("There is no such product code or there is not enough goods in the store!");
@@ -137,9 +140,11 @@ namespace GroceryStore.Views
             }
             else
                 basketOwn.IdSale = tempSale.Id;
+
             if ((tempGimo = _goodsInMarketOwnService.GetAll()
                     .FirstOrDefault(gim =>
-                        gim.IdProductionNavigation?.IdGoodsOwnNavigation.ProductCode == ProductCodeTextBox.Text && gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) ==
+                        gim.IdProductionNavigation?.IdGoodsOwnNavigation.ProductCode == ProductCodeTextBox.Text &&
+                        gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) ==
                 null)
             {
                 MessageBox.Show("There is no such product code or there is not enough goods in the store!");

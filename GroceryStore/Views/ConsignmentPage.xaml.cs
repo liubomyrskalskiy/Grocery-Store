@@ -27,7 +27,8 @@ namespace GroceryStore.Views
 
         public List<ConsignmentDTO> ConsignmentDtos { get; set; }
 
-        public ConsignmentPage(IConsignmentService consignmentService, IGoodsService goodsService, IOptions<AppSettings> settings, IMapper mapper)
+        public ConsignmentPage(IConsignmentService consignmentService, IGoodsService goodsService,
+            IOptions<AppSettings> settings, IMapper mapper)
         {
             _consignmentService = consignmentService;
             _goodsService = goodsService;
@@ -62,30 +63,35 @@ namespace GroceryStore.Views
                 DateTextBox.Focus();
                 return false;
             }
+
             if (!DateTime.TryParse(BestDeforeTextBox.Text, out dt))
             {
                 MessageBox.Show("Best Before isn't valid! Check data you've entered!");
                 BestDeforeTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(AmountTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success)
             {
                 MessageBox.Show("Invalid amount! Check the data you've entered!");
                 AmountTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(IncomePriceTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success)
             {
                 MessageBox.Show("Invalid incoming price! Check the data you've entered!");
                 IncomePriceTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
                 MessageBox.Show("Invalid product code! It must contain 5 digits");
                 AmountTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 
@@ -130,7 +136,8 @@ namespace GroceryStore.Views
             consignment.BestBefore = DateTime.Parse(BestDeforeTextBox.Text);
             consignment.Amount = Convert.ToDouble(AmountTextBox.Text);
             consignment.IncomePrice = Convert.ToDouble(IncomePriceTextBox.Text);
-            if ((tempGoods = _goodsService.GetAll().FirstOrDefault(good => good.ProductCode == ProductCodeTextBox.Text)) == null)
+            if ((tempGoods = _goodsService.GetAll()
+                    .FirstOrDefault(good => good.ProductCode == ProductCodeTextBox.Text)) == null)
             {
                 MessageBox.Show("There is no such good title!");
                 return;

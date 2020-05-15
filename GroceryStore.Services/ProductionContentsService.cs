@@ -36,7 +36,7 @@ namespace GroceryStore.Services
         {
             var valueToInsert = entity;
             unitOfWork.ProductionContentsRepository.Add(valueToInsert);
-            unitOfWork.SaveTablesChanges("dbo.Production_Contentss");
+            unitOfWork.SaveTablesChanges("dbo.Production_Contents");
             entity.Id = valueToInsert.Id;
             return entity;
         }

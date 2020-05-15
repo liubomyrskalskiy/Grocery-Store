@@ -10,6 +10,7 @@ using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
 using GroceryStore.Core.DTO;
 using GroceryStore.Core.Models;
+using GroceryStore.NavigationTransferObjects;
 using Microsoft.Extensions.Options;
 
 namespace GroceryStore.Views
@@ -22,12 +23,14 @@ namespace GroceryStore.Views
         private readonly IProductionContentsService _productionContentsService;
         private readonly IProductionService _productionService;
         private readonly IGoodsInMarketService _goodsInMarketService;
-        private AppSettings _settings;
+        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
 
         public List<ProductionContentsDTO> ProductionContentsDtos { get; set; }
 
-        public ProductionContentsPage(IProductionContentsService productionContentsService, IProductionService productionService, IGoodsInMarketService goodsInMarketService, IOptions<AppSettings> settings, IMapper mapper)
+        public ProductionContentsPage(IProductionContentsService productionContentsService,
+            IProductionService productionService, IGoodsInMarketService goodsInMarketService,
+            IOptions<AppSettings> settings, IMapper mapper)
         {
             _productionContentsService = productionContentsService;
             _productionService = productionService;
@@ -42,7 +45,8 @@ namespace GroceryStore.Views
 
         private void UpdateDataGrid()
         {
-            ProductionContentsDtos = _mapper.Map<List<ProductionContents>, List<ProductionContentsDTO>>(_productionContentsService.GetAll());
+            ProductionContentsDtos =
+                _mapper.Map<List<ProductionContents>, List<ProductionContentsDTO>>(_productionContentsService.GetAll());
 
             DataGrid.ItemsSource = ProductionContentsDtos;
         }
@@ -90,7 +94,7 @@ namespace GroceryStore.Views
 
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            if(!ValidateForm()) return;
+            if (!ValidateForm()) return;
             ProductionContents productionContents = new ProductionContents();
             Production tempProduction;
             GoodsInMarket tempGoodsInMarket;
@@ -106,7 +110,8 @@ namespace GroceryStore.Views
                 productionContents.IdProduction = tempProduction.Id;
 
             if ((tempGoodsInMarket = _goodsInMarketService.GetAll().FirstOrDefault(goodsInMarket =>
-                    goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text && goodsInMarket.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
+                    goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text &&
+                    goodsInMarket.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
             {
                 MessageBox.Show("There is no such product in database or there is not enough goods in the store!");
                 return;
@@ -137,7 +142,8 @@ namespace GroceryStore.Views
                 productionContents.IdProduction = tempProduction.Id;
 
             if ((tempGoodsInMarket = _goodsInMarketService.GetAll().FirstOrDefault(goodsInMarket =>
-                    goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text && goodsInMarket.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
+                    goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text &&
+                    goodsInMarket.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
             {
                 MessageBox.Show("There is no such product in database or there is not enough goods in the store!");
                 return;
@@ -155,7 +161,5 @@ namespace GroceryStore.Views
             _productionContentsService.Delete(ProductionContentsDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
-
-        
     }
 }

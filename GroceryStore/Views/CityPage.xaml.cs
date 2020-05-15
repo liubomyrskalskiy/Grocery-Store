@@ -25,7 +25,8 @@ namespace GroceryStore.Views
 
         public List<CityDTO> CityDtos { get; set; }
 
-        public CityPage(ICityService cityService, ICountryService countryService, IOptions<AppSettings> settings, IMapper mapper)
+        public CityPage(ICityService cityService, ICountryService countryService, IOptions<AppSettings> settings,
+            IMapper mapper)
         {
             _cityService = cityService;
             _countryService = countryService;
@@ -35,7 +36,6 @@ namespace GroceryStore.Views
             InitializeComponent();
 
             UpdateDataGrid();
-
         }
 
         private void UpdateDataGrid()
@@ -53,12 +53,14 @@ namespace GroceryStore.Views
                 TitleTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(CountryTitleTextBox.Text, @"^\D{1,50}$").Success)
             {
                 MessageBox.Show("Country title must consist of at least 1 character and not exceed 50 characters!");
                 CountryTitleTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 
@@ -82,6 +84,7 @@ namespace GroceryStore.Views
             }
             else
                 city.IdCountry = tempCountry.Id;
+
             _cityService.Create(city);
             UpdateDataGrid();
         }
@@ -94,7 +97,7 @@ namespace GroceryStore.Views
             Country tempCountry;
             city.Id = CityDtos[DataGrid.SelectedIndex].Id;
             city.Title = TitleTextBox.Text;
-            if ((tempCountry =_countryService.GetAll()
+            if ((tempCountry = _countryService.GetAll()
                     .FirstOrDefault(country => country.Title == CountryTitleTextBox.Text)) == null)
             {
                 MessageBox.Show("There is no such country title!");
@@ -102,6 +105,7 @@ namespace GroceryStore.Views
             }
             else
                 city.IdCountry = tempCountry.Id;
+
             _cityService.Update(city);
             UpdateDataGrid();
         }

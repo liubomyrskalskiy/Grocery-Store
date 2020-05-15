@@ -31,6 +31,7 @@ namespace GroceryStore.Views.LessViews
         private readonly IMapper _mapper;
 
         private List<ProductionDTO> ProductionDtos { get; set; }
+
         public ProductionLessPage(IProductionService productionService, IOptions<AppSettings> settings, IMapper mapper)
         {
             _productionService = productionService;

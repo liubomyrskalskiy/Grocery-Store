@@ -24,10 +24,15 @@ namespace GroceryStore.Views
         private readonly IMarketService _marketService;
         private AppSettings _settings;
         private readonly IMapper _mapper;
+        private EmployeeDTO _currentEmployee;
+
 
         public List<GoodsInMarketDTO> GoodsInMarketDtos { get; set; }
 
-        public GoodsInMarketPage(IGoodsInMarketService goodsInMarketService, IGoodsService goodsService, IMarketService marketService, IOptions<AppSettings> settings, IMapper mapper)
+        public List<GoodsInMarketDTO> GoodsInCurrentMarketDtos { get; set; }
+
+        public GoodsInMarketPage(IGoodsInMarketService goodsInMarketService, IGoodsService goodsService,
+            IMarketService marketService, IOptions<AppSettings> settings, IMapper mapper)
         {
             _goodsInMarketService = goodsInMarketService;
             _goodsService = goodsService;
@@ -36,15 +41,16 @@ namespace GroceryStore.Views
             _settings = settings.Value;
 
             InitializeComponent();
-
-            UpdateDataGrid();
         }
 
         private void UpdateDataGrid()
         {
-            GoodsInMarketDtos = _mapper.Map<List<GoodsInMarket>, List<GoodsInMarketDTO>>(_goodsInMarketService.GetAll());
+            GoodsInMarketDtos =
+                _mapper.Map<List<GoodsInMarket>, List<GoodsInMarketDTO>>(_goodsInMarketService.GetAll());
 
-            DataGrid.ItemsSource = GoodsInMarketDtos;
+            GoodsInCurrentMarketDtos = GoodsInMarketDtos.Where(item => item.Address == _currentEmployee.MarketAddress).ToList();
+
+            DataGrid.ItemsSource = GoodsInCurrentMarketDtos;
         }
 
         private bool ValidateForm()
@@ -52,21 +58,7 @@ namespace GroceryStore.Views
             if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
                 MessageBox.Show("Invalid product code! It must contain 5 digits");
-                AmountTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(AddressTextBox.Text, @"^(Вул\.\s\D{1,40}\,\s\d{1,3})$").Success)
-            {
-                MessageBox.Show("Market address must consist of at least 1 character and not exceed 50 characters!");
-                AddressTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(AmountTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success)
-            {
-                MessageBox.Show("Invalid amount! Check the data you've entered!");
-                AmountTextBox.Focus();
+                ProductCodeTextBox.Focus();
                 return false;
             }
 
@@ -75,6 +67,8 @@ namespace GroceryStore.Views
 
         public Task ActivateAsync(object parameter)
         {
+            _currentEmployee = (EmployeeDTO)parameter;
+            UpdateDataGrid();
             return Task.CompletedTask;
         }
 
@@ -82,9 +76,39 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                ProductCodeTextBox.Text = GoodsInMarketDtos[DataGrid.SelectedIndex].ProductCode;
-                AmountTextBox.Text = GoodsInMarketDtos[DataGrid.SelectedIndex].Amount.ToString();
-                AddressTextBox.Text = GoodsInMarketDtos[DataGrid.SelectedIndex].Address;
+                ProductCodeTextBox.Text = GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].ProductCode;
+            }
+        }
+
+        private void ProductCodeTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
+            {
+                return;
+            }
+            else
+            {
+                GoodsDTO goodsDto;
+                Goods tempgood;
+                if ((tempgood = _goodsService.GetAll()
+                        .FirstOrDefault(gim =>
+                            gim.ProductCode == ProductCodeTextBox.Text)) == null)
+                {
+                    GoodTitleLabel.Content = "";
+                    ProducerTitleLabel.Content = "";
+                    WeightLabel.Content = "";
+                    PriceLabel.Content = "";
+                    return;
+                }
+                else
+                {
+                    goodsDto = _mapper.Map<Goods, GoodsDTO>(tempgood);
+                    GoodTitleLabel.Content = "Good: " + goodsDto.Title;
+                    ProducerTitleLabel.Content = "Producer: " + goodsDto.ProducerTitle;
+                    WeightLabel.Content = "Unit weight: " + goodsDto.Weight;
+                    PriceLabel.Content = "Price: " + $"{goodsDto.Price,0:C2}";
+                }
+
             }
         }
 
@@ -96,7 +120,7 @@ namespace GroceryStore.Views
             Market tempMarket;
 
             goodsInMarket.Id = GoodsInMarketDtos[^1]?.Id + 1 ?? 1;
-            goodsInMarket.Amount = Convert.ToDouble(AmountTextBox.Text);
+            goodsInMarket.Amount = 0;
             if ((tempGoods = _goodsService.GetAll()
                     .FirstOrDefault(goods => goods.ProductCode == ProductCodeTextBox.Text)) == null)
             {
@@ -107,7 +131,7 @@ namespace GroceryStore.Views
                 goodsInMarket.IdGoods = tempGoods.Id;
 
             if ((tempMarket =
-                    _marketService.GetAll().FirstOrDefault(market => market.Address == AddressTextBox.Text)) == null)
+                    _marketService.GetAll().FirstOrDefault(market => market.Address == _currentEmployee.MarketAddress)) == null)
             {
                 MessageBox.Show("There is no market on such address in database!");
                 return;
@@ -121,43 +145,41 @@ namespace GroceryStore.Views
 
         private void UpdateBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            if (DataGrid.SelectedIndex == -1) return;
-            if (!ValidateForm()) return;
-            GoodsInMarket goodsInMarket = new GoodsInMarket();
-            Goods tempGoods;
-            Market tempMarket;
+            //if (DataGrid.SelectedIndex == -1) return;
+            //if (!ValidateForm()) return;
+            //GoodsInMarket goodsInMarket = new GoodsInMarket();
+            //Goods tempGoods;
+            //Market tempMarket;
 
-            goodsInMarket.Id = GoodsInMarketDtos[DataGrid.SelectedIndex].Id;
-            goodsInMarket.Amount = Convert.ToDouble(AmountTextBox.Text);
-            if ((tempGoods = _goodsService.GetAll()
-                    .FirstOrDefault(goods => goods.ProductCode == ProductCodeTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such product in database!");
-                return;
-            }
-            else
-                goodsInMarket.IdGoods = tempGoods.Id;
+            //goodsInMarket.Id = GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].Id;
+            //goodsInMarket.Amount = Convert.ToDouble(AmountTextBox.Text);
+            //if ((tempGoods = _goodsService.GetAll()
+            //        .FirstOrDefault(goods => goods.ProductCode == ProductCodeTextBox.Text)) == null)
+            //{
+            //    MessageBox.Show("There is no such product in database!");
+            //    return;
+            //}
+            //else
+            //    goodsInMarket.IdGoods = tempGoods.Id;
 
-            if ((tempMarket =
-                    _marketService.GetAll().FirstOrDefault(market => market.Address == AddressTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no market on such address in database!");
-                return;
-            }
-            else
-                goodsInMarket.IdMarket = tempMarket.Id;
+            //if ((tempMarket =
+            //        _marketService.GetAll().FirstOrDefault(market => market.Address == _marketAddress)) == null)
+            //{
+            //    MessageBox.Show("There is no market on such address in database!");
+            //    return;
+            //}
+            //else
+            //    goodsInMarket.IdMarket = tempMarket.Id;
 
-            _goodsInMarketService.Update(goodsInMarket);
-            UpdateDataGrid();
+            //_goodsInMarketService.Update(goodsInMarket);
+            //UpdateDataGrid();
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            _goodsInMarketService.Delete(GoodsInMarketDtos[DataGrid.SelectedIndex].Id);
+            _goodsInMarketService.Delete(GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
-
-        
     }
 }

@@ -9,28 +9,30 @@ using GroceryStore.Core.DTO;
 using GroceryStore.Core.Models;
 using GroceryStore.Views;
 using GroceryStore.Views.LessViews;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
 
-namespace GroceryStore
+namespace GroceryStore.Windows
 {
     public partial class MainWindow : Window
     {
         private readonly IEmployeeService _employeeService;
         private readonly SimpleNavigationService _navigationService;
-        private AppSettings _settings;
+        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-        Storyboard sb;
+        private readonly Storyboard sb;
 
         public List<EmployeeDTO> EmployeeDtos { get; set; }
 
-        public MainWindow(SimpleNavigationService navigationService, IOptions<AppSettings> settings, IEmployeeService employeeService, IMapper mapper)
+        private EmployeeDTO _currentEmployee;
+
+        public MainWindow(SimpleNavigationService navigationService, IOptions<AppSettings> settings,
+            IEmployeeService employeeService, IMapper mapper)
         {
             _navigationService = navigationService;
             _employeeService = employeeService;
             _mapper = mapper;
             _settings = settings.Value;
-            
+
 
             EmployeeDtos = _mapper.Map<List<Employee>, List<EmployeeDTO>>(_employeeService.GetAll());
 
@@ -38,9 +40,9 @@ namespace GroceryStore
 
             sb = (FindResource("LogInMenuClose") as Storyboard);
 
-            //BtnOpenLogInMenu.Visibility = Visibility.Collapsed;
             HideMenu();
         }
+
         private void BtnClose(object sender, RoutedEventArgs e)
         {
             Close();
@@ -65,28 +67,24 @@ namespace GroceryStore
             return true;
         }
 
-        private void BtnOpenLogInMenu_Click(object sender, RoutedEventArgs e)
-        {
-            //BtnOpenLogInMenu.Visibility = Visibility.Collapsed;
-            //BtnCloseLogInMenu.Visibility = Visibility.Visible;
-        }
-
-
         private async void SaleBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<SalePage>();
+            var result = await _navigationService.GetPageAsync<SalePage>(_currentEmployee);
             Main.Content = result;
         }
+
         private async void BasketBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<BasketPage>();
             Main.Content = result;
         }
+
         private async void BasketOwnBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<BasketOwnPage>();
             Main.Content = result;
         }
+
         private async void CategoryBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<CategoryPage>();
@@ -125,25 +123,26 @@ namespace GroceryStore
 
         private async void GoodsInMarketBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<GoodsInMarketPage>();
+            var result = await _navigationService.GetPageAsync<GoodsInMarketPage>(_currentEmployee);
             Main.Content = result;
         }
 
         private async void GoodsInMarketOwnBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<GoodsInMarketOwnPage>();
+            var result = await _navigationService.GetPageAsync<GoodsInMarketOwnPage>(_currentEmployee);
             Main.Content = result;
         }
 
         private async void GoodsInMarketLessBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<GoodsInMarketLessPage>();
+            var result = await _navigationService.GetPageAsync<GoodsInMarketLessPage>(_currentEmployee);
             Main.Content = result;
         }
 
         private async void GoodsInMarketOwnLessBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<GoodsInMarketOwnLessPage>();
+            var result =
+                await _navigationService.GetPageAsync<GoodsInMarketOwnLessPage>(_currentEmployee);
             Main.Content = result;
         }
 
@@ -155,7 +154,7 @@ namespace GroceryStore
 
         private async void ProductionBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<ProductionPage>();
+            var result = await _navigationService.GetPageAsync<ProductionPage>(_currentEmployee);
             Main.Content = result;
         }
 
@@ -182,16 +181,19 @@ namespace GroceryStore
             var result = await _navigationService.GetPageAsync<ConsignmentPage>();
             Main.Content = result;
         }
+
         private async void CountryBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<CountryPage>();
             Main.Content = result;
         }
+
         private async void DeliveryContentsBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<DeliveryContentsPage>();
             Main.Content = result;
         }
+
         private async void DeliveryBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<DeliveryPage>();
@@ -203,31 +205,37 @@ namespace GroceryStore
             var result = await _navigationService.GetPageAsync<DeliveryShipmentPage>();
             Main.Content = result;
         }
+
         private async void GoodsBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<GoodsPage>();
             Main.Content = result;
         }
+
         private async void GoodsWriteOffOwnBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<GoodsWriteOffOwnPage>();
             Main.Content = result;
         }
+
         private async void GoodsWriteOffBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<GoodsWriteOffPage>();
             Main.Content = result;
         }
+
         private async void ProducerBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<ProducerPage>();
             Main.Content = result;
         }
+
         private async void ProviderBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<ProviderPage>();
             Main.Content = result;
         }
+
         private async void WriteOffReasonBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<WriteOffReasonPage>();
@@ -236,12 +244,11 @@ namespace GroceryStore
 
         private void HideMenu()
         {
-            MarketManagementMenuOpenBtn.Visibility = Visibility.Collapsed;
-            MarketManagementMenuCloseBtn.Visibility = Visibility.Collapsed;
+            SaleBtn.Visibility = Visibility.Collapsed;
             StoreManagementMenuOpenBtn.Visibility = Visibility.Collapsed;
             StoreManagementMenuCloseBtn.Visibility = Visibility.Collapsed;
-            ProductionManagementMenuOpenBtn.Visibility = Visibility.Collapsed;
-            ProductionManagementMenuCloseBtn.Visibility = Visibility.Collapsed;
+            ProductionBtn.Visibility = Visibility.Collapsed;
+            ProductionLessBtn.Visibility = Visibility.Collapsed;
             ProductManagementMenuOpenBtn.Visibility = Visibility.Collapsed;
             ProductManagementMenuCloseBtn.Visibility = Visibility.Collapsed;
             StaffManagementMenuOpenBtn.Visibility = Visibility.Collapsed;
@@ -269,7 +276,6 @@ namespace GroceryStore
             WriteOffReasonBtn.IsEnabled = true;
             GoodsOwnBtn.IsEnabled = true;
             CategotyBtn.IsEnabled = true;
-            ProductionContentsBtn.IsEnabled = true;
             GoodsInMarketOwnBtn.IsEnabled = true;
             EmployeeBtn.IsEnabled = true;
             RoleBtn.IsEnabled = true;
@@ -280,8 +286,7 @@ namespace GroceryStore
         {
             HideMenu();
             if (!ValidateForm()) return;
-            EmployeeDTO employee = new EmployeeDTO();
-            if ((employee = EmployeeDtos.FirstOrDefault(item =>
+            if ((_currentEmployee = EmployeeDtos.FirstOrDefault(item =>
                     item.Login == LoginTextBox.Text && item.Password == PasswordTextBox.Password)) == null)
             {
                 MessageBox.Show("Incorrect login or password!");
@@ -289,14 +294,12 @@ namespace GroceryStore
                 return;
             }
 
-            if (employee.RoleTitle.Equals("Адміністратор"))
+            if (_currentEmployee.RoleTitle.Equals("Адміністратор"))
             {
-                MarketManagementMenuOpenBtn.Visibility = Visibility.Visible;
-                MarketManagementMenuCloseBtn.Visibility = Visibility.Visible;
+                SaleBtn.Visibility = Visibility.Visible;
                 StoreManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 StoreManagementMenuCloseBtn.Visibility = Visibility.Visible;
-                ProductionManagementMenuOpenBtn.Visibility = Visibility.Visible;
-                ProductionManagementMenuCloseBtn.Visibility = Visibility.Visible;
+                ProductionBtn.Visibility = Visibility.Visible;
                 ProductManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 ProductManagementMenuCloseBtn.Visibility = Visibility.Visible;
                 StaffManagementMenuOpenBtn.Visibility = Visibility.Visible;
@@ -312,10 +315,9 @@ namespace GroceryStore
                 sb.Begin();
             }
 
-            if (employee.RoleTitle.Equals("Продавець-касир"))
+            if (_currentEmployee.RoleTitle.Equals("Продавець-касир"))
             {
-                MarketManagementMenuOpenBtn.Visibility = Visibility.Visible;
-                MarketManagementMenuCloseBtn.Visibility = Visibility.Visible;
+                SaleBtn.Visibility = Visibility.Visible;
                 StoreManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 StoreManagementMenuCloseBtn.Visibility = Visibility.Visible;
                 MarketBtn.IsEnabled = false;
@@ -326,7 +328,7 @@ namespace GroceryStore
                 sb.Begin();
             }
 
-            if (employee.RoleTitle.Equals("Продавець-кухар"))
+            if (_currentEmployee.RoleTitle.Equals("Продавець-кухар"))
             {
                 StoreManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 StoreManagementMenuCloseBtn.Visibility = Visibility.Visible;
@@ -334,8 +336,7 @@ namespace GroceryStore
                 GoodsInMarketBtn.Height = 0;
                 GoodsInMarketOwnLessBtn.Height = 0;
                 ProductionLessBtn.Height = 0;
-                ProductionManagementMenuOpenBtn.Visibility = Visibility.Visible;
-                ProductionManagementMenuCloseBtn.Visibility = Visibility.Visible;
+                ProductionBtn.Visibility = Visibility.Visible;
                 ProductManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 ProductManagementMenuCloseBtn.Visibility = Visibility.Visible;
                 GoodsBtn.IsEnabled = false;
@@ -350,7 +351,7 @@ namespace GroceryStore
                 sb.Begin();
             }
 
-            if (employee.RoleTitle.Equals("Менеджер по списуванню"))
+            if (_currentEmployee.RoleTitle.Equals("Менеджер по списуванню"))
             {
                 StoreManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 StoreManagementMenuCloseBtn.Visibility = Visibility.Visible;
@@ -366,15 +367,13 @@ namespace GroceryStore
                 DeliveryBtn.IsEnabled = false;
                 ConsignmentBtn.IsEnabled = false;
                 DeliveryContentsBtn.IsEnabled = false;
-                ProductionManagementMenuOpenBtn.Visibility = Visibility.Visible;
-                ProductionManagementMenuCloseBtn.Visibility = Visibility.Visible;
+                ProductionBtn.Visibility = Visibility.Visible;
                 ProductionBtn.Height = 0;
-                ProductionContentsBtn.IsEnabled = false;
 
                 sb.Begin();
             }
 
-            if (employee.RoleTitle.Equals("Менеджер по постачанню"))
+            if (_currentEmployee.RoleTitle.Equals("Менеджер по постачанню"))
             {
                 StoreManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 StoreManagementMenuCloseBtn.Visibility = Visibility.Visible;
@@ -398,7 +397,6 @@ namespace GroceryStore
 
                 sb.Begin();
             }
-
         }
     }
 }

@@ -101,11 +101,9 @@ namespace GroceryStore.Views
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            if(DataGrid.SelectedIndex == -1) return;
+            if (DataGrid.SelectedIndex == -1) return;
             _roleService.Delete(RoleDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
-
-        
     }
 }

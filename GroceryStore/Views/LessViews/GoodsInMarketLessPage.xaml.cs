@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using AutoMapper;
@@ -18,29 +19,34 @@ namespace GroceryStore.Views.LessViews
         private readonly IGoodsInMarketService _goodsInMarketService;
         private AppSettings _settings;
         private readonly IMapper _mapper;
+        private EmployeeDTO _currentEmployee;
 
         public List<GoodsInMarketDTO> GoodsInMarketDtos { get; set; }
+        public List<GoodsInMarketDTO> GoodsInCurrentMarketDtos { get; set; }
 
-        public GoodsInMarketLessPage(IGoodsInMarketService goodsInMarketService, IOptions<AppSettings> settings, IMapper mapper)
+        public GoodsInMarketLessPage(IGoodsInMarketService goodsInMarketService, IOptions<AppSettings> settings,
+            IMapper mapper)
         {
             _goodsInMarketService = goodsInMarketService;
             _mapper = mapper;
             _settings = settings.Value;
 
             InitializeComponent();
-
-            UpdateDataGrid();
         }
 
         private void UpdateDataGrid()
         {
-            GoodsInMarketDtos = _mapper.Map<List<GoodsInMarket>, List<GoodsInMarketDTO>>(_goodsInMarketService.GetAll());
-
-            DataGrid.ItemsSource = GoodsInMarketDtos;
+            GoodsInMarketDtos =
+                _mapper.Map<List<GoodsInMarket>, List<GoodsInMarketDTO>>(_goodsInMarketService.GetAll());
+            GoodsInCurrentMarketDtos = GoodsInMarketDtos.Where(item => item.Address == _currentEmployee.MarketAddress)
+                .ToList();
+            DataGrid.ItemsSource = GoodsInCurrentMarketDtos;
         }
 
         public Task ActivateAsync(object parameter)
         {
+            _currentEmployee = (EmployeeDTO)parameter;
+            UpdateDataGrid();
             return Task.CompletedTask;
         }
 
@@ -48,9 +54,9 @@ namespace GroceryStore.Views.LessViews
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                ProductCodeTextBox.Text = GoodsInMarketDtos[DataGrid.SelectedIndex].ProductCode;
-                AmountTextBox.Text = GoodsInMarketDtos[DataGrid.SelectedIndex].Amount.ToString();
-                AddressTextBox.Text = GoodsInMarketDtos[DataGrid.SelectedIndex].Address;
+                TitleTextBox.Text = GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].GoodsTitle;
+                ProducerTextBox.Text = GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].ProducerTitle;
+                ProductCodeTextBox.Text = GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].ProductCode;
             }
         }
     }

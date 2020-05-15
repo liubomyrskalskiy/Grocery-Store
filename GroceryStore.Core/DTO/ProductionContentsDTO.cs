@@ -7,5 +7,7 @@
         public string ProductCode { get; set; }
         public string ProductionCode { get; set; }
         public double? Amount { get; set; }
+        public double? Price { get; set; }
+        public string StringPrice { get; set; }
     }
 }

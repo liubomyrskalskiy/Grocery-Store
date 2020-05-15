@@ -8,6 +8,7 @@
         public string PhoneNumber { get; set; }
         public int? WorkExperience { get; set; }
         public string Address { get; set; }
+        public string FullAddress { get; set; }
         public string RoleTitle { get; set; }
         public string MarketAddress { get; set; }
         public string CityTitle { get; set; }

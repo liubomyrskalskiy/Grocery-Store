@@ -48,9 +48,11 @@ namespace GroceryStore.Views
 
             UpdateDataGrid();
         }
+
         private void UpdateDataGrid()
         {
-            GoodsWriteOffOwnDtos = _mapper.Map<List<GoodsWriteOffOwn>, List<GoodsWriteOffOwnDTO>>(_goodsWriteOffOwnService.GetAll());
+            GoodsWriteOffOwnDtos =
+                _mapper.Map<List<GoodsWriteOffOwn>, List<GoodsWriteOffOwnDTO>>(_goodsWriteOffOwnService.GetAll());
 
             DataGrid.ItemsSource = GoodsWriteOffOwnDtos;
         }

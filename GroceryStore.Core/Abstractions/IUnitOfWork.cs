@@ -33,6 +33,6 @@ namespace GroceryStore.Core.Abstractions
 
         void SaveChanges();
 
-        void SaveTablesChanges(string TableName);
+        void SaveTablesChanges(string tableName);
     }
 }

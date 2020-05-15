@@ -24,8 +24,10 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<ClientDTO> ClientDtos { get; set; }
+        public List<CityDTO> CityDtos { get; set; }
 
-        public ClientPage(IClientService clientService, ICityService cityService, IOptions<AppSettings> settings, IMapper mapper)
+        public ClientPage(IClientService clientService, ICityService cityService, IOptions<AppSettings> settings,
+            IMapper mapper)
         {
             _clientService = clientService;
             _cityService = cityService;
@@ -33,8 +35,6 @@ namespace GroceryStore.Views
             _mapper = mapper;
 
             InitializeComponent();
-
-            UpdateDataGrid();
         }
 
         private void UpdateDataGrid()
@@ -42,11 +42,12 @@ namespace GroceryStore.Views
             ClientDtos = _mapper.Map<List<Client>, List<ClientDTO>>(_clientService.GetAll());
 
             DataGrid.ItemsSource = ClientDtos;
+            CityComboBox.ItemsSource = CityDtos;
         }
 
         private bool ValidateForm()
         {
-            if(!Regex.Match(FirstNameTextBox.Text, @"^\D{1,30}$").Success)
+            if (!Regex.Match(FirstNameTextBox.Text, @"^\D{1,30}$").Success)
             {
                 MessageBox.Show("First name must consist of at least 1 character and not exceed 30 characters!");
                 FirstNameTextBox.Focus();
@@ -74,24 +75,15 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if(!Regex.Match(AccountNumberTextBox.Text, @"^\d{12}$").Success)
-            {
-                MessageBox.Show("Account number must consist of 12 digits!");
-                AccountNumberTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(CityTitleTextBox.Text, @"^\D{1,50}$").Success)
-            {
-                MessageBox.Show("City title must consist of at least 1 character and not exceed 50 characters!");
-                CityTitleTextBox.Focus();
-                return false;
-            }
             return true;
         }
 
         public Task ActivateAsync(object parameter)
         {
+            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
+
+            UpdateDataGrid();
+
             return Task.CompletedTask;
         }
 
@@ -103,8 +95,6 @@ namespace GroceryStore.Views
                 LastNameTextBox.Text = ClientDtos[DataGrid.SelectedIndex].LastName;
                 AddressTextBox.Text = ClientDtos[DataGrid.SelectedIndex].Address;
                 PhoneNumberTextBox.Text = ClientDtos[DataGrid.SelectedIndex].PhoneNumber;
-                AccountNumberTextBox.Text = ClientDtos[DataGrid.SelectedIndex].AccountNumber;
-                CityTitleTextBox.Text = ClientDtos[DataGrid.SelectedIndex].CityTitle;
             }
         }
 
@@ -112,21 +102,31 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             Client client = new Client();
-            City tempCity;
+            CityDTO tempCity;
             client.Id = ClientDtos[^1]?.Id + 1 ?? 1;
             client.FirstName = FirstNameTextBox.Text;
             client.LastName = LastNameTextBox.Text;
             client.Address = AddressTextBox.Text;
             client.Bonuses = 0;
             client.PhoneNumber = PhoneNumberTextBox.Text;
-            client.AccountNumber = AccountNumberTextBox.Text;
-            if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            client.AccountNumber = client.Id.ToString("D12");
+            if (CityComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such city in database!");
+                MessageBox.Show("Please select city");
                 return;
             }
+            else
+            {
+                tempCity = (CityDTO) CityComboBox.SelectedItem;
+                client.IdCity = tempCity.Id;
+            }
+            //if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            //{
+            //    MessageBox.Show("There is no such city in database!");
+            //    return;
+            //}
+            //client.IdCity = tempCity.Id;
 
-            client.IdCity = tempCity.Id;
             _clientService.Create(client);
             UpdateDataGrid();
         }
@@ -136,21 +136,25 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
             Client client = new Client();
-            City tempCity;
+            CityDTO tempCity;
             client.Id = ClientDtos[DataGrid.SelectedIndex].Id;
             client.FirstName = FirstNameTextBox.Text;
             client.LastName = LastNameTextBox.Text;
             client.Address = AddressTextBox.Text;
             client.Bonuses = ClientDtos[DataGrid.SelectedIndex].Bonuses;
             client.PhoneNumber = PhoneNumberTextBox.Text;
-            client.AccountNumber = AccountNumberTextBox.Text;
-            if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            client.AccountNumber = ClientDtos[DataGrid.SelectedIndex].AccountNumber;
+            if(CityComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such city in database!");
+                MessageBox.Show("Please select city");
                 return;
             }
+            else
+            {
+                tempCity = (CityDTO)CityComboBox.SelectedItem;
+                client.IdCity = tempCity.Id;
+            }
 
-            client.IdCity = tempCity.Id;
             _clientService.Update(client);
             UpdateDataGrid();
         }

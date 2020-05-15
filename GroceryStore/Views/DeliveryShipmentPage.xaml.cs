@@ -33,7 +33,7 @@ namespace GroceryStore.Views
             IGoodsInMarketService goodsInMarketService,
             IOptions<AppSettings> settings, IMapper mapper)
         {
-            _deliveryShipmentService = deliveryShipmentService; 
+            _deliveryShipmentService = deliveryShipmentService;
             _consignmentService = consignmentService;
             _goodsInMarketService = goodsInMarketService;
             _mapper = mapper;
@@ -46,7 +46,8 @@ namespace GroceryStore.Views
 
         private void UpdateDataGrid()
         {
-            DeliveryShipmentDtos = _mapper.Map<List<DeliveryShipment>, List<DeliveryShipmentDTO>>(_deliveryShipmentService.GetAll());
+            DeliveryShipmentDtos =
+                _mapper.Map<List<DeliveryShipment>, List<DeliveryShipmentDTO>>(_deliveryShipmentService.GetAll());
 
             DataGrid.ItemsSource = DeliveryShipmentDtos;
         }
@@ -59,12 +60,14 @@ namespace GroceryStore.Views
                 AmountTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(NumberTextBox.Text, @"^\d{5,20}$").Success)
             {
                 MessageBox.Show("Consignment Number must consist of at least 5 digits and not exceed 20 digits!");
                 NumberTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(AmountTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success)
             {
                 MessageBox.Show("Invalid amount! Check the data you've entered!");
@@ -79,6 +82,7 @@ namespace GroceryStore.Views
                 DateTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 
@@ -105,7 +109,8 @@ namespace GroceryStore.Views
             else
                 deliveryShipment.IdConsignment = tempConsignment.Id;
 
-            if((tempGoodsInMarket = _goodsInMarketService.GetAll().FirstOrDefault(goodsInMarket => goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text)) == null)
+            if ((tempGoodsInMarket = _goodsInMarketService.GetAll().FirstOrDefault(goodsInMarket =>
+                    goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text)) == null)
             {
                 MessageBox.Show("There is no such good in market!");
                 return;
@@ -136,7 +141,8 @@ namespace GroceryStore.Views
             else
                 deliveryShipment.IdConsignment = tempConsignment.Id;
 
-            if ((tempGoodsInMarket = _goodsInMarketService.GetAll().FirstOrDefault(goodsInMarket => goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text)) == null)
+            if ((tempGoodsInMarket = _goodsInMarketService.GetAll().FirstOrDefault(goodsInMarket =>
+                    goodsInMarket.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text)) == null)
             {
                 MessageBox.Show("There is no such good in market!");
                 return;

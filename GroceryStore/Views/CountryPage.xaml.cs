@@ -33,7 +33,7 @@ namespace GroceryStore.Views
 
             UpdateDataGrid();
         }
-        
+
         private void UpdateDataGrid()
         {
             CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
@@ -49,6 +49,7 @@ namespace GroceryStore.Views
                 TitleTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 

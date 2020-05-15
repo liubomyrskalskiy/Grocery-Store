@@ -25,7 +25,8 @@ namespace GroceryStore.Views
 
         public List<ProducerDTO> ProducerDtos { get; set; }
 
-        public ProducerPage(IProducerService producerService, ICountryService countryService, IOptions<AppSettings> settings, IMapper mapper)
+        public ProducerPage(IProducerService producerService, ICountryService countryService,
+            IOptions<AppSettings> settings, IMapper mapper)
         {
             _producerService = producerService;
             _countryService = countryService;

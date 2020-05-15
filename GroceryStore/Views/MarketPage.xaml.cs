@@ -23,8 +23,10 @@ namespace GroceryStore.Views
         private AppSettings _settings;
         private readonly IMapper _mapper;
         public List<MarketDTO> MarketDtos { get; set; }
+        public List<CityDTO> CityDtos { get; set; }
 
-        public MarketPage(IMarketService marketService, ICityService cityService, IOptions<AppSettings> settings, IMapper mapper)
+        public MarketPage(IMarketService marketService, ICityService cityService, IOptions<AppSettings> settings,
+            IMapper mapper)
         {
             _marketService = marketService;
             _cityService = cityService;
@@ -59,18 +61,13 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if(!Regex.Match(CityTitleTextBox.Text, @"^\D{1,50}$").Success)
-            {
-                MessageBox.Show("Title must consist of at least 1 character and not exceed 50 characters!");
-                CityTitleTextBox.Focus();
-                return false;
-            }
-
             return true;
         }
 
         public Task ActivateAsync(object parameter)
         {
+            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
+            CityComboBox.ItemsSource = CityDtos;
             return Task.CompletedTask;
         }
 
@@ -80,7 +77,7 @@ namespace GroceryStore.Views
             {
                 AddressTextBox.Text = MarketDtos[DataGrid.SelectedIndex].Address;
                 PhoneNumberTextBox.Text = MarketDtos[DataGrid.SelectedIndex].PhoneNumber;
-                CityTitleTextBox.Text = MarketDtos[DataGrid.SelectedIndex].CityTitle;
+                //CityTitleTextBox.Text = MarketDtos[DataGrid.SelectedIndex].CityTitle;
             }
         }
 
@@ -88,17 +85,20 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             Market market = new Market();
-            City tempCity = new City();
+            CityDTO tempCity;
             market.Id = MarketDtos[^1]?.Id + 1 ?? 1;
             market.Address = AddressTextBox.Text;
             market.PhoneNumber = PhoneNumberTextBox.Text;
-            if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            if(CityComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such city in database!");
+                MessageBox.Show("Please select city");
                 return;
             }
-
-            market.IdCity = tempCity.Id;
+            else
+            {
+                tempCity = (CityDTO) CityComboBox.SelectedItem;
+                market.IdCity = tempCity.Id;
+            }
 
             _marketService.Create(market);
             UpdateDataGrid();
@@ -109,17 +109,20 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
             Market market = new Market();
-            City tempCity = new City();
+            CityDTO tempCity;
             market.Id = MarketDtos[DataGrid.SelectedIndex].Id;
             market.Address = AddressTextBox.Text;
             market.PhoneNumber = PhoneNumberTextBox.Text;
-            if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            if (CityComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such city in database!");
+                MessageBox.Show("Please select city");
                 return;
             }
-
-            market.IdCity = tempCity.Id;
+            else
+            {
+                tempCity = (CityDTO)CityComboBox.SelectedItem;
+                market.IdCity = tempCity.Id;
+            }
 
             _marketService.Update(market);
             UpdateDataGrid();
@@ -131,7 +134,5 @@ namespace GroceryStore.Views
             _marketService.Delete(MarketDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
-
-        
     }
 }

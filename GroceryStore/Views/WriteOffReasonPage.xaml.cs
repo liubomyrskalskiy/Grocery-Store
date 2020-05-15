@@ -23,7 +23,8 @@ namespace GroceryStore.Views
 
         public List<WriteOffReasonDTO> WriteOffReasonDtos { get; set; }
 
-        public WriteOffReasonPage(IWriteOffReasonService writeOffReasonService, IOptions<AppSettings> settings, IMapper mapper)
+        public WriteOffReasonPage(IWriteOffReasonService writeOffReasonService, IOptions<AppSettings> settings,
+            IMapper mapper)
         {
             _writeOffReasonService = writeOffReasonService;
             _mapper = mapper;
@@ -36,7 +37,8 @@ namespace GroceryStore.Views
 
         private void UpdateDataGrid()
         {
-            WriteOffReasonDtos = _mapper.Map<List<WriteOffReason>, List<WriteOffReasonDTO>>(_writeOffReasonService.GetAll());
+            WriteOffReasonDtos =
+                _mapper.Map<List<WriteOffReason>, List<WriteOffReasonDTO>>(_writeOffReasonService.GetAll());
 
             DataGrid.ItemsSource = WriteOffReasonDtos;
         }

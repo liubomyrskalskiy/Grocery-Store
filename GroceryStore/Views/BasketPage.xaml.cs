@@ -28,7 +28,8 @@ namespace GroceryStore.Views
 
         public List<BasketDTO> BasketDtos { get; set; }
 
-        public BasketPage(IBasketService basketService, ISaleService saleService, IGoodsInMarketService goodsInMarketService, IOptions<AppSettings> settings, IMapper mapper)
+        public BasketPage(IBasketService basketService, ISaleService saleService,
+            IGoodsInMarketService goodsInMarketService, IOptions<AppSettings> settings, IMapper mapper)
         {
             _basketService = basketService;
             _saleService = saleService;
@@ -63,12 +64,14 @@ namespace GroceryStore.Views
                 CheckNumberTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
                 MessageBox.Show("Invalid product code! It must contain 5 digits");
                 ProductCodeTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 
@@ -93,8 +96,11 @@ namespace GroceryStore.Views
             }
             else
                 basket.IdSale = tempsale.Id;
+
             if ((tempgim = _goodsInMarketService.GetAll()
-                    .FirstOrDefault(gim => gim.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text && gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
+                    .FirstOrDefault(gim =>
+                        gim.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text &&
+                        gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
             {
                 MessageBox.Show("There is no such product code or there is not enough goods in the store!");
                 return;
@@ -134,8 +140,11 @@ namespace GroceryStore.Views
                 }
                 else
                     basket.IdSale = tempsale.Id;
+
                 if ((tempgim = _goodsInMarketService.GetAll()
-                        .FirstOrDefault(gim => gim.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text && gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
+                        .FirstOrDefault(gim =>
+                            gim.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text &&
+                            gim.Amount >= Convert.ToDouble(AmountTextBox.Text))) == null)
                 {
                     MessageBox.Show("There is no such product code or there is not enough goods in the store!");
                     return;

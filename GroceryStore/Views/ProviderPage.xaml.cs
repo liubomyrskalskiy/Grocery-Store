@@ -24,8 +24,10 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<ProviderDTO> ProviderDtos { get; set; }
+        public List<CityDTO> CityDtos { get; set; }
 
-        public ProviderPage(IProviderService providerService, ICityService cityService, IOptions<AppSettings> settings, IMapper mapper)
+        public ProviderPage(IProviderService providerService, ICityService cityService, IOptions<AppSettings> settings,
+            IMapper mapper)
         {
             _providerService = providerService;
             _cityService = cityService;
@@ -33,14 +35,13 @@ namespace GroceryStore.Views
             _settings = settings.Value;
 
             InitializeComponent();
-
-            UpdateDataGrid();
         }
 
         private void UpdateDataGrid()
         {
             ProviderDtos = _mapper.Map<List<Provider>, List<ProviderDTO>>(_providerService.GetAll());
 
+            CityComboBox.ItemsSource = CityDtos;
             DataGrid.ItemsSource = ProviderDtos;
         }
 
@@ -52,7 +53,7 @@ namespace GroceryStore.Views
                 TitleTextBox.Focus();
                 return false;
             }
-        
+
             if (!Regex.Match(ContactTextBox.Text, @"^\D{1,50}$").Success)
             {
                 MessageBox.Show("Contact person must consist of at least 1 character and not exceed 50 characters!");
@@ -74,18 +75,13 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if (!Regex.Match(CityTitleTextBox.Text, @"^\D{1,50}$").Success)
-            {
-                MessageBox.Show("City title must consist of at least 1 character and not exceed 50 characters!");
-                CityTitleTextBox.Focus();
-                return false;
-            }
-
             return true;
         }
 
         public Task ActivateAsync(object parameter)
         {
+            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
+            UpdateDataGrid();
             return Task.CompletedTask;
         }
 
@@ -93,19 +89,29 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             Provider provider = new Provider();
-            City tempCity;
+            CityDTO tempCity;
             provider.Id = ProviderDtos[^1]?.Id + 1 ?? 1;
             provider.CompanyTitle = TitleTextBox.Text;
             provider.ContactPerson = ContactTextBox.Text;
             provider.PhoneNumber = PhoneTextBox.Text;
             provider.Address = AddressTextBox.Text;
-            if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            if (CityComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such city title!");
+                MessageBox.Show("Please select city");
                 return;
             }
             else
+            {
+                tempCity = (CityDTO) CityComboBox.SelectedItem;
                 provider.IdCity = tempCity.Id;
+            }
+            //if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            //{
+            //    MessageBox.Show("There is no such city title!");
+            //    return;
+            //}
+            //else
+            //    provider.IdCity = tempCity.Id;
 
             _providerService.Create(provider);
             UpdateDataGrid();
@@ -116,19 +122,22 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
             Provider provider = new Provider();
-            City tempCity;
+            CityDTO tempCity;
             provider.Id = ProviderDtos[DataGrid.SelectedIndex].Id;
             provider.CompanyTitle = TitleTextBox.Text;
             provider.ContactPerson = ContactTextBox.Text;
             provider.PhoneNumber = PhoneTextBox.Text;
             provider.Address = AddressTextBox.Text;
-            if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
+            if (CityComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such city title!");
+                MessageBox.Show("Please select city");
                 return;
             }
             else
+            {
+                tempCity = (CityDTO)CityComboBox.SelectedItem;
                 provider.IdCity = tempCity.Id;
+            }
 
             _providerService.Update(provider);
             UpdateDataGrid();
@@ -142,7 +151,6 @@ namespace GroceryStore.Views
                 ContactTextBox.Text = ProviderDtos[DataGrid.SelectedIndex].ContactPerson;
                 PhoneTextBox.Text = ProviderDtos[DataGrid.SelectedIndex].PhoneNumber;
                 AddressTextBox.Text = ProviderDtos[DataGrid.SelectedIndex].Address;
-                CityTitleTextBox.Text = ProviderDtos[DataGrid.SelectedIndex].CityTitle;
             }
         }
 

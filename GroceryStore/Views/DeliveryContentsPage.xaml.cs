@@ -26,7 +26,9 @@ namespace GroceryStore.Views
 
         public List<DeliveryContentsDTO> DeliveryContentsDtos { get; set; }
 
-        public DeliveryContentsPage(IDeliveryContentsService deliveryContentsService, IConsignmentService consignmentService, IDeliveryService deliveryService, IOptions<AppSettings> settings, IMapper mapper)
+        public DeliveryContentsPage(IDeliveryContentsService deliveryContentsService,
+            IConsignmentService consignmentService, IDeliveryService deliveryService, IOptions<AppSettings> settings,
+            IMapper mapper)
         {
             _deliveryContentsService = deliveryContentsService;
             _consignmentService = consignmentService;
@@ -41,7 +43,8 @@ namespace GroceryStore.Views
 
         private void UpdateDataGrid()
         {
-            DeliveryContentsDtos = _mapper.Map<List<DeliveryContents>, List<DeliveryContentsDTO>>(_deliveryContentsService.GetAll());
+            DeliveryContentsDtos =
+                _mapper.Map<List<DeliveryContents>, List<DeliveryContentsDTO>>(_deliveryContentsService.GetAll());
 
             DataGrid.ItemsSource = DeliveryContentsDtos;
         }
@@ -54,12 +57,14 @@ namespace GroceryStore.Views
                 ConsignmentTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(DeliveryTextBox.Text, @"^\d{5,20}$").Success)
             {
                 MessageBox.Show("Delivery Number must consist of at least 5 digits and not exceed 20 digits!");
                 ConsignmentTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 
@@ -84,8 +89,8 @@ namespace GroceryStore.Views
             else
                 deliveryContents.IdConsignment = tempConsignment.Id;
 
-            if((tempDelivery = _deliveryService.GetAll()
-                   .FirstOrDefault(delivery => delivery.DeliveryNumber == DeliveryTextBox.Text.ToString())) == null)
+            if ((tempDelivery = _deliveryService.GetAll()
+                    .FirstOrDefault(delivery => delivery.DeliveryNumber == DeliveryTextBox.Text.ToString())) == null)
             {
                 MessageBox.Show("There is no such delivery!");
                 return;

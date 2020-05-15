@@ -9,6 +9,7 @@ using GroceryStore.DAL;
 using GroceryStore.Services;
 using GroceryStore.Views;
 using GroceryStore.Views.LessViews;
+using GroceryStore.Windows;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,15 +82,16 @@ namespace GroceryStore
 
             services.AddScoped<SimpleNavigationService>();
 
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new MappingProfile());
-            });
+            var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 
             IMapper mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
 
             services.AddTransient<MainWindow>();
+            services.AddTransient<SaleWindow>();
+            services.AddTransient<SaleDetailWindow>();
+            services.AddTransient<ProductionWindow>();
+            services.AddTransient<ProductionDetailWindow>();
 
             services.AddTransient<CategoryPage>();
             services.AddTransient<BasketPage>();

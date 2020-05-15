@@ -57,7 +57,8 @@ namespace GroceryStore.Views
 
         private void UpdateDataGrid()
         {
-            GoodsWriteOffDtos = _mapper.Map<List<GoodsWriteOff>, List<GoodsWriteOffDTO>>(_goodsWriteOffService.GetAll());
+            GoodsWriteOffDtos =
+                _mapper.Map<List<GoodsWriteOff>, List<GoodsWriteOffDTO>>(_goodsWriteOffService.GetAll());
 
             DataGrid.ItemsSource = GoodsWriteOffDtos;
         }
@@ -66,7 +67,8 @@ namespace GroceryStore.Views
         {
             if (!Regex.Match(ConsignmentTextBox.Text, @"^\d{5,20}$").Success)
             {
-                MessageBox.Show("Invalid Consignment number! It must contain at least 5 digits and not exceed 20 digits");
+                MessageBox.Show(
+                    "Invalid Consignment number! It must contain at least 5 digits and not exceed 20 digits");
                 ConsignmentTextBox.Focus();
                 return false;
             }
@@ -147,7 +149,7 @@ namespace GroceryStore.Views
                 goodsWriteOff.IdDeliveryShipment = tempDeliveryShipment.Id;
 
             if ((tempDeliveryShipment = _deliveryShipmentService.GetAll().FirstOrDefault(deliveryShipment =>
-                        deliveryShipment.IdConsignmentNavigation.ConsignmentNumber == ConsignmentTextBox.Text)) == null)
+                    deliveryShipment.IdConsignmentNavigation.ConsignmentNumber == ConsignmentTextBox.Text)) == null)
             {
                 MessageBox.Show("There is no such good in market!");
                 return;

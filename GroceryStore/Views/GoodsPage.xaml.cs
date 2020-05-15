@@ -27,8 +27,11 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<GoodsDTO> GoodsDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
+        public List<ProducerDTO> ProducerDtos { get; set; }
 
-        public GoodsPage(IGoodsService goodsService, ICategoryService categoryService, IProducerService producerService, IOptions<AppSettings> settings, IMapper mapper)
+        public GoodsPage(IGoodsService goodsService, ICategoryService categoryService, IProducerService producerService,
+            IOptions<AppSettings> settings, IMapper mapper)
         {
             _goodsService = goodsService;
             _categoryService = categoryService;
@@ -38,12 +41,17 @@ namespace GroceryStore.Views
 
             InitializeComponent();
 
-            UpdateDataGrid();
+            
         }
 
         private void UpdateDataGrid()
         {
             GoodsDtos = _mapper.Map<List<Goods>, List<GoodsDTO>>(_goodsService.GetAll());
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
+
+            ProducerComboBox.ItemsSource = ProducerDtos;
+            CategoryComboBox.ItemsSource = CategoryDtos;
 
             DataGrid.ItemsSource = GoodsDtos;
         }
@@ -56,6 +64,7 @@ namespace GroceryStore.Views
                 TitleTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(DescriptionTextBox.Text, @"^\D{1,200}$").Success)
             {
                 MessageBox.Show("Description must consist of at least 1 character and not exceed 200 characters!");
@@ -84,31 +93,13 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if (!Regex.Match(CodeTextBox.Text, @"^\d{5}$").Success)
-            {
-                MessageBox.Show("Invalid product code! It must contain 5 digits");
-                CodeTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(CategoryTextBox.Text, @"^\D{1,50}$").Success)
-            {
-                MessageBox.Show("Country title must consist of at least 1 character and not exceed 50 characters!");
-                CategoryTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(ProducerTextBox.Text, @"^\D{1,50}$").Success)
-            {
-                MessageBox.Show("Producer title must consist of at least 1 character and not exceed 50 characters!");
-                CategoryTextBox.Focus();
-                return false;
-            }
             return true;
         }
 
         public Task ActivateAsync(object parameter)
         {
+            UpdateDataGrid();
+
             return Task.CompletedTask;
         }
 
@@ -116,30 +107,51 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             Goods goods = new Goods();
-            Category tempCategory;
-            Producer tempProducer;
+            CategoryDTO tempCategory;
+            ProducerDTO tempProducer;
             goods.Id = GoodsDtos[^1]?.Id + 1 ?? 1;
             goods.Title = TitleTextBox.Text;
             goods.Description = DescriptionTextBox.Text;
             goods.Weight = Convert.ToDouble(WeightTextBox.Text);
             goods.Components = ComponentsTextBox.Text;
             goods.Price = Convert.ToDouble(PriceTextBox.Text);
-            goods.ProductCode = CodeTextBox.Text;
-            if ((tempCategory = _categoryService.GetAll().FirstOrDefault(category => category.Title == CategoryTextBox.Text)) == null)
+            goods.ProductCode = goods.Id.ToString("D5");
+            if (CategoryComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such category!");
+                MessageBox.Show("Please select categoty");
                 return;
             }
             else
+            {
+                tempCategory = (CategoryDTO) CategoryComboBox.SelectedItem;
                 goods.IdCategory = tempCategory.Id;
-
-            if ((tempProducer = _producerService.GetAll().FirstOrDefault(producer => producer.Title == ProducerTextBox.Text)) == null)
+            }
+            //if ((tempCategory = _categoryService.GetAll()
+            //        .FirstOrDefault(category => category.Title == CategoryTextBox.Text)) == null)
+            //{
+            //    MessageBox.Show("There is no such category!");
+            //    return;
+            //}
+            //else
+            //    goods.IdCategory = tempCategory.Id;
+            if (ProducerComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such producer!");
+                MessageBox.Show("Please select categoty");
                 return;
             }
             else
+            {
+                tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
                 goods.IdProducer = tempProducer.Id;
+            }
+            //if ((tempProducer = _producerService.GetAll()
+            //        .FirstOrDefault(producer => producer.Title == ProducerTextBox.Text)) == null)
+            //{
+            //    MessageBox.Show("There is no such producer!");
+            //    return;
+            //}
+            //else
+            //    goods.IdProducer = tempProducer.Id;
 
             _goodsService.Create(goods);
             UpdateDataGrid();
@@ -150,30 +162,36 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
             Goods goods = new Goods();
-            Category tempCategory;
-            Producer tempProducer;
+            CategoryDTO tempCategory;
+            ProducerDTO tempProducer;
             goods.Id = GoodsDtos[DataGrid.SelectedIndex].Id;
             goods.Title = TitleTextBox.Text;
             goods.Description = DescriptionTextBox.Text;
             goods.Weight = Convert.ToDouble(WeightTextBox.Text);
             goods.Components = ComponentsTextBox.Text;
             goods.Price = Convert.ToDouble(PriceTextBox.Text);
-            goods.ProductCode = CodeTextBox.Text;
-            if ((tempCategory = _categoryService.GetAll().FirstOrDefault(category => category.Title == CategoryTextBox.Text)) == null)
+            goods.ProductCode = GoodsDtos[DataGrid.SelectedIndex].ProductCode;
+            if (CategoryComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such category!");
+                MessageBox.Show("Please select categoty");
                 return;
             }
             else
+            {
+                tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
                 goods.IdCategory = tempCategory.Id;
+            }
 
-            if ((tempProducer = _producerService.GetAll().FirstOrDefault(producer => producer.Title == ProducerTextBox.Text)) == null)
+            if (ProducerComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such producer!");
+                MessageBox.Show("Please select categoty");
                 return;
             }
             else
+            {
+                tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
                 goods.IdProducer = tempProducer.Id;
+            }
 
             _goodsService.Update(goods);
             UpdateDataGrid();
@@ -188,9 +206,6 @@ namespace GroceryStore.Views
                 WeightTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Weight.ToString();
                 ComponentsTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Components;
                 PriceTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Price.ToString();
-                CodeTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].ProductCode;
-                CategoryTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].CategoryTitle;
-                ProducerTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].ProducerTitle;
             }
         }
 

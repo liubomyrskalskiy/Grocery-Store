@@ -25,8 +25,10 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<GoodsOwnDTO> GoodsOwnDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
 
-        public GoodsOwnPage(IGoodsOwnService goodsOwnService, ICategoryService categoryService, IOptions<AppSettings> settings, IMapper mapper)
+        public GoodsOwnPage(IGoodsOwnService goodsOwnService, ICategoryService categoryService,
+            IOptions<AppSettings> settings, IMapper mapper)
         {
             _goodsOwnService = goodsOwnService;
             _categoryService = categoryService;
@@ -34,14 +36,16 @@ namespace GroceryStore.Views
             _mapper = mapper;
             InitializeComponent();
 
-            UpdateDataGrid();
+            
         }
 
         private void UpdateDataGrid()
         {
             GoodsOwnDtos = _mapper.Map<List<GoodsOwn>, List<GoodsOwnDTO>>(_goodsOwnService.GetAll());
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
 
             DataGrid.ItemsSource = GoodsOwnDtos;
+            CategoryComboBox.ItemsSource = CategoryDtos;
         }
 
         private bool ValidateForm()
@@ -74,25 +78,13 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if (!Regex.Match(CategoryTextBox.Text, @"^\D{1,50}$").Success)
-            {
-                MessageBox.Show("Country title must consist of at least 1 character and not exceed 50 characters!");
-                CategoryTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
-            {
-                MessageBox.Show("Invalid product code! It must contain 5 digits");
-                ProductCodeTextBox.Focus();
-                return false;
-            }
-
             return true;
         }
 
         public Task ActivateAsync(object parameter)
         {
+            UpdateDataGrid();
+
             return Task.CompletedTask;
         }
 
@@ -104,8 +96,6 @@ namespace GroceryStore.Views
                 WeightTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Weight.ToString();
                 ComponentnsTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Components;
                 PriceTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Price.ToString();
-                CategoryTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Category;
-                ProductCodeTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].ProductCode;
             }
         }
 
@@ -113,21 +103,23 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             GoodsOwn goodsOwn = new GoodsOwn();
-            Category tempCategory = new Category();
+            CategoryDTO tempCategory;
             goodsOwn.Id = GoodsOwnDtos[^1]?.Id + 1 ?? 1;
             goodsOwn.Title = TitleTextBox.Text;
             goodsOwn.Weight = Convert.ToDouble(WeightTextBox.Text);
             goodsOwn.Components = ComponentnsTextBox.Text;
             goodsOwn.Price = Convert.ToDouble(PriceTextBox.Text);
-            goodsOwn.ProductCode = ProductCodeTextBox.Text;
-            if ((tempCategory = _categoryService.GetAll()
-                    .FirstOrDefault(category => category.Title == CategoryTextBox.Text)) == null)
+            goodsOwn.ProductCode = goodsOwn.Id.ToString("D5");
+            if (CategoryComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such category in database!");
+                MessageBox.Show("Please select categoty");
                 return;
             }
             else
+            {
+                tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
                 goodsOwn.IdCategory = tempCategory.Id;
+            }
 
             _goodsOwnService.Create(goodsOwn);
             UpdateDataGrid();
@@ -138,21 +130,23 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
             GoodsOwn goodsOwn = new GoodsOwn();
-            Category tempCategory = new Category();
+            CategoryDTO tempCategory;
             goodsOwn.Id = GoodsOwnDtos[DataGrid.SelectedIndex].Id;
             goodsOwn.Title = TitleTextBox.Text;
             goodsOwn.Weight = Convert.ToDouble(WeightTextBox.Text);
             goodsOwn.Components = ComponentnsTextBox.Text;
             goodsOwn.Price = Convert.ToDouble(PriceTextBox.Text);
-            goodsOwn.ProductCode = ProductCodeTextBox.Text;
-            if ((tempCategory = _categoryService.GetAll()
-                    .FirstOrDefault(category => category.Title == CategoryTextBox.Text)) == null)
+            goodsOwn.ProductCode = GoodsOwnDtos[DataGrid.SelectedIndex].ProductCode;
+            if (CategoryComboBox.SelectedItem == null)
             {
-                MessageBox.Show("There is no such category in database!");
+                MessageBox.Show("Please select categoty");
                 return;
             }
             else
+            {
+                tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
                 goodsOwn.IdCategory = tempCategory.Id;
+            }
 
             _goodsOwnService.Update(goodsOwn);
             UpdateDataGrid();
@@ -164,7 +158,5 @@ namespace GroceryStore.Views
             _goodsOwnService.Delete(GoodsOwnDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
-
-        
     }
 }

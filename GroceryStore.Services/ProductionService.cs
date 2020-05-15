@@ -20,6 +20,7 @@ namespace GroceryStore.Services
             return unitOfWork.ProductionRepository.GetAll()
                 .Include(production => production.IdEmployeeNavigation)
                 .Include(production => production.IdGoodsOwnNavigation)
+                .Include(production => production.IdGoodsOwnNavigation.IdCategoryNavigation)
                 .ToList();
         }
 

@@ -26,7 +26,8 @@ namespace GroceryStore.Views
 
         public List<DeliveryDTO> DeliveryDtos { get; set; }
 
-        public DeliveryPage(IDeliveryService deliveryService, IProviderService providerService, IOptions<AppSettings> settings, IMapper mapper)
+        public DeliveryPage(IDeliveryService deliveryService, IProviderService providerService,
+            IOptions<AppSettings> settings, IMapper mapper)
         {
             _deliveryService = deliveryService;
             _providerService = providerService;
@@ -61,12 +62,14 @@ namespace GroceryStore.Views
                 DateTextBox.Focus();
                 return false;
             }
+
             if (!Regex.Match(ProviderTextBox.Text, @"^\D{1,50}$").Success)
             {
                 MessageBox.Show("Provider title must consist of at least 1 character and not exceed 40 characters!");
                 ProviderTextBox.Focus();
                 return false;
             }
+
             return true;
         }
 
@@ -83,7 +86,7 @@ namespace GroceryStore.Views
             delivery.Id = DeliveryDtos[^1]?.Id + 1 ?? 1;
             delivery.DeliveryNumber = NumberTextBox.Text;
             delivery.DeliveryDate = DateTime.Parse(DateTextBox.Text);
-            if ((tempProvider= _providerService.GetAll()
+            if ((tempProvider = _providerService.GetAll()
                     .FirstOrDefault(provider => provider.CompanyTitle == ProviderTextBox.Text.ToString())) == null)
             {
                 MessageBox.Show("There is no such provider title!");
