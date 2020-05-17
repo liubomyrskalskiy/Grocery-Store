@@ -24,6 +24,7 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<CityDTO> CityDtos { get; set; }
+        public List<CountryDTO> CountryDtos { get; set; }
 
         public CityPage(ICityService cityService, ICountryService countryService, IOptions<AppSettings> settings,
             IMapper mapper)
@@ -54,10 +55,9 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if (!Regex.Match(CountryTitleTextBox.Text, @"^\D{1,50}$").Success)
+            if (CountryComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Country title must consist of at least 1 character and not exceed 50 characters!");
-                CountryTitleTextBox.Focus();
+                MessageBox.Show("Please select country");
                 return false;
             }
 
@@ -66,6 +66,8 @@ namespace GroceryStore.Views
 
         public Task ActivateAsync(object parameter)
         {
+            CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
+            CountryComboBox.ItemsSource = CountryDtos;
             return Task.CompletedTask;
         }
 
@@ -73,17 +75,12 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             City city = new City();
-            Country tempCountry;
+            CountryDTO tempCountry;
             city.Id = CityDtos[^1]?.Id + 1 ?? 1;
             city.Title = TitleTextBox.Text;
-            if ((tempCountry = _countryService.GetAll()
-                    .FirstOrDefault(country => country.Title == CountryTitleTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such country title!");
-                return;
-            }
-            else
-                city.IdCountry = tempCountry.Id;
+            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            city.IdCountry = tempCountry.Id;
+
 
             _cityService.Create(city);
             UpdateDataGrid();
@@ -94,17 +91,11 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
             City city = new City();
-            Country tempCountry;
+            CountryDTO tempCountry;
             city.Id = CityDtos[DataGrid.SelectedIndex].Id;
             city.Title = TitleTextBox.Text;
-            if ((tempCountry = _countryService.GetAll()
-                    .FirstOrDefault(country => country.Title == CountryTitleTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such country title!");
-                return;
-            }
-            else
-                city.IdCountry = tempCountry.Id;
+            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            city.IdCountry = tempCountry.Id;
 
             _cityService.Update(city);
             UpdateDataGrid();
@@ -114,7 +105,8 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             TitleTextBox.Text = CityDtos[DataGrid.SelectedIndex].Title;
-            CountryTitleTextBox.Text = CityDtos[DataGrid.SelectedIndex].CountryTitle;
+            CountryComboBox.SelectedItem =
+                CountryDtos.FirstOrDefault(item => item.Title == CityDtos[DataGrid.SelectedIndex].CountryTitle);
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)

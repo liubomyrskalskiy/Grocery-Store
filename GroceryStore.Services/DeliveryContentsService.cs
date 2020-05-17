@@ -17,7 +17,13 @@ namespace GroceryStore.Services
 
         public List<DeliveryContents> GetAll()
         {
-            return unitOfWork.DeliveryContentsRepository.GetAll().Include(content => content.IdConsignmentNavigation).Include(content => content.IdDeliveryNavigation).ToList();
+            return unitOfWork.DeliveryContentsRepository.GetAll()
+                .Include(content => content.IdConsignmentNavigation)
+                .Include(content => content.IdConsignmentNavigation.IdGoodsNavigation)
+                .Include(content => content.IdConsignmentNavigation.IdGoodsNavigation.IdProducerNavigation)
+                .Include(content => content.IdDeliveryNavigation)
+                .Include(content => content.IdDeliveryNavigation.IdProviderNavigation)
+                .ToList();
         }
 
         public DeliveryContents GetId(int id)

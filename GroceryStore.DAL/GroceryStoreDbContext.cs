@@ -187,7 +187,7 @@ namespace GroceryStore.DAL
 
                 entity.Property(e => e.ConsignmentNumber)
                     .HasColumnName("Consignment_Number")
-                    .HasMaxLength(20)
+                    .HasMaxLength(12)
                     .IsUnicode(false);
 
                 entity.Property(e => e.IdGoods).HasColumnName("Id_Goods");
@@ -229,7 +229,7 @@ namespace GroceryStore.DAL
 
                 entity.Property(e => e.DeliveryNumber)
                     .HasColumnName("Delivery_Number")
-                    .HasMaxLength(20)
+                    .HasMaxLength(12)
                     .IsUnicode(false);
 
                 entity.Property(e => e.IdProvider).HasColumnName("Id_Provider");

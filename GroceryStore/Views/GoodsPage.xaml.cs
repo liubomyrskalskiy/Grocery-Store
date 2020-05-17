@@ -27,6 +27,7 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<GoodsDTO> GoodsDtos { get; set; }
+        public List<GoodsDTO> FilteredGoodsDtos { get; set; }
         public List<CategoryDTO> CategoryDtos { get; set; }
         public List<ProducerDTO> ProducerDtos { get; set; }
 
@@ -41,19 +42,24 @@ namespace GroceryStore.Views
 
             InitializeComponent();
 
-            
+
         }
 
         private void UpdateDataGrid()
         {
             GoodsDtos = _mapper.Map<List<Goods>, List<GoodsDTO>>(_goodsService.GetAll());
-            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
-            ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
-
-            ProducerComboBox.ItemsSource = ProducerDtos;
-            CategoryComboBox.ItemsSource = CategoryDtos;
-
-            DataGrid.ItemsSource = GoodsDtos;
+            FilteredGoodsDtos = GoodsDtos;
+            if (ProducerFilterComboBox.SelectedItem != null)
+            {
+                ProducerDTO tempProducer = (ProducerDTO)ProducerFilterComboBox.SelectedItem;
+                FilteredGoodsDtos = GoodsDtos.Where(item => item.ProducerTitle == tempProducer.Title).ToList();
+            }
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                CategoryDTO tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
+                FilteredGoodsDtos = GoodsDtos.Where(item => item.CategoryTitle == tempCategoty.Title).ToList();
+            }
+            DataGrid.ItemsSource = FilteredGoodsDtos;
         }
 
         private bool ValidateForm()
@@ -69,6 +75,18 @@ namespace GroceryStore.Views
             {
                 MessageBox.Show("Description must consist of at least 1 character and not exceed 200 characters!");
                 DescriptionTextBox.Focus();
+                return false;
+            }
+
+            if (CategoryComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select category");
+                return false;
+            }
+
+            if (ProducerComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select categoty");
                 return false;
             }
 
@@ -98,6 +116,13 @@ namespace GroceryStore.Views
 
         public Task ActivateAsync(object parameter)
         {
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
+
+            ProducerComboBox.ItemsSource = ProducerDtos;
+            ProducerFilterComboBox.ItemsSource = ProducerDtos;
+            CategoryComboBox.ItemsSource = CategoryDtos;
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
             UpdateDataGrid();
 
             return Task.CompletedTask;
@@ -116,42 +141,10 @@ namespace GroceryStore.Views
             goods.Components = ComponentsTextBox.Text;
             goods.Price = Convert.ToDouble(PriceTextBox.Text);
             goods.ProductCode = goods.Id.ToString("D5");
-            if (CategoryComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select categoty");
-                return;
-            }
-            else
-            {
-                tempCategory = (CategoryDTO) CategoryComboBox.SelectedItem;
-                goods.IdCategory = tempCategory.Id;
-            }
-            //if ((tempCategory = _categoryService.GetAll()
-            //        .FirstOrDefault(category => category.Title == CategoryTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such category!");
-            //    return;
-            //}
-            //else
-            //    goods.IdCategory = tempCategory.Id;
-            if (ProducerComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select categoty");
-                return;
-            }
-            else
-            {
-                tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
-                goods.IdProducer = tempProducer.Id;
-            }
-            //if ((tempProducer = _producerService.GetAll()
-            //        .FirstOrDefault(producer => producer.Title == ProducerTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such producer!");
-            //    return;
-            //}
-            //else
-            //    goods.IdProducer = tempProducer.Id;
+            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            goods.IdCategory = tempCategory.Id;
+            tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
+            goods.IdProducer = tempProducer.Id;
 
             _goodsService.Create(goods);
             UpdateDataGrid();
@@ -164,34 +157,19 @@ namespace GroceryStore.Views
             Goods goods = new Goods();
             CategoryDTO tempCategory;
             ProducerDTO tempProducer;
-            goods.Id = GoodsDtos[DataGrid.SelectedIndex].Id;
+            goods.Id = FilteredGoodsDtos[DataGrid.SelectedIndex].Id;
             goods.Title = TitleTextBox.Text;
             goods.Description = DescriptionTextBox.Text;
             goods.Weight = Convert.ToDouble(WeightTextBox.Text);
             goods.Components = ComponentsTextBox.Text;
             goods.Price = Convert.ToDouble(PriceTextBox.Text);
-            goods.ProductCode = GoodsDtos[DataGrid.SelectedIndex].ProductCode;
-            if (CategoryComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select categoty");
-                return;
-            }
-            else
-            {
-                tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
-                goods.IdCategory = tempCategory.Id;
-            }
+            goods.ProductCode = FilteredGoodsDtos[DataGrid.SelectedIndex].ProductCode;
 
-            if (ProducerComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select categoty");
-                return;
-            }
-            else
-            {
-                tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
-                goods.IdProducer = tempProducer.Id;
-            }
+            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            goods.IdCategory = tempCategory.Id;
+
+            tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
+            goods.IdProducer = tempProducer.Id;
 
             _goodsService.Update(goods);
             UpdateDataGrid();
@@ -201,19 +179,49 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                TitleTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Title;
-                DescriptionTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Description;
-                WeightTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Weight.ToString();
-                ComponentsTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Components;
-                PriceTextBox.Text = GoodsDtos[DataGrid.SelectedIndex].Price.ToString();
+                TitleTextBox.Text = FilteredGoodsDtos[DataGrid.SelectedIndex].Title;
+                DescriptionTextBox.Text = FilteredGoodsDtos[DataGrid.SelectedIndex].Description;
+                WeightTextBox.Text = FilteredGoodsDtos[DataGrid.SelectedIndex].Weight.ToString();
+                ComponentsTextBox.Text = FilteredGoodsDtos[DataGrid.SelectedIndex].Components;
+                PriceTextBox.Text = FilteredGoodsDtos[DataGrid.SelectedIndex].Price.ToString();
+                ProducerComboBox.SelectedItem = ProducerDtos.FirstOrDefault(item =>
+                    item.Title == FilteredGoodsDtos[DataGrid.SelectedIndex].ProducerTitle);
+                CategoryComboBox.SelectedItem = CategoryDtos.FirstOrDefault(item => item.Title == FilteredGoodsDtos[DataGrid.SelectedIndex].CategoryTitle);
             }
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            _goodsService.Delete(GoodsDtos[DataGrid.SelectedIndex].Id);
+            _goodsService.Delete(FilteredGoodsDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
+        }
+
+        private void ClearFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            ProducerFilterComboBox.SelectedItem = null;
+            CategoryFilterComboBox.SelectedItem = null;
+            ProducerFilterComboBox.IsEnabled = true;
+            CategoryFilterComboBox.IsEnabled = true;
+            UpdateDataGrid();
+        }
+
+        private void ProducerFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ProducerFilterComboBox.SelectedItem != null)
+            {
+                CategoryFilterComboBox.IsEnabled = false;
+                UpdateDataGrid();
+            }
+        }
+
+        private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                ProducerFilterComboBox.IsEnabled = false;
+                UpdateDataGrid();
+            }
         }
     }
 }

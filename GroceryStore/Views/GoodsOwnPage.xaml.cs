@@ -25,6 +25,7 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<GoodsOwnDTO> GoodsOwnDtos { get; set; }
+        public List<GoodsOwnDTO> FilteredGoodsOwnDtos { get; set; }
         public List<CategoryDTO> CategoryDtos { get; set; }
 
         public GoodsOwnPage(IGoodsOwnService goodsOwnService, ICategoryService categoryService,
@@ -36,16 +37,21 @@ namespace GroceryStore.Views
             _mapper = mapper;
             InitializeComponent();
 
-            
+
         }
 
         private void UpdateDataGrid()
         {
             GoodsOwnDtos = _mapper.Map<List<GoodsOwn>, List<GoodsOwnDTO>>(_goodsOwnService.GetAll());
-            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            FilteredGoodsOwnDtos = GoodsOwnDtos;
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                CategoryDTO tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
+                FilteredGoodsOwnDtos = GoodsOwnDtos.Where(item => item.Category == tempCategoty.Title).ToList();
+            }
 
-            DataGrid.ItemsSource = GoodsOwnDtos;
-            CategoryComboBox.ItemsSource = CategoryDtos;
+            DataGrid.ItemsSource = FilteredGoodsOwnDtos;
+
         }
 
         private bool ValidateForm()
@@ -54,6 +60,12 @@ namespace GroceryStore.Views
             {
                 MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
                 TitleTextBox.Focus();
+                return false;
+            }
+
+            if (CategoryComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select categoty");
                 return false;
             }
 
@@ -83,6 +95,9 @@ namespace GroceryStore.Views
 
         public Task ActivateAsync(object parameter)
         {
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            CategoryComboBox.ItemsSource = CategoryDtos;
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
             UpdateDataGrid();
 
             return Task.CompletedTask;
@@ -92,10 +107,12 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                TitleTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Title;
-                WeightTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Weight.ToString();
-                ComponentnsTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Components;
-                PriceTextBox.Text = GoodsOwnDtos[DataGrid.SelectedIndex].Price.ToString();
+                TitleTextBox.Text = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Title;
+                WeightTextBox.Text = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Weight.ToString();
+                ComponentnsTextBox.Text = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Components;
+                PriceTextBox.Text = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Price.ToString();
+                CategoryComboBox.SelectedItem = CategoryDtos.FirstOrDefault(item =>
+                    item.Title == FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Category);
             }
         }
 
@@ -110,16 +127,8 @@ namespace GroceryStore.Views
             goodsOwn.Components = ComponentnsTextBox.Text;
             goodsOwn.Price = Convert.ToDouble(PriceTextBox.Text);
             goodsOwn.ProductCode = goodsOwn.Id.ToString("D5");
-            if (CategoryComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select categoty");
-                return;
-            }
-            else
-            {
-                tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
-                goodsOwn.IdCategory = tempCategory.Id;
-            }
+            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            goodsOwn.IdCategory = tempCategory.Id;
 
             _goodsOwnService.Create(goodsOwn);
             UpdateDataGrid();
@@ -131,22 +140,14 @@ namespace GroceryStore.Views
             if (!ValidateForm()) return;
             GoodsOwn goodsOwn = new GoodsOwn();
             CategoryDTO tempCategory;
-            goodsOwn.Id = GoodsOwnDtos[DataGrid.SelectedIndex].Id;
+            goodsOwn.Id = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Id;
             goodsOwn.Title = TitleTextBox.Text;
             goodsOwn.Weight = Convert.ToDouble(WeightTextBox.Text);
             goodsOwn.Components = ComponentnsTextBox.Text;
             goodsOwn.Price = Convert.ToDouble(PriceTextBox.Text);
-            goodsOwn.ProductCode = GoodsOwnDtos[DataGrid.SelectedIndex].ProductCode;
-            if (CategoryComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select categoty");
-                return;
-            }
-            else
-            {
-                tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
-                goodsOwn.IdCategory = tempCategory.Id;
-            }
+            goodsOwn.ProductCode = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].ProductCode;
+            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            goodsOwn.IdCategory = tempCategory.Id;
 
             _goodsOwnService.Update(goodsOwn);
             UpdateDataGrid();
@@ -155,8 +156,22 @@ namespace GroceryStore.Views
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            _goodsOwnService.Delete(GoodsOwnDtos[DataGrid.SelectedIndex].Id);
+            _goodsOwnService.Delete(FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
+        }
+
+        private void ClearFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                UpdateDataGrid();
+            }
         }
     }
 }

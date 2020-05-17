@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,33 +21,32 @@ namespace GroceryStore.Views
     public partial class GoodsWriteOffOwnPage : Page, IActivable
     {
         private readonly IGoodsWriteOffOwnService _goodsWriteOffOwnService;
-        private readonly IEmployeeService _employeeService;
         private readonly IWriteOffReasonService _writeOffReasonService;
-        private readonly IProductionService _productionService;
         private readonly IGoodsInMarketOwnService _goodsInMarketOwnService;
+        private readonly IGoodsOwnService _goodsOwnService;
         private readonly AppSettings _settings;
         private readonly IMapper _mapper;
+        private EmployeeDTO _currentEmployee;
 
         public List<GoodsWriteOffOwnDTO> GoodsWriteOffOwnDtos { get; set; }
+        public List<WriteOffReasonDTO> WriteOffReasonDtos { get; set; }
+        public List<GoodsInMarketOwnDTO> GoodsInMarketOwnDtos { get; set; }
 
         public GoodsWriteOffOwnPage(IGoodsWriteOffOwnService goodsWriteOffOwnService,
-            IEmployeeService employeeService,
             IWriteOffReasonService writeOffReasonService,
-            IProductionService productionService,
             IGoodsInMarketOwnService goodsInMarketOwnService,
-            IOptions<AppSettings> settings, IMapper mapper)
+            IOptions<AppSettings> settings, IMapper mapper, IGoodsOwnService goodsOwnService)
         {
             _goodsWriteOffOwnService = goodsWriteOffOwnService;
-            _employeeService = employeeService;
             _writeOffReasonService = writeOffReasonService;
-            _productionService = productionService;
             _goodsInMarketOwnService = goodsInMarketOwnService;
             _mapper = mapper;
+            _goodsOwnService = goodsOwnService;
             _settings = settings.Value;
 
             InitializeComponent();
 
-            UpdateDataGrid();
+            GoodsInMarketComboBox.IsEnabled = false;
         }
 
         private void UpdateDataGrid()
@@ -59,10 +59,16 @@ namespace GroceryStore.Views
 
         private bool ValidateForm()
         {
-            if (!Regex.Match(ProductionCodeTextBox.Text, @"^\d{5,10}$").Success)
+            if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
-                MessageBox.Show("Invalid production code! It must contain at least 5 digits and not exceed 10 digits");
-                ProductionCodeTextBox.Focus();
+                MessageBox.Show("Invalid product code! It must contain 5 digits");
+                ProductCodeTextBox.Focus();
+                return false;
+            }
+
+            if (GoodsInMarketComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select manufacture date");
                 return false;
             }
 
@@ -73,25 +79,9 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            DateTime dt;
-            if (!DateTime.TryParse(DateTextBox.Text, out dt))
+            if (ReasonComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Date isn't valid! Check data you've entered!");
-                DateTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(LoginTextBox.Text, @"^\D{6,20}$").Success)
-            {
-                MessageBox.Show("Login must consist of at least 6 character and not exceed 20 characters!");
-                LoginTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(ReasonTextBox.Text, @"^\D{1,150}$").Success)
-            {
-                MessageBox.Show("Reason must consist of at least 6 character and not exceed 150 characters!");
-                ReasonTextBox.Focus();
+                MessageBox.Show("Please select reason");
                 return false;
             }
 
@@ -100,6 +90,11 @@ namespace GroceryStore.Views
 
         public Task ActivateAsync(object parameter)
         {
+            _currentEmployee = (EmployeeDTO)parameter;
+            WriteOffReasonDtos =
+                _mapper.Map<List<WriteOffReason>, List<WriteOffReasonDTO>>(_writeOffReasonService.GetAll());
+            ReasonComboBox.ItemsSource = WriteOffReasonDtos;
+            UpdateDataGrid();
             return Task.CompletedTask;
         }
 
@@ -107,117 +102,19 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             GoodsWriteOffOwn goodsWriteOffOwn = new GoodsWriteOffOwn();
-            Employee tempEmployee;
-            WriteOffReason tempWriteOffReason;
-            Production tempProduction;
-            GoodsInMarketOwn tempGoodsInMarketOwn;
             goodsWriteOffOwn.Id = GoodsWriteOffOwnDtos[^1]?.Id + 1 ?? 1;
             goodsWriteOffOwn.Amount = Convert.ToDouble(AmountTextBox.Text);
-            goodsWriteOffOwn.Date = DateTime.Parse(DateTextBox.Text);
-
-            if ((tempEmployee = _employeeService.GetAll()
-                    .FirstOrDefault(employee => employee.Login == LoginTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such employee in database!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdEmployee = tempEmployee.Id;
-
-            if ((tempWriteOffReason = _writeOffReasonService.GetAll()
-                    .FirstOrDefault(reason => reason.Description == ReasonTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such write-off reason!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdWriteOffReason = tempWriteOffReason.Id;
-
-            if ((tempProduction = _productionService.GetAll()
-                    .FirstOrDefault(production => production.ProductionCode == ProductionCodeTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such production!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdProduction = tempProduction.Id;
-
-            if ((tempGoodsInMarketOwn = _goodsInMarketOwnService.GetAll().FirstOrDefault(goodsInMarketOwn =>
-                    goodsInMarketOwn.IdProductionNavigation.ProductionCode == ProductionCodeTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such own good in market!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdGoodsInMarketOwn = tempGoodsInMarketOwn.Id;
+            goodsWriteOffOwn.Date = DateTime.Now;
+            goodsWriteOffOwn.IdEmployee = _currentEmployee.Id;
+            var tempGimo = (GoodsInMarketOwnDTO)GoodsInMarketComboBox.SelectedItem;
+            goodsWriteOffOwn.IdGoodsInMarketOwn = tempGimo.Id;
+            var gimo = _goodsInMarketOwnService.GetId(tempGimo.Id);
+            goodsWriteOffOwn.IdProduction = gimo.IdProduction;
+            var reason = (WriteOffReasonDTO)ReasonComboBox.SelectedItem;
+            goodsWriteOffOwn.IdWriteOffReason = reason.Id;
 
             _goodsWriteOffOwnService.Create(goodsWriteOffOwn);
             UpdateDataGrid();
-        }
-
-        private void UpdateBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (DataGrid.SelectedIndex == -1) return;
-            if (!ValidateForm()) return;
-            GoodsWriteOffOwn goodsWriteOffOwn = new GoodsWriteOffOwn();
-            Employee tempEmployee;
-            WriteOffReason tempWriteOffReason;
-            Production tempProduction;
-            GoodsInMarketOwn tempGoodsInMarketOwn;
-            goodsWriteOffOwn.Id = GoodsWriteOffOwnDtos[DataGrid.SelectedIndex].Id;
-            goodsWriteOffOwn.Amount = Convert.ToDouble(AmountTextBox.Text.ToString());
-            goodsWriteOffOwn.Date = DateTime.Parse(DateTextBox.Text.ToString());
-
-            if ((tempEmployee = _employeeService.GetAll()
-                    .FirstOrDefault(employee => employee.Login == LoginTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such employee in database!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdEmployee = tempEmployee.Id;
-
-            if ((tempWriteOffReason = _writeOffReasonService.GetAll()
-                    .FirstOrDefault(reason => reason.Description == ReasonTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such write-off reason!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdWriteOffReason = tempWriteOffReason.Id;
-
-            if ((tempProduction = _productionService.GetAll()
-                    .FirstOrDefault(production => production.ProductionCode == ProductionCodeTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such production!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdProduction = tempProduction.Id;
-
-            if ((tempGoodsInMarketOwn = _goodsInMarketOwnService.GetAll().FirstOrDefault(goodsInMarketOwn =>
-                    goodsInMarketOwn.IdProductionNavigation.ProductionCode == ProductionCodeTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such own good in market!");
-                return;
-            }
-            else
-                goodsWriteOffOwn.IdGoodsInMarketOwn = tempGoodsInMarketOwn.Id;
-
-            _goodsWriteOffOwnService.Update(goodsWriteOffOwn);
-            UpdateDataGrid();
-        }
-
-        private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (DataGrid.SelectedIndex != -1)
-            {
-                ProductionCodeTextBox.Text = GoodsWriteOffOwnDtos[DataGrid.SelectedIndex].ProductionCode;
-                AmountTextBox.Text = GoodsWriteOffOwnDtos[DataGrid.SelectedIndex].Amount.ToString();
-                DateTextBox.Text = GoodsWriteOffOwnDtos[DataGrid.SelectedIndex].Date.ToString();
-                LoginTextBox.Text = GoodsWriteOffOwnDtos[DataGrid.SelectedIndex].Login;
-                ReasonTextBox.Text = GoodsWriteOffOwnDtos[DataGrid.SelectedIndex].Reason;
-            }
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
@@ -225,6 +122,59 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             _goodsWriteOffOwnService.Delete(GoodsWriteOffOwnDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
+        }
+
+        private void ProductCodeTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
+            {
+                GoodsOwnDTO tempGoodsOwnDto;
+
+                if ((tempGoodsOwnDto = _mapper.Map<GoodsOwn, GoodsOwnDTO>(_goodsOwnService.GetAll()
+                        .FirstOrDefault(item => item.ProductCode == ProductCodeTextBox.Text))) != null)
+                {
+                    GoodTitleLabel.Content = "Good: " + tempGoodsOwnDto.Title;
+                    CategoryLabel.Content = "Category: " + tempGoodsOwnDto.Category;
+                    WeightLabel.Content = "Unit weight: " + tempGoodsOwnDto.Weight;
+                    PriceLabel.Content = "Price: " + $"{tempGoodsOwnDto.Price,0:C2}";
+
+                    if ((GoodsInMarketOwnDtos = _mapper.Map<List<GoodsInMarketOwn>, List<GoodsInMarketOwnDTO>>(
+                            _goodsInMarketOwnService.GetAll()
+                                .Where(item => item.IdProductionNavigation.IdGoodsOwn == tempGoodsOwnDto.Id && item.IdMarketNavigation.Address == _currentEmployee.MarketAddress)
+                                .ToList())).Count > 0)
+                    {
+                        GoodsInMarketComboBox.ItemsSource = GoodsInMarketOwnDtos;
+                        GoodsInMarketComboBox.IsEnabled = true;
+                    }
+                    else
+                    {
+                        GoodsInMarketOwnDtos = null;
+                        GoodsInMarketComboBox.ItemsSource = null;
+                        GoodsInMarketComboBox.IsEnabled = false;
+
+                    }
+                }
+            }
+            else
+            {
+                GoodTitleLabel.Content = "";
+                WeightLabel.Content = "";
+                PriceLabel.Content = "";
+
+                GoodsInMarketOwnDtos = null;
+                GoodsInMarketComboBox.ItemsSource = null;
+                GoodsInMarketComboBox.IsEnabled = false;
+            }
+        }
+        private void GoodsInMarketComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (GoodsInMarketComboBox.SelectedItem != null)
+            {
+                GoodsInMarketOwnDTO tempProduction = (GoodsInMarketOwnDTO)GoodsInMarketComboBox.SelectedItem;
+                AmountLabel.Content = "Amount: " + tempProduction.Amount;
+            }
+            else
+                AmountLabel.Content = "";
         }
     }
 }

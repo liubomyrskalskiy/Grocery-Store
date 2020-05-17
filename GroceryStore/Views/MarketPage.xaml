@@ -9,7 +9,7 @@
         <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="50" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
             <Setter Property="Padding" Value="10, 0, 100, 0" />
@@ -36,7 +36,7 @@
             <Grid Margin="0, 0, 850 ,0" VerticalAlignment="Stretch">
                 <DataGrid Margin="0, 0, 0, 50" VerticalAlignment="Stretch" Name="DataGrid" FontFamily="Consolas"
                           AutoGenerateColumns="False" ItemsSource="{Binding Path=MarketDtos}"
-                          HorizontalGridLinesBrush="White" Foreground="White" Background="Transparent"
+                          HorizontalGridLinesBrush="#FF393D47" Foreground="#FF393D47" Background="Transparent"
                           CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                           CanUserSortColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False"
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"

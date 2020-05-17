@@ -20,39 +20,34 @@ namespace GroceryStore.Views
     public partial class GoodsWriteOffPage : Page, IActivable
     {
         private readonly IGoodsWriteOffService _goodsWriteOffService;
-        private readonly IEmployeeService _employeeService;
         private readonly IWriteOffReasonService _writeOffReasonService;
         private readonly IDeliveryShipmentService _deliveryShipmentService;
-        private readonly IConsignmentService _consignmentService;
         private readonly IGoodsInMarketService _goodsInMarketService;
         private readonly IGoodsService _goodsService;
         private readonly AppSettings _settings;
         private readonly IMapper _mapper;
+        private EmployeeDTO _currentEmployee;
 
         public List<GoodsWriteOffDTO> GoodsWriteOffDtos { get; set; }
+        public List<WriteOffReasonDTO> WriteOffReasonDtos { get; set; }
+        public List<DeliveryShipmentDTO> DeliveryShipmentDtos { get; set; }
 
         public GoodsWriteOffPage(IGoodsWriteOffService goodsWriteOffService,
-            IEmployeeService employeeService,
             IWriteOffReasonService writeOffReasonService,
             IDeliveryShipmentService deliveryShipmentService,
-            IConsignmentService consignmentService,
             IGoodsInMarketService goodsInMarketService,
             IGoodsService goodsService,
             IOptions<AppSettings> settings, IMapper mapper)
         {
             _goodsWriteOffService = goodsWriteOffService;
-            _employeeService = employeeService;
             _writeOffReasonService = writeOffReasonService;
             _deliveryShipmentService = deliveryShipmentService;
-            _consignmentService = consignmentService;
             _goodsInMarketService = goodsInMarketService;
             _goodsService = goodsService;
             _mapper = mapper;
             _settings = settings.Value;
 
             InitializeComponent();
-
-            UpdateDataGrid();
         }
 
         private void UpdateDataGrid()
@@ -65,11 +60,10 @@ namespace GroceryStore.Views
 
         private bool ValidateForm()
         {
-            if (!Regex.Match(ConsignmentTextBox.Text, @"^\d{5,20}$").Success)
+            if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
-                MessageBox.Show(
-                    "Invalid Consignment number! It must contain at least 5 digits and not exceed 20 digits");
-                ConsignmentTextBox.Focus();
+                MessageBox.Show("Invalid product code! It must contain 5 digits");
+                ProductCodeTextBox.Focus();
                 return false;
             }
 
@@ -80,25 +74,15 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            DateTime dt;
-            if (!DateTime.TryParse(DateTextBox.Text, out dt))
+            if (ShipmentDateComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Date isn't valid! Check data you've entered!");
-                DateTextBox.Focus();
+                MessageBox.Show("Please select Shipment date!");
                 return false;
             }
 
-            if (!Regex.Match(LoginTextBox.Text, @"^\D{6,20}$").Success)
+            if (ReasonComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Login must consist of at least 6 character and not exceed 20 characters!");
-                LoginTextBox.Focus();
-                return false;
-            }
-
-            if (!Regex.Match(ReasonTextBox.Text, @"^\D{1,150}$").Success)
-            {
-                MessageBox.Show("Reason must consist of at least 6 character and not exceed 150 characters!");
-                ReasonTextBox.Focus();
+                MessageBox.Show("Please select reason!");
                 return false;
             }
 
@@ -107,6 +91,11 @@ namespace GroceryStore.Views
 
         public Task ActivateAsync(object parameter)
         {
+            _currentEmployee = (EmployeeDTO)parameter;
+            WriteOffReasonDtos =
+                _mapper.Map<List<WriteOffReason>, List<WriteOffReasonDTO>>(_writeOffReasonService.GetAll());
+            ReasonComboBox.ItemsSource = WriteOffReasonDtos;
+            UpdateDataGrid();
             return Task.CompletedTask;
         }
 
@@ -114,115 +103,19 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             GoodsWriteOff goodsWriteOff = new GoodsWriteOff();
-            Employee tempEmployee;
-            WriteOffReason tempWriteOffReason;
-            DeliveryShipment tempDeliveryShipment;
             goodsWriteOff.Id = GoodsWriteOffDtos[^1]?.Id + 1 ?? 1;
             goodsWriteOff.Amount = Convert.ToDouble(AmountTextBox.Text);
-            goodsWriteOff.Date = DateTime.Parse(DateTextBox.Text);
-
-            if ((tempEmployee = _employeeService.GetAll()
-                    .FirstOrDefault(employee => employee.Login == LoginTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such employee surname!");
-                return;
-            }
-            else
-                goodsWriteOff.IdEmployee = tempEmployee.Id;
-
-            if ((tempWriteOffReason = _writeOffReasonService.GetAll()
-                    .FirstOrDefault(reason => reason.Description == ReasonTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such writeo-ff reason!");
-                return;
-            }
-            else
-                goodsWriteOff.IdWriteOffReason = tempWriteOffReason.Id;
-
-            if ((tempDeliveryShipment = _deliveryShipmentService.GetAll().FirstOrDefault(deliveryShipment =>
-                    deliveryShipment.IdConsignmentNavigation.ConsignmentNumber == ConsignmentTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such consignment!");
-                return;
-            }
-            else
-                goodsWriteOff.IdDeliveryShipment = tempDeliveryShipment.Id;
-
-            if ((tempDeliveryShipment = _deliveryShipmentService.GetAll().FirstOrDefault(deliveryShipment =>
-                    deliveryShipment.IdConsignmentNavigation.ConsignmentNumber == ConsignmentTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such good in market!");
-                return;
-            }
-            else
-                goodsWriteOff.IdGoodsInMarket = tempDeliveryShipment.IdGoodsInMarket;
+            goodsWriteOff.Date = DateTime.Now;
+            goodsWriteOff.IdEmployee = _currentEmployee.Id;
+            var tempShipment = (DeliveryShipmentDTO) ShipmentDateComboBox.SelectedItem;
+            goodsWriteOff.IdDeliveryShipment = tempShipment.Id;
+            var shipment = _deliveryShipmentService.GetId(tempShipment.Id);
+            goodsWriteOff.IdGoodsInMarket = shipment.IdGoodsInMarket;
+            var reason = (WriteOffReasonDTO) ReasonComboBox.SelectedItem;
+            goodsWriteOff.IdWriteOffReason = reason.Id;
 
             _goodsWriteOffService.Create(goodsWriteOff);
             UpdateDataGrid();
-        }
-
-        private void UpdateBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (DataGrid.SelectedIndex == -1) return;
-            if (!ValidateForm()) return;
-            GoodsWriteOff goodsWriteOff = new GoodsWriteOff();
-            Employee tempEmployee;
-            WriteOffReason tempWriteOffReason;
-            DeliveryShipment tempDeliveryShipment;
-            goodsWriteOff.Id = GoodsWriteOffDtos[DataGrid.SelectedIndex].Id;
-            goodsWriteOff.Amount = Convert.ToDouble(AmountTextBox.Text);
-            goodsWriteOff.Date = DateTime.Parse(DateTextBox.Text);
-
-            if ((tempEmployee = _employeeService.GetAll()
-                    .FirstOrDefault(employee => employee.Login == LoginTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such employee surname!");
-                return;
-            }
-            else
-                goodsWriteOff.IdEmployee = tempEmployee.Id;
-
-            if ((tempWriteOffReason = _writeOffReasonService.GetAll()
-                    .FirstOrDefault(reason => reason.Description == ReasonTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such writeo-ff reason!");
-                return;
-            }
-            else
-                goodsWriteOff.IdWriteOffReason = tempWriteOffReason.Id;
-
-            if ((tempDeliveryShipment = _deliveryShipmentService.GetAll().FirstOrDefault(deliveryShipment =>
-                    deliveryShipment.IdConsignmentNavigation.ConsignmentNumber == ConsignmentTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such consignment!");
-                return;
-            }
-            else
-                goodsWriteOff.IdDeliveryShipment = tempDeliveryShipment.Id;
-
-            if ((tempDeliveryShipment = _deliveryShipmentService.GetAll().FirstOrDefault(deliveryShipment =>
-                    deliveryShipment.IdConsignmentNavigation.ConsignmentNumber == ConsignmentTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such good in market!");
-                return;
-            }
-            else
-                goodsWriteOff.IdGoodsInMarket = tempDeliveryShipment.IdGoodsInMarket;
-
-            _goodsWriteOffService.Update(goodsWriteOff);
-            UpdateDataGrid();
-        }
-
-        private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (DataGrid.SelectedIndex != -1)
-            {
-                AmountTextBox.Text = GoodsWriteOffDtos[DataGrid.SelectedIndex].Amount.ToString();
-                DateTextBox.Text = GoodsWriteOffDtos[DataGrid.SelectedIndex].Date.ToString();
-                LoginTextBox.Text = GoodsWriteOffDtos[DataGrid.SelectedIndex].Login;
-                ReasonTextBox.Text = GoodsWriteOffDtos[DataGrid.SelectedIndex].Reason;
-                ConsignmentTextBox.Text = GoodsWriteOffDtos[DataGrid.SelectedIndex].ConsignmentNumber;
-            }
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
@@ -230,6 +123,62 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             _goodsWriteOffService.Delete(GoodsWriteOffDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
+        }
+
+        private void ProductCodeTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
+            {
+                GoodsDTO tempGoodsDto;
+                if ((tempGoodsDto = _mapper.Map<Goods, GoodsDTO>(_goodsService.GetAll()
+                        .FirstOrDefault(item => item.ProductCode == ProductCodeTextBox.Text))) != null)
+                {
+                    GoodTitleLabel.Content = "Good: " + tempGoodsDto.Title;
+                    CategoryLabel.Content = "Category: " + tempGoodsDto.CategoryTitle;
+                    WeightLabel.Content = "Unit weight: " + tempGoodsDto.Weight;
+                    PriceLabel.Content = "Price: " + $"{tempGoodsDto.Price,0:C2}";
+
+                    GoodsInMarketDTO tempGimo = _mapper.Map<GoodsInMarket, GoodsInMarketDTO>(_goodsInMarketService
+                        .GetAll().FirstOrDefault(item =>
+                            item.IdGoods == tempGoodsDto.Id &&
+                            item.IdMarketNavigation.Address == _currentEmployee.MarketAddress));
+                    if ((DeliveryShipmentDtos =
+                        _mapper.Map<List<DeliveryShipment>, List<DeliveryShipmentDTO>>(_deliveryShipmentService.GetAll()
+                            .Where(item => item.IdGoodsInMarket == tempGimo.Id).ToList())).Count > 0)
+                    {
+                        ShipmentDateComboBox.ItemsSource = DeliveryShipmentDtos;
+                        ShipmentDateComboBox.IsEnabled = true;
+                    }
+                    else
+                    {
+                        DeliveryShipmentDtos = null;
+                        ShipmentDateComboBox.ItemsSource = null;
+                        ShipmentDateComboBox.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    GoodTitleLabel.Content = "";
+                    CategoryLabel.Content = "";
+                    WeightLabel.Content = "";
+                    PriceLabel.Content = "";
+
+                    DeliveryShipmentDtos = null;
+                    ShipmentDateComboBox.ItemsSource = null;
+                    ShipmentDateComboBox.IsEnabled = false;
+                }
+            }
+        }
+
+        private void ShipmentDateComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ShipmentDateComboBox.SelectedItem != null)
+            {
+                var tempDeliveryShipment = (DeliveryShipmentDTO) ShipmentDateComboBox.SelectedItem;
+                AmountLabel.Content = "Amount: " + tempDeliveryShipment.Amount;
+            }
+            else
+                AmountLabel.Content = "";
         }
     }
 }

@@ -115,6 +115,13 @@ namespace GroceryStore.Views
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
+            if (GoodsInMarketDtos.FirstOrDefault(item =>
+                    item.ProductCode == ProductCodeTextBox.Text && item.Address == _currentEmployee.MarketAddress) !=
+                null)
+            {
+                MessageBox.Show("Such good is already in your market");
+                return;
+            }
             GoodsInMarket goodsInMarket = new GoodsInMarket();
             Goods tempGoods;
             Market tempMarket;
@@ -140,45 +147,6 @@ namespace GroceryStore.Views
                 goodsInMarket.IdMarket = tempMarket.Id;
 
             _goodsInMarketService.Create(goodsInMarket);
-            UpdateDataGrid();
-        }
-
-        private void UpdateBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            //if (DataGrid.SelectedIndex == -1) return;
-            //if (!ValidateForm()) return;
-            //GoodsInMarket goodsInMarket = new GoodsInMarket();
-            //Goods tempGoods;
-            //Market tempMarket;
-
-            //goodsInMarket.Id = GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].Id;
-            //goodsInMarket.Amount = Convert.ToDouble(AmountTextBox.Text);
-            //if ((tempGoods = _goodsService.GetAll()
-            //        .FirstOrDefault(goods => goods.ProductCode == ProductCodeTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such product in database!");
-            //    return;
-            //}
-            //else
-            //    goodsInMarket.IdGoods = tempGoods.Id;
-
-            //if ((tempMarket =
-            //        _marketService.GetAll().FirstOrDefault(market => market.Address == _marketAddress)) == null)
-            //{
-            //    MessageBox.Show("There is no market on such address in database!");
-            //    return;
-            //}
-            //else
-            //    goodsInMarket.IdMarket = tempMarket.Id;
-
-            //_goodsInMarketService.Update(goodsInMarket);
-            //UpdateDataGrid();
-        }
-
-        private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (DataGrid.SelectedIndex == -1) return;
-            _goodsInMarketService.Delete(GoodsInCurrentMarketDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
     }

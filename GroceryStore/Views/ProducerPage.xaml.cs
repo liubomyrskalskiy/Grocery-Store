@@ -24,6 +24,7 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<ProducerDTO> ProducerDtos { get; set; }
+        public List<CountryDTO> CountryDtos { get; set; }
 
         public ProducerPage(IProducerService producerService, ICountryService countryService,
             IOptions<AppSettings> settings, IMapper mapper)
@@ -54,10 +55,9 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if (!Regex.Match(CountryTitleTextBox.Text, @"^\D{1,50}$").Success)
+            if (CountryComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Country title must consist of at least 1 character and not exceed 50 characters!");
-                CountryTitleTextBox.Focus();
+                MessageBox.Show("Please select country");
                 return false;
             }
 
@@ -66,6 +66,8 @@ namespace GroceryStore.Views
 
         public Task ActivateAsync(object parameter)
         {
+            CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
+            CountryComboBox.ItemsSource = CountryDtos;
             return Task.CompletedTask;
         }
 
@@ -73,17 +75,11 @@ namespace GroceryStore.Views
         {
             if (!ValidateForm()) return;
             Producer producer = new Producer();
-            Country tempCountry;
+            CountryDTO tempCountry;
             producer.Id = ProducerDtos[^1]?.Id + 1 ?? 1;
             producer.Title = TitleTextBox.Text;
-            if ((tempCountry = _countryService.GetAll()
-                    .FirstOrDefault(country => country.Title == CountryTitleTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such country title!");
-                return;
-            }
-            else
-                producer.IdCountry = tempCountry.Id;
+            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            producer.IdCountry = tempCountry.Id;
 
             _producerService.Create(producer);
             UpdateDataGrid();
@@ -94,17 +90,11 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
             Producer producer = new Producer();
-            Country tempCountry;
+            CountryDTO tempCountry;
             producer.Id = ProducerDtos[DataGrid.SelectedIndex].Id;
             producer.Title = TitleTextBox.Text;
-            if ((tempCountry = _countryService.GetAll()
-                    .FirstOrDefault(country => country.Title == CountryTitleTextBox.Text)) == null)
-            {
-                MessageBox.Show("There is no such country title!");
-                return;
-            }
-            else
-                producer.IdCountry = tempCountry.Id;
+            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            producer.IdCountry = tempCountry.Id;
 
             _producerService.Update(producer);
             UpdateDataGrid();
@@ -116,7 +106,6 @@ namespace GroceryStore.Views
             {
                 ProducerDTO producerDto = ProducerDtos[DataGrid.SelectedIndex];
                 TitleTextBox.Text = producerDto.Title;
-                CountryTitleTextBox.Text = producerDto.CountryTitle;
             }
         }
 

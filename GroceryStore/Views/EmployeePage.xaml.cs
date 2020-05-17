@@ -10,6 +10,7 @@ using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
 using GroceryStore.Core.DTO;
 using GroceryStore.Core.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Options;
 
 namespace GroceryStore.Views
@@ -43,7 +44,7 @@ namespace GroceryStore.Views
 
             InitializeComponent();
 
-            
+
         }
 
         private void UpdateDataGrid()
@@ -93,26 +94,23 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            //if (!Regex.Match(RoleTextBox.Text, @"^\D{1,25}$").Success)
-            //{
-            //    MessageBox.Show("Role title must consist of at least 1 character and not exceed 25 characters!");
-            //    RoleTextBox.Focus();
-            //    return false;
-            //}
+            if (RoleComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select role");
+                return false;
+            }
 
-            //if (!Regex.Match(MarketTextBox.Text, @"^(Вул\.\s\D{1,40}\,\s\d{1,3})$").Success)
-            //{
-            //    MessageBox.Show("Market address must consist of at least 1 character and not exceed 50 characters!");
-            //    MarketTextBox.Focus();
-            //    return false;
-            //}
+            if (MarketComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select market");
+                return false;
+            }
 
-            //if (!Regex.Match(CityTitleTextBox.Text, @"^\D{1,50}$").Success)
-            //{
-            //    MessageBox.Show("City title must consist of at least 1 character and not exceed 50 characters!");
-            //    CityTitleTextBox.Focus();
-            //    return false;
-            //}
+            if (CityComboBox.SelectedItem == null)
+            {
+                MessageBox.Show("Please select city");
+                return false;
+            }
 
             if (!Regex.Match(LoginTextBox.Text, @"^\D{6,20}$").Success)
             {
@@ -151,11 +149,14 @@ namespace GroceryStore.Views
                 PhoneNumberTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].PhoneNumber;
                 ExperienceTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].WorkExperience.ToString();
                 AddressTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].Address;
-                //RoleTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].RoleTitle;
-                //MarketTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].MarketAddress;
-                //CityTitleTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].CityTitle;
                 LoginTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].Login;
                 PasswordTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].Password;
+                RoleComboBox.SelectedItem =
+                    RoleDtos.FirstOrDefault(item => item.Title == EmployeeDtos[DataGrid.SelectedIndex].RoleTitle);
+                MarketComboBox.SelectedItem = MarketDtos.FirstOrDefault(item =>
+                    item.FullAddress == EmployeeDtos[DataGrid.SelectedIndex].FullMarketAddress);
+                CityComboBox.SelectedItem =
+                    CityDtos.FirstOrDefault(item => item.Title == EmployeeDtos[DataGrid.SelectedIndex].CityTitle);
             }
         }
 
@@ -172,62 +173,20 @@ namespace GroceryStore.Views
             employee.PhoneNumber = PhoneNumberTextBox.Text;
             employee.WorkExperience = Convert.ToInt32(ExperienceTextBox.Text);
             employee.Address = AddressTextBox.Text;
-            employee.Login = LoginTextBox.Text;
+            if (_employeeService.GetAll().FirstOrDefault(item => item.Login.Equals(LoginTextBox.Text)) != null)
+            {
+                MessageBox.Show("This login is already captured!");
+                return;
+            }
+            else
+                employee.Login = LoginTextBox.Text;
             employee.Password = PasswordTextBox.Text;
-            if (RoleComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select role");
-                return;
-            }
-            else
-            {
-                tempRole = (RoleDTO) RoleComboBox.SelectedItem;
-                employee.IdRole = tempRole.Id;
-            }
-            //if ((tempRole = _roleService.GetAll().FirstOrDefault(role => role.Title == RoleTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such role in database!");
-            //    return;
-            //}
-            //else
-            //    employee.IdRole = tempRole.Id;
-            if (MarketComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select market");
-                return;
-            }
-            else
-            {
-                tempMarket = (MarketDTO) MarketComboBox.SelectedItem;
-                employee.IdMarket = tempMarket.Id;
-            }
-            
-            //if ((tempMarket = _marketService.GetAll().FirstOrDefault(market => market.Address == MarketTextBox.Text)) ==
-            //    null)
-            //{
-            //    MessageBox.Show("There is no market on such address in database!");
-            //    return;
-            //}
-            //else
-            //    employee.IdMarket = tempMarket.Id;
-            if (CityComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select city");
-                return;
-            }
-            else
-            {
-                tempCity = (CityDTO) CityComboBox.SelectedItem;
-                employee.IdCity = tempCity.Id;
-            }
-
-            //if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such city in database!");
-            //    return;
-            //}
-            //else
-            //    employee.IdCity = tempCity.Id;
+            tempRole = (RoleDTO)RoleComboBox.SelectedItem;
+            employee.IdRole = tempRole.Id;
+            tempMarket = (MarketDTO)MarketComboBox.SelectedItem;
+            employee.IdMarket = tempMarket.Id;
+            tempCity = (CityDTO)CityComboBox.SelectedItem;
+            employee.IdCity = tempCity.Id;
 
             _employeeService.Create(employee);
             UpdateDataGrid();
@@ -247,40 +206,20 @@ namespace GroceryStore.Views
             employee.PhoneNumber = PhoneNumberTextBox.Text;
             employee.WorkExperience = Convert.ToInt32(ExperienceTextBox.Text);
             employee.Address = AddressTextBox.Text;
-            employee.Login = LoginTextBox.Text;
+            if (_employeeService.GetAll().FirstOrDefault(item => item.Login.Equals(LoginTextBox.Text)) != null)
+            {
+                MessageBox.Show("This login is already captured!");
+                return;
+            }
+            else
+                employee.Login = LoginTextBox.Text;
             employee.Password = PasswordTextBox.Text;
-            if (RoleComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select role");
-                return;
-            }
-            else
-            {
-                tempRole = (RoleDTO)RoleComboBox.SelectedItem;
-                employee.IdRole = tempRole.Id;
-            }
-
-            if (MarketComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select market");
-                return;
-            }
-            else
-            {
-                tempMarket = (MarketDTO)MarketComboBox.SelectedItem;
-                employee.IdMarket = tempMarket.Id;
-            }
-
-            if (CityComboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Please select city");
-                return;
-            }
-            else
-            {
-                tempCity = (CityDTO)CityComboBox.SelectedItem;
-                employee.IdCity = tempCity.Id;
-            }
+            tempRole = (RoleDTO)RoleComboBox.SelectedItem;
+            employee.IdRole = tempRole.Id;
+            tempMarket = (MarketDTO)MarketComboBox.SelectedItem;
+            employee.IdMarket = tempMarket.Id;
+            tempCity = (CityDTO)CityComboBox.SelectedItem;
+            employee.IdCity = tempCity.Id;
 
             _employeeService.Update(employee);
             UpdateDataGrid();

@@ -24,6 +24,7 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<ClientDTO> ClientDtos { get; set; }
+        public List<ClientDTO> FilteredClientDtos { get; set; }
         public List<CityDTO> CityDtos { get; set; }
 
         public ClientPage(IClientService clientService, ICityService cityService, IOptions<AppSettings> settings,
@@ -40,9 +41,13 @@ namespace GroceryStore.Views
         private void UpdateDataGrid()
         {
             ClientDtos = _mapper.Map<List<Client>, List<ClientDTO>>(_clientService.GetAll());
-
-            DataGrid.ItemsSource = ClientDtos;
-            CityComboBox.ItemsSource = CityDtos;
+            FilteredClientDtos = ClientDtos;
+            if (CityFilterComboBox.SelectedItem != null)
+            {
+                CityDTO tempCity = (CityDTO) CityFilterComboBox.SelectedItem;
+                FilteredClientDtos = ClientDtos.Where(item => item.CityTitle == tempCity.Title).ToList();
+            }
+            DataGrid.ItemsSource = FilteredClientDtos;
         }
 
         private bool ValidateForm()
@@ -81,7 +86,8 @@ namespace GroceryStore.Views
         public Task ActivateAsync(object parameter)
         {
             CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
-
+            CityComboBox.ItemsSource = CityDtos;
+            CityFilterComboBox.ItemsSource = CityDtos;
             UpdateDataGrid();
 
             return Task.CompletedTask;
@@ -91,10 +97,12 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                FirstNameTextBox.Text = ClientDtos[DataGrid.SelectedIndex].FirstName;
-                LastNameTextBox.Text = ClientDtos[DataGrid.SelectedIndex].LastName;
-                AddressTextBox.Text = ClientDtos[DataGrid.SelectedIndex].Address;
-                PhoneNumberTextBox.Text = ClientDtos[DataGrid.SelectedIndex].PhoneNumber;
+                FirstNameTextBox.Text = FilteredClientDtos[DataGrid.SelectedIndex].FirstName;
+                LastNameTextBox.Text = FilteredClientDtos[DataGrid.SelectedIndex].LastName;
+                AddressTextBox.Text = FilteredClientDtos[DataGrid.SelectedIndex].Address;
+                PhoneNumberTextBox.Text = FilteredClientDtos[DataGrid.SelectedIndex].PhoneNumber;
+                CityComboBox.SelectedItem =
+                    CityDtos.FirstOrDefault(item => item.Title == FilteredClientDtos[DataGrid.SelectedIndex].CityTitle);
             }
         }
 
@@ -120,12 +128,6 @@ namespace GroceryStore.Views
                 tempCity = (CityDTO) CityComboBox.SelectedItem;
                 client.IdCity = tempCity.Id;
             }
-            //if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such city in database!");
-            //    return;
-            //}
-            //client.IdCity = tempCity.Id;
 
             _clientService.Create(client);
             UpdateDataGrid();
@@ -137,13 +139,13 @@ namespace GroceryStore.Views
             if (!ValidateForm()) return;
             Client client = new Client();
             CityDTO tempCity;
-            client.Id = ClientDtos[DataGrid.SelectedIndex].Id;
+            client.Id = FilteredClientDtos[DataGrid.SelectedIndex].Id;
             client.FirstName = FirstNameTextBox.Text;
             client.LastName = LastNameTextBox.Text;
             client.Address = AddressTextBox.Text;
-            client.Bonuses = ClientDtos[DataGrid.SelectedIndex].Bonuses;
+            client.Bonuses = FilteredClientDtos[DataGrid.SelectedIndex].Bonuses;
             client.PhoneNumber = PhoneNumberTextBox.Text;
-            client.AccountNumber = ClientDtos[DataGrid.SelectedIndex].AccountNumber;
+            client.AccountNumber = FilteredClientDtos[DataGrid.SelectedIndex].AccountNumber;
             if(CityComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Please select city");
@@ -162,7 +164,21 @@ namespace GroceryStore.Views
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            _clientService.Delete(ClientDtos[DataGrid.SelectedIndex].Id);
+            _clientService.Delete(FilteredClientDtos[DataGrid.SelectedIndex].Id);
+            UpdateDataGrid();
+        }
+
+        private void CityFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CityFilterComboBox.SelectedItem != null)
+            {
+                UpdateDataGrid();
+            }
+        }
+
+        private void ClearFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CityFilterComboBox.SelectedItem = null;
             UpdateDataGrid();
         }
     }

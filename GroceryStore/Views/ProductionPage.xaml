@@ -9,7 +9,7 @@
         <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="50" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
             <Setter Property="Padding" Value="10, 0, 20, 0" />
@@ -36,7 +36,7 @@
             <Grid Margin="0, 0, 700 ,0" VerticalAlignment="Stretch">
                 <DataGrid Margin="0, 0, 0, 0" VerticalAlignment="Stretch" Name="DataGrid" FontFamily="Consolas"
                           AutoGenerateColumns="False" ItemsSource="{Binding Path=ProductionDtos}"
-                          HorizontalGridLinesBrush="White" Foreground="White" Background="Transparent"
+                          HorizontalGridLinesBrush="#FF393D47" Foreground="#FF393D47" Background="Transparent"
                           CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                           CanUserSortColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False"
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
@@ -58,21 +58,21 @@
                 <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="650">
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <StackPanel Margin="10,0,10,10" VerticalAlignment="Top">
-                            <Label x:Name="GoodTitleLabel" Foreground="White" FontSize="15" VerticalAlignment="Top"
+                            <Label x:Name="GoodTitleLabel" Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
                                    FontFamily="Comic Sans MS" Content="" />
-                            <Label x:Name="CategoryLabel" Foreground="White" FontSize="15" VerticalAlignment="Top"
+                            <Label x:Name="CategoryLabel" Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
                                    FontFamily="Comic Sans MS" Content="" />
-                            <Label x:Name="WeightLabel" Foreground="White" FontSize="15" VerticalAlignment="Top"
+                            <Label x:Name="WeightLabel" Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
                                    FontFamily="Comic Sans MS" Content="" />
-                            <Label x:Name="PriceLabel" Foreground="White" FontSize="15" VerticalAlignment="Top"
+                            <Label x:Name="PriceLabel" Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
                                    FontFamily="Comic Sans MS" Content="" />
                         </StackPanel>
-                        <Label Foreground="White" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Product Code</Label>
+                        <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Product Code</Label>
 
-                        <TextBox x:Name="ProductCodeTextBox" Foreground="White" Padding="5,0,0,0" Height="40"
+                        <TextBox x:Name="ProductCodeTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="White" SelectionTextBrush="White"
-                                 CaretBrush="White" BorderBrush="White" BorderThickness="2" Background="#26FFFFFF"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF"
                                  TextChanged="ProductCodeTextBox_OnTextChanged">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
@@ -80,12 +80,12 @@
                             </TextBox.Effect>
                         </TextBox>
 
-                        <Label Foreground="White" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Amount</Label>
+                        <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Amount</Label>
 
-                        <TextBox x:Name="AmountTextBox" Foreground="White" Padding="5,0,0,0" Height="40"
+                        <TextBox x:Name="AmountTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="White" SelectionTextBrush="White"
-                                 CaretBrush="White" BorderBrush="White" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />

@@ -9,7 +9,7 @@
         <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="50" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
             <Setter Property="Padding" Value="10, 0, 70, 0" />
@@ -36,7 +36,7 @@
             <Grid Margin="0, 0, 850 ,0" VerticalAlignment="Stretch">
                 <DataGrid Margin="0, 0, 0, 0" VerticalAlignment="Stretch" Name="DataGrid" FontFamily="Consolas"
                           AutoGenerateColumns="False" ItemsSource="{Binding Path=GoodsOwnDtos}"
-                          HorizontalGridLinesBrush="White" Foreground="White" Background="Transparent"
+                          HorizontalGridLinesBrush="#FF393D47" Foreground="#FF393D47" Background="Transparent"
                           CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                           CanUserSortColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False"
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
@@ -52,7 +52,7 @@
                 </DataGrid>
             </Grid>
             <Grid x:Name="AppGridMenu" VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="800">
-                <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="750">
+                <Grid VerticalAlignment="top" HorizontalAlignment="Stretch" Width="750" Margin="0,20,0,0">
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
@@ -200,6 +200,43 @@
                         </Button>
                     </StackPanel>
                 </Grid>
+                <StackPanel VerticalAlignment="Bottom" Margin="25,0,25,20">
+                    <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
+                           FontFamily="Comic Sans MS">
+                        Category
+                    </Label>
+
+                    <ComboBox x:Name="CategoryFilterComboBox" ItemsSource="{Binding Path=CategoryDtos}"
+                              DisplayMemberPath="Title" SelectedValuePath="Title"
+                              SelectedValue="{Binding Path=CategoryrDTO}"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
+                        <ComboBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </ComboBox.Effect>
+                    </ComboBox>
+                    <Button x:Name="ClearFilterBtn"
+                            Margin="0,10,0,0"
+                            HorizontalAlignment="Stretch"
+                            Height="40"
+                            BorderBrush="{x:Null}"
+                            Padding="0"
+                            Content="Clear Filter"
+                            Background="#FF393D47"
+                            Foreground="#FFFFFFFF"
+                            FontFamily="Comic Sans MS"
+                            Click="ClearFilterBtn_OnClick">
+                        <Button.Effect>
+                            <DropShadowEffect ShadowDepth="4"
+                                              Direction="-90"
+                                              Color="Black"
+                                              Opacity="0.5"
+                                              BlurRadius="20" />
+                        </Button.Effect>
+                    </Button>
+                </StackPanel>
             </Grid>
         </Grid>
     </Grid>

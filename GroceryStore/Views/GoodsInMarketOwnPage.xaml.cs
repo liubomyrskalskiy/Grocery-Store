@@ -23,6 +23,8 @@ namespace GroceryStore.Views
         private readonly IMarketService _marketService;
         private readonly IProductionService _productionService;
         private readonly IGoodsOwnService _goodsOwnService;
+        private readonly IBasketOwnService _basketOwnService;
+        private readonly IGoodsWriteOffOwnService _goodsWriteOffOwnService;
         private readonly AppSettings _settings;
         private readonly IMapper _mapper;
         private EmployeeDTO _currentEmployee;
@@ -33,7 +35,7 @@ namespace GroceryStore.Views
 
         public GoodsInMarketOwnPage(IGoodsInMarketOwnService goodsInMarketOwnService, IMarketService marketService,
             IProductionService productionService, IOptions<AppSettings> settings, IMapper mapper,
-            IGoodsOwnService goodsOwnService)
+            IGoodsOwnService goodsOwnService, IBasketOwnService basketOwnService, IGoodsWriteOffOwnService goodsWriteOffOwnService)
         {
             _goodsInMarketOwnService = goodsInMarketOwnService;
             _marketService = marketService;
@@ -41,6 +43,8 @@ namespace GroceryStore.Views
             _settings = settings.Value;
             _mapper = mapper;
             _goodsOwnService = goodsOwnService;
+            _basketOwnService = basketOwnService;
+            _goodsWriteOffOwnService = goodsWriteOffOwnService;
 
             InitializeComponent();
 
@@ -70,7 +74,7 @@ namespace GroceryStore.Views
         public Task ActivateAsync(object parameter)
         {
             _currentEmployee = (EmployeeDTO)parameter;
-            //_marketAddress = parameter.ToString();
+            
             UpdateDataGrid();
             return Task.CompletedTask;
         }
@@ -80,6 +84,8 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex != -1)
             {
                 AmountTextBox.Text = GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Amount.ToString();
+                ProductionComboBox.SelectedItem = ProductionDtos.FirstOrDefault(item =>
+                    item.ProductionCode == GoodsInMarketOwnDtos[DataGrid.SelectedIndex].ProductionCode);
             }
         }
 
@@ -125,41 +131,22 @@ namespace GroceryStore.Views
             UpdateDataGrid();
         }
 
-        private void UpdateBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            //if (DataGrid.SelectedIndex == -1) return;
-            //if (!ValidateForm()) return;
-            //GoodsInMarketOwn goodsInMarketOwn = new GoodsInMarketOwn();
-            //Production temProduction;
-            //Market tempMarket;
-
-            //goodsInMarketOwn.Id = GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id;
-            //goodsInMarketOwn.Amount = Convert.ToDouble(AmountTextBox.Text);
-            //if ((temProduction = _productionService.GetAll()
-            //        .FirstOrDefault(goods => goods.ProductionCode == ProductionCodeTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such product in database!");
-            //    return;
-            //}
-            //else
-            //    goodsInMarketOwn.IdProduction = temProduction.Id;
-
-            //if ((tempMarket =
-            //        _marketService.GetAll().FirstOrDefault(market => market.Address == _marketAddress)) == null)
-            //{
-            //    MessageBox.Show("There is no market on such address in database!");
-            //    return;
-            //}
-            //else
-            //    goodsInMarketOwn.IdMarket = tempMarket.Id;
-
-            //_goodsInMarketOwnService.Update(goodsInMarketOwn);
-            //UpdateDataGrid();
-        }
-
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
+            if (_basketOwnService.GetAll().FirstOrDefault(item =>
+                    item.IdGoodsInMarketOwn == GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
+            {
+                MessageBox.Show("You can not delete this row because it is referenced by some Sales!");
+                return;
+            }
+
+            if (_goodsWriteOffOwnService.GetAll().FirstOrDefault(item =>
+                    item.IdGoodsInMarketOwn == GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
+            {
+                MessageBox.Show("You can not delete this row because it is referenced by some write-off!");
+                return;
+            }
             _goodsInMarketOwnService.Delete(GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }

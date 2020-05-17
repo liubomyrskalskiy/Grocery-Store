@@ -71,7 +71,7 @@
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)"
                                            Storyboard.TargetName="ProductManagementMenu">
                 <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Height, ElementName=ProductManagementMenu}" />
-                <EasingDoubleKeyFrame KeyTime="0:0:0.7" Value="400" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.7" Value="280" />
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)"
                                            Storyboard.TargetName="ProductManagementMenuCloseBtn">
@@ -524,31 +524,10 @@
                                 </ListViewItem>
 
                                 <ListViewItem HorizontalContentAlignment="Center" Padding="0">
-                                    <Button x:Name="DeliveryBtn" Height="40" Background="{x:Null}"
-                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Deliveries"
-                                            HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
-                                            Click="DeliveryBtn_Click" />
-                                </ListViewItem>
-
-                                <ListViewItem HorizontalContentAlignment="Center" Padding="0">
-                                    <Button x:Name="ConsignmentBtn" Height="40" Background="{x:Null}"
-                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Consignments"
-                                            HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
-                                            Click="ConsignmentBtn_Click" />
-                                </ListViewItem>
-
-                                <ListViewItem HorizontalContentAlignment="Center" Padding="0">
                                     <Button x:Name="DeliveryContentsBtn" Height="40" Background="{x:Null}"
-                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Consignments"
+                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Delivery Orders"
                                             HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
                                             Click="DeliveryContentsBtn_Click" />
-                                </ListViewItem>
-
-                                <ListViewItem HorizontalContentAlignment="Center" Padding="0">
-                                    <Button x:Name="DeliveryShipmentBtn" Height="40" Background="{x:Null}"
-                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Delivery shipment"
-                                            HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
-                                            Click="DeliveryShipmentBtn_Click" />
                                 </ListViewItem>
 
                                 <ListViewItem HorizontalContentAlignment="Center" Padding="0">

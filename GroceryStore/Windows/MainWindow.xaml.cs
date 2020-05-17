@@ -73,18 +73,6 @@ namespace GroceryStore.Windows
             Main.Content = result;
         }
 
-        private async void BasketBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var result = await _navigationService.GetPageAsync<BasketPage>();
-            Main.Content = result;
-        }
-
-        private async void BasketOwnBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var result = await _navigationService.GetPageAsync<BasketOwnPage>();
-            Main.Content = result;
-        }
-
         private async void CategoryBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<CategoryPage>();
@@ -164,21 +152,9 @@ namespace GroceryStore.Windows
             Main.Content = result;
         }
 
-        private async void ProductionContentsBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var result = await _navigationService.GetPageAsync<ProductionContentsPage>();
-            Main.Content = result;
-        }
-
         private async void CityBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<CityPage>();
-            Main.Content = result;
-        }
-
-        private async void ConsignmentBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var result = await _navigationService.GetPageAsync<ConsignmentPage>();
             Main.Content = result;
         }
 
@@ -194,18 +170,6 @@ namespace GroceryStore.Windows
             Main.Content = result;
         }
 
-        private async void DeliveryBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var result = await _navigationService.GetPageAsync<DeliveryPage>();
-            Main.Content = result;
-        }
-
-        private async void DeliveryShipmentBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var result = await _navigationService.GetPageAsync<DeliveryShipmentPage>();
-            Main.Content = result;
-        }
-
         private async void GoodsBtn_Click(object sender, RoutedEventArgs e)
         {
             var result = await _navigationService.GetPageAsync<GoodsPage>();
@@ -214,13 +178,13 @@ namespace GroceryStore.Windows
 
         private async void GoodsWriteOffOwnBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<GoodsWriteOffOwnPage>();
+            var result = await _navigationService.GetPageAsync<GoodsWriteOffOwnPage>(_currentEmployee);
             Main.Content = result;
         }
 
         private async void GoodsWriteOffBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<GoodsWriteOffPage>();
+            var result = await _navigationService.GetPageAsync<GoodsWriteOffPage>(_currentEmployee);
             Main.Content = result;
         }
 
@@ -267,10 +231,7 @@ namespace GroceryStore.Windows
 
             MarketBtn.IsEnabled = true;
             GoodsBtn.IsEnabled = true;
-            DeliveryBtn.IsEnabled = true;
-            ConsignmentBtn.IsEnabled = true;
             DeliveryContentsBtn.IsEnabled = true;
-            DeliveryShipmentBtn.IsEnabled = true;
             GoodsWriteOffBtn.IsEnabled = true;
             GoodsWriteOffOwnBtn.IsEnabled = true;
             WriteOffReasonBtn.IsEnabled = true;
@@ -340,10 +301,7 @@ namespace GroceryStore.Windows
                 ProductManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 ProductManagementMenuCloseBtn.Visibility = Visibility.Visible;
                 GoodsBtn.IsEnabled = false;
-                DeliveryBtn.IsEnabled = false;
-                ConsignmentBtn.IsEnabled = false;
                 DeliveryContentsBtn.IsEnabled = false;
-                DeliveryShipmentBtn.IsEnabled = false;
                 GoodsWriteOffBtn.IsEnabled = false;
                 GoodsWriteOffOwnBtn.IsEnabled = false;
                 WriteOffReasonBtn.IsEnabled = false;
@@ -364,8 +322,6 @@ namespace GroceryStore.Windows
                 GoodsBtn.IsEnabled = false;
                 GoodsOwnBtn.IsEnabled = false;
                 CategotyBtn.IsEnabled = false;
-                DeliveryBtn.IsEnabled = false;
-                ConsignmentBtn.IsEnabled = false;
                 DeliveryContentsBtn.IsEnabled = false;
                 ProductionBtn.Visibility = Visibility.Visible;
                 ProductionBtn.Height = 0;
