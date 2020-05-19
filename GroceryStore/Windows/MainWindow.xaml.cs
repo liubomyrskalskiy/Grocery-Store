@@ -39,6 +39,7 @@ namespace GroceryStore.Windows
             InitializeComponent();
 
             sb = (FindResource("LogInMenuClose") as Storyboard);
+            LogOutBtn.Visibility = Visibility.Collapsed;
 
             HideMenu();
         }
@@ -117,8 +118,16 @@ namespace GroceryStore.Windows
 
         private async void GoodsInMarketOwnBtn_Click(object sender, RoutedEventArgs e)
         {
-            var result = await _navigationService.GetPageAsync<GoodsInMarketOwnPage>(_currentEmployee);
-            Main.Content = result;
+            if (_currentEmployee.RoleTitle.Equals("Адміністратор"))
+            {
+                var result = await _navigationService.GetPageAsync<GoodsInMarketOwn_AdminPage>(_currentEmployee);
+                Main.Content = result;
+            }
+            else
+            {
+                var result = await _navigationService.GetPageAsync<GoodsInMarketOwnPage>(_currentEmployee);
+                Main.Content = result;
+            }
         }
 
         private async void GoodsInMarketLessBtn_Click(object sender, RoutedEventArgs e)
@@ -208,6 +217,7 @@ namespace GroceryStore.Windows
 
         private void HideMenu()
         {
+            Main.Content = null;
             SaleBtn.Visibility = Visibility.Collapsed;
             StoreManagementMenuOpenBtn.Visibility = Visibility.Collapsed;
             StoreManagementMenuCloseBtn.Visibility = Visibility.Collapsed;
@@ -245,8 +255,8 @@ namespace GroceryStore.Windows
 
         private void LogInBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            HideMenu();
             if (!ValidateForm()) return;
+            EmployeeDtos = _mapper.Map<List<Employee>, List<EmployeeDTO>>(_employeeService.GetAll());
             if ((_currentEmployee = EmployeeDtos.FirstOrDefault(item =>
                     item.Login == LoginTextBox.Text && item.Password == PasswordTextBox.Password)) == null)
             {
@@ -254,6 +264,14 @@ namespace GroceryStore.Windows
                 LoginTextBox.Focus();
                 return;
             }
+
+            LogOutBtn.Visibility = Visibility.Visible;
+
+            NameLabel.Content = _currentEmployee.FullName;
+            RoleLabel.Content = _currentEmployee.RoleTitle;
+            MarketLabel.Content = "Market: "+_currentEmployee.FullMarketAddress;
+            LoginTextBox.Text = "";
+            PasswordTextBox.Password = "";
 
             if (_currentEmployee.RoleTitle.Equals("Адміністратор"))
             {
@@ -353,6 +371,15 @@ namespace GroceryStore.Windows
 
                 sb.Begin();
             }
+        }
+
+        private void LogOutBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            HideMenu();
+            NameLabel.Content = "";
+            RoleLabel.Content = "";
+            MarketLabel.Content = "";
+            LogOutBtn.Visibility = Visibility.Collapsed;
         }
     }
 }

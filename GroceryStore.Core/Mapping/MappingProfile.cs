@@ -66,7 +66,7 @@ namespace GroceryStore.Core.Mapping
                 .ForMember(dest => dest.ProducerTitle, opts => opts.MapFrom(item => item.IdProducerNavigation.Title))
                 .ForMember(dest => dest.StringWeight, opts => opts.MapFrom(item => $"{item.Weight,0:0.00} kg"))
                 .ForMember(dest => dest.StringPrice, opts => opts.MapFrom(item => $"{item.Price,0:C2}"))
-                .ForMember(dest => dest.FullName, opts => opts.MapFrom(item => item.ProductCode + " "+ item.Title));
+                .ForMember(dest => dest.FullName, opts => opts.MapFrom(item => item.ProductCode + " " + item.Title));
 
             CreateMap<Consignment, ConsignmentDTO>()
                 .ForMember(dest => dest.GoodTitle, opts => opts.MapFrom(item => item.IdGoodsNavigation.Title))
@@ -113,7 +113,7 @@ namespace GroceryStore.Core.Mapping
                 .ForMember(dest => dest.ConsignmentNumber,
                     opts => opts.MapFrom(item => item.IdConsignmentNavigation.ConsignmentNumber))
                 .ForMember(dest => dest.StringAmount, opts => opts.MapFrom(item => $"{item.Amount,0:0.000}"))
-                .ForMember(dest => dest.Address, opts => opts.MapFrom(item => item.IdGoodsInMarketNavigation.IdMarketNavigation.IdCityNavigation.Title+" "+item.IdGoodsInMarketNavigation.IdMarketNavigation.Address));
+                .ForMember(dest => dest.Address, opts => opts.MapFrom(item => item.IdGoodsInMarketNavigation.IdMarketNavigation.IdCityNavigation.Title + " " + item.IdGoodsInMarketNavigation.IdMarketNavigation.Address));
 
             CreateMap<WriteOffReason, WriteOffReasonDTO>();
 
@@ -127,7 +127,8 @@ namespace GroceryStore.Core.Mapping
                 .ForMember(dest => dest.GoodTitle,
                     opts => opts.MapFrom(item => item.IdGoodsInMarketNavigation.IdGoodsNavigation.Title))
                 .ForMember(dest => dest.ProductCode,
-                    opts => opts.MapFrom(item => item.IdGoodsInMarketNavigation.IdGoodsNavigation.ProductCode));
+                    opts => opts.MapFrom(item => item.IdGoodsInMarketNavigation.IdGoodsNavigation.ProductCode))
+                .ForMember(dest=> dest.ShipmentDateTime, opts => opts.MapFrom(item => item.IdDeliveryShipmentNavigation.ShipmentDateTime));
 
             CreateMap<GoodsWriteOffOwn, GoodsWriteOffOwnDTO>()
                 .ForMember(dest => dest.Login, opts => opts.MapFrom(item => item.IdEmployeeNavigation.Login))
@@ -183,6 +184,9 @@ namespace GroceryStore.Core.Mapping
                 .ForMember(dest => dest.GoodsTitle, opts => opts.MapFrom(item => item.IdGoodsNavigation.Title))
                 .ForMember(dest => dest.ProductCode, opts => opts.MapFrom(item => item.IdGoodsNavigation.ProductCode))
                 .ForMember(dest => dest.Address, opts => opts.MapFrom(item => item.IdMarketNavigation.Address))
+                .ForMember(dest => dest.FullMarketAddress,
+                    opts => opts.MapFrom(item =>
+                        item.IdMarketNavigation.IdCityNavigation.Title + " " + item.IdMarketNavigation.Address))
                 .ForMember(dest => dest.ProducerTitle,
                     opts => opts.MapFrom(item => item.IdGoodsNavigation.IdProducerNavigation.Title))
                 .ForMember(dest => dest.Price, opts => opts.MapFrom(item => $"{item.IdGoodsNavigation.Price,0:C2}"))
@@ -208,6 +212,7 @@ namespace GroceryStore.Core.Mapping
                 .ForMember(dest => dest.GoodsTitle,
                     opts => opts.MapFrom(item => item.IdProductionNavigation.IdGoodsOwnNavigation.Title))
                 .ForMember(dest => dest.Address, opts => opts.MapFrom(item => item.IdMarketNavigation.Address))
+                .ForMember(dest => dest.FullAddress, opts => opts.MapFrom(item => item.IdMarketNavigation.IdCityNavigation.Title + " " + item.IdMarketNavigation.Address))
                 .ForMember(dest => dest.ProductionCode,
                     opts => opts.MapFrom(item => item.IdProductionNavigation.ProductionCode))
                 .ForMember(dest => dest.ProductCode,

@@ -160,18 +160,18 @@ namespace GroceryStore.Views
             UpdateDataGrid();
         }
 
-        private void ClearFilterBtn_OnClick(object sender, RoutedEventArgs e)
-        {
-            CategoryFilterComboBox.SelectedItem = null;
-            UpdateDataGrid();
-        }
-
         private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (CategoryFilterComboBox.SelectedItem != null)
             {
                 UpdateDataGrid();
             }
+        }
+
+        private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
         }
     }
 }

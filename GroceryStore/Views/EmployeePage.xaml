@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" Height="1080" Width="1920">
 
     <Page.Resources>
@@ -61,7 +62,7 @@
                     <ImageBrush ImageSource="../src/category_page_menu_background.png" Stretch="None" />
                 </Border.Background>
             </Border>
-            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,20">
+            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10,10,10,10">
                 <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">First Name</Label>
 
@@ -252,6 +253,27 @@
                                               BlurRadius="20" />
                         </Button.Effect>
                     </Button>
+                </StackPanel>
+                <StackPanel Margin="0,5,0,0">
+                    <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Market Address</Label>
+
+                    <Grid HorizontalAlignment="Stretch">
+                        <ComboBox x:Name="MarketFilterComboBox" ItemsSource="{Binding Path=MarketDtos}"
+                              DisplayMemberPath="FullAddress" SelectedValuePath="FullAddress"
+                              SelectedValue="{Binding Path=MarketDTO}" Margin="0,0,40,0"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="MarketFilterComboBox_OnSelectionChanged">
+                            <ComboBox.Effect>
+                                <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                            </ComboBox.Effect>
+                        </ComboBox>
+                        <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                                BorderBrush="Transparent" Padding="0" Click="ClearFilterBtn_OnClick">
+                            <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                        </Button>
+                    </Grid>
                 </StackPanel>
             </StackPanel>
         </Grid>

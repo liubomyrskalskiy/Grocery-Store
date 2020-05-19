@@ -62,22 +62,22 @@ namespace GroceryStore.Views
             if (ProviderFilterComboBox.SelectedItem != null)
             {
                 ProviderDTO tempProvider = (ProviderDTO) ProviderFilterComboBox.SelectedItem;
-                FilteredDeliveryContentsDtos = DeliveryContentsDtos
-                    .Where(item => item.ProviderTitle == tempProvider.CompanyTitle).ToList();
+                var tempList = FilteredDeliveryContentsDtos.Where(item => item.ProviderTitle == tempProvider.CompanyTitle).ToList();
+                FilteredDeliveryContentsDtos = tempList;
             }
 
             if (DeliveryComboBox.SelectedItem != null)
             {
                 DeliveryDTO tempDelivery = (DeliveryDTO) DeliveryComboBox.SelectedItem;
-                FilteredDeliveryContentsDtos = DeliveryContentsDtos
-                    .Where(item => item.OrderDate == tempDelivery.DeliveryDate).ToList();
+                var tempList = FilteredDeliveryContentsDtos.Where(item => item.OrderDate == tempDelivery.DeliveryDate).ToList();
+                FilteredDeliveryContentsDtos = tempList;
             }
 
             if (GoodComboBox.SelectedItem != null)
             {
                 GoodsDTO tempGood = (GoodsDTO) GoodComboBox.SelectedItem;
-                FilteredDeliveryContentsDtos = DeliveryContentsDtos
-                    .Where(item => item.ProductCode == tempGood.ProductCode).ToList();
+                var tempList = FilteredDeliveryContentsDtos.Where(item => item.ProductCode == tempGood.ProductCode).ToList();
+                FilteredDeliveryContentsDtos = tempList;
             }
 
             DataGrid.ItemsSource = FilteredDeliveryContentsDtos;
@@ -154,8 +154,6 @@ namespace GroceryStore.Views
         {
             if (ProviderFilterComboBox.SelectedItem != null)
             {
-                DeliveryComboBox.IsEnabled = false;
-                GoodComboBox.IsEnabled = false;
                 UpdateDataGrid();
             }
         }
@@ -164,8 +162,6 @@ namespace GroceryStore.Views
         {
             if (DeliveryComboBox.SelectedItem != null)
             {
-                ProviderFilterComboBox.IsEnabled = false;
-                GoodComboBox.IsEnabled = false;
                 UpdateDataGrid();
             }
         }
@@ -174,8 +170,6 @@ namespace GroceryStore.Views
         {
             if (GoodComboBox.SelectedItem != null)
             {
-                ProviderFilterComboBox.IsEnabled = false;
-                DeliveryComboBox.IsEnabled = false;
                 UpdateDataGrid();
             }
         }
@@ -188,6 +182,24 @@ namespace GroceryStore.Views
             ProviderFilterComboBox.IsEnabled = true;
             DeliveryComboBox.IsEnabled = true;
             GoodComboBox.IsEnabled = true;
+            UpdateDataGrid();
+        }
+
+        private void ClearProviderFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            ProviderFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void ClearDeliveryFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            DeliveryComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void ClearGoodFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            GoodComboBox.SelectedItem = null;
             UpdateDataGrid();
         }
     }

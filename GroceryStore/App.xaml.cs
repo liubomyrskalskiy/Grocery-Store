@@ -126,6 +126,8 @@ namespace GroceryStore
             services.AddTransient<GoodsInMarketLessPage>();
             services.AddTransient<ProductionLessPage>();
             services.AddTransient<MarketLessPage>();
+
+            services.AddTransient<GoodsInMarketOwn_AdminPage>();
         }
     }
 }

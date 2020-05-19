@@ -48,6 +48,8 @@ namespace GroceryStore.Views
             _settings = settings.Value;
 
             InitializeComponent();
+
+            ShipmentDateComboBox.IsEnabled = false;
         }
 
         private void UpdateDataGrid()
@@ -116,6 +118,8 @@ namespace GroceryStore.Views
 
             _goodsWriteOffService.Create(goodsWriteOff);
             UpdateDataGrid();
+
+           
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
@@ -156,17 +160,17 @@ namespace GroceryStore.Views
                         ShipmentDateComboBox.IsEnabled = false;
                     }
                 }
-                else
-                {
-                    GoodTitleLabel.Content = "";
-                    CategoryLabel.Content = "";
-                    WeightLabel.Content = "";
-                    PriceLabel.Content = "";
+            }
+            else
+            {
+                GoodTitleLabel.Content = "";
+                CategoryLabel.Content = "";
+                WeightLabel.Content = "";
+                PriceLabel.Content = "";
 
-                    DeliveryShipmentDtos = null;
-                    ShipmentDateComboBox.ItemsSource = null;
-                    ShipmentDateComboBox.IsEnabled = false;
-                }
+                DeliveryShipmentDtos = null;
+                ShipmentDateComboBox.ItemsSource = null;
+                ShipmentDateComboBox.IsEnabled = false;
             }
         }
 

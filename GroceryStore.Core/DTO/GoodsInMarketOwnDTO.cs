@@ -13,6 +13,7 @@ namespace GroceryStore.Core.DTO
         public string Amount { get; set; }
         public string ProductionCode { get; set; }
         public string Address { get; set; }
+        public string FullAddress { get; set; }
 
     }
 }

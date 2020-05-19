@@ -9,6 +9,7 @@
         public string Price { get; set; }
         public string Weight { get; set; }
         public string Address { get; set; }
+        public string FullMarketAddress { get; set; }
         public string Amount { get; set; }
     }
 }

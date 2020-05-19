@@ -52,12 +52,14 @@ namespace GroceryStore.Views
             if (ProducerFilterComboBox.SelectedItem != null)
             {
                 ProducerDTO tempProducer = (ProducerDTO)ProducerFilterComboBox.SelectedItem;
-                FilteredGoodsDtos = GoodsDtos.Where(item => item.ProducerTitle == tempProducer.Title).ToList();
+                var tempList = FilteredGoodsDtos.Where(item => item.ProducerTitle == tempProducer.Title).ToList();
+                FilteredGoodsDtos = tempList;
             }
             if (CategoryFilterComboBox.SelectedItem != null)
             {
                 CategoryDTO tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
-                FilteredGoodsDtos = GoodsDtos.Where(item => item.CategoryTitle == tempCategoty.Title).ToList();
+                var tempList = FilteredGoodsDtos.Where(item => item.CategoryTitle == tempCategoty.Title).ToList();
+                FilteredGoodsDtos = tempList;
             }
             DataGrid.ItemsSource = FilteredGoodsDtos;
         }
@@ -210,7 +212,6 @@ namespace GroceryStore.Views
         {
             if (ProducerFilterComboBox.SelectedItem != null)
             {
-                CategoryFilterComboBox.IsEnabled = false;
                 UpdateDataGrid();
             }
         }
@@ -219,9 +220,20 @@ namespace GroceryStore.Views
         {
             if (CategoryFilterComboBox.SelectedItem != null)
             {
-                ProducerFilterComboBox.IsEnabled = false;
                 UpdateDataGrid();
             }
+        }
+
+        private void ClearProducerFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            ProducerFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
         }
     }
 }

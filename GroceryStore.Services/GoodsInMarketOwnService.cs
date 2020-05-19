@@ -20,6 +20,7 @@ namespace GroceryStore.Services
             return unitOfWork.GoodsInMarketOwnRepository.GetAll()
                 .Include(gimo => gimo.IdProductionNavigation)
                 .Include(gimo => gimo.IdMarketNavigation)
+                .Include(gimo => gimo.IdMarketNavigation.IdCityNavigation)
                 .Include(gimo => gimo.IdProductionNavigation.IdGoodsOwnNavigation)
                 .ToList();
         }

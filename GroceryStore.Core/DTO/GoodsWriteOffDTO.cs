@@ -10,6 +10,7 @@ namespace GroceryStore.Core.DTO
         public string Login { get; set; }
         public string Reason { get; set; }
         public string ConsignmentNumber { get; set; }
+        public DateTime? ShipmentDateTime { get; set; }
         public string GoodTitle { get; set; }
         public string ProductCode { get; set; }
     }

@@ -10,7 +10,7 @@
         <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
             <Setter Property="Height" Value="50" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
             <Setter Property="Padding" Value="10, 0, 50, 0" />
@@ -37,7 +37,7 @@
             <Grid Margin="0, 0, 850 ,0" VerticalAlignment="Stretch">
                 <DataGrid Margin="0, 0, 0, 0" VerticalAlignment="Stretch" Name="DataGrid" FontFamily="Consolas"
                           AutoGenerateColumns="False" ItemsSource="{Binding Path=GoodsInMarketDtos}"
-                          HorizontalGridLinesBrush="White" Foreground="White" Background="Transparent"
+                          HorizontalGridLinesBrush="#FF393D47" Foreground="#FF393D47" Background="Transparent"
                           CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                           CanUserSortColumns="False"
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
@@ -59,15 +59,15 @@
                         <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="750">
                             <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
-                                <Label Foreground="White" FontSize="15" VerticalAlignment="Top"
+                                <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
                                        FontFamily="Comic Sans MS">
                                     Title
                                 </Label>
 
-                                <TextBox x:Name="TitleTextBox" Foreground="White" Padding="5,0,0,0" Height="40"
+                                <TextBox x:Name="TitleTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                          VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="White"
-                                         SelectionTextBrush="White" CaretBrush="White" BorderBrush="White"
+                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
                                          BorderThickness="2" Background="#26FFFFFF">
                                     <TextBox.Effect>
                                         <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
@@ -75,15 +75,15 @@
                                     </TextBox.Effect>
                                 </TextBox>
 
-                                <Label Foreground="White" FontSize="15" VerticalAlignment="Top"
+                                <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
                                        FontFamily="Comic Sans MS">
                                     Producer
                                 </Label>
 
-                                <TextBox x:Name="ProducerTextBox" Foreground="White" Padding="5,0,0,0" Height="40"
+                                <TextBox x:Name="ProducerTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                          VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="White"
-                                         SelectionTextBrush="White" CaretBrush="White" BorderBrush="White"
+                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
                                          BorderThickness="2" Background="#26FFFFFF">
                                     <TextBox.Effect>
                                         <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
@@ -91,15 +91,15 @@
                                     </TextBox.Effect>
                                 </TextBox>
 
-                                <Label Foreground="White" FontSize="15" VerticalAlignment="Top"
+                                <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
                                        FontFamily="Comic Sans MS">
                                     Product Code
                                 </Label>
 
-                                <TextBox x:Name="ProductCodeTextBox" Foreground="White" Padding="5,0,0,0" Height="40"
+                                <TextBox x:Name="ProductCodeTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                          VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="White"
-                                         SelectionTextBrush="White" CaretBrush="White" BorderBrush="White"
+                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
                                          BorderThickness="2" Background="#26FFFFFF">
                                     <TextBox.Effect>
                                         <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"

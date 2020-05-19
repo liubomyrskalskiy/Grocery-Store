@@ -28,6 +28,7 @@ namespace GroceryStore.Views
         private readonly IMapper _mapper;
 
         public List<EmployeeDTO> EmployeeDtos { get; set; }
+        public List<EmployeeDTO> FilteredEmployeeDtos { get; set; }
         public List<RoleDTO> RoleDtos { get; set; }
         public List<MarketDTO> MarketDtos { get; set; }
         public List<CityDTO> CityDtos { get; set; }
@@ -54,7 +55,16 @@ namespace GroceryStore.Views
             MarketComboBox.ItemsSource = MarketDtos;
             CityComboBox.ItemsSource = CityDtos;
 
-            DataGrid.ItemsSource = EmployeeDtos;
+            FilteredEmployeeDtos = EmployeeDtos;
+
+            if (MarketFilterComboBox.SelectedItem != null)
+            {
+                var tempMarket = (MarketDTO) MarketFilterComboBox.SelectedItem;
+                FilteredEmployeeDtos = EmployeeDtos.Where(item => item.FullMarketAddress == tempMarket.FullAddress)
+                    .ToList();
+            }
+
+            DataGrid.ItemsSource = FilteredEmployeeDtos;
         }
 
         private bool ValidateForm()
@@ -135,6 +145,7 @@ namespace GroceryStore.Views
             MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
             CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
 
+            MarketFilterComboBox.ItemsSource = MarketDtos;
             UpdateDataGrid();
 
             return Task.CompletedTask;
@@ -144,19 +155,19 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                FirstNameTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].FirstName;
-                LastNameTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].LastName;
-                PhoneNumberTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].PhoneNumber;
-                ExperienceTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].WorkExperience.ToString();
-                AddressTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].Address;
-                LoginTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].Login;
-                PasswordTextBox.Text = EmployeeDtos[DataGrid.SelectedIndex].Password;
+                FirstNameTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].FirstName;
+                LastNameTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].LastName;
+                PhoneNumberTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].PhoneNumber;
+                ExperienceTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].WorkExperience.ToString();
+                AddressTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].Address;
+                LoginTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].Login;
+                PasswordTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].Password;
                 RoleComboBox.SelectedItem =
-                    RoleDtos.FirstOrDefault(item => item.Title == EmployeeDtos[DataGrid.SelectedIndex].RoleTitle);
+                    RoleDtos.FirstOrDefault(item => item.Title == FilteredEmployeeDtos[DataGrid.SelectedIndex].RoleTitle);
                 MarketComboBox.SelectedItem = MarketDtos.FirstOrDefault(item =>
-                    item.FullAddress == EmployeeDtos[DataGrid.SelectedIndex].FullMarketAddress);
+                    item.FullAddress == FilteredEmployeeDtos[DataGrid.SelectedIndex].FullMarketAddress);
                 CityComboBox.SelectedItem =
-                    CityDtos.FirstOrDefault(item => item.Title == EmployeeDtos[DataGrid.SelectedIndex].CityTitle);
+                    CityDtos.FirstOrDefault(item => item.Title == FilteredEmployeeDtos[DataGrid.SelectedIndex].CityTitle);
             }
         }
 
@@ -200,7 +211,7 @@ namespace GroceryStore.Views
             RoleDTO tempRole;
             CityDTO tempCity;
             MarketDTO tempMarket;
-            employee.Id = EmployeeDtos[DataGrid.SelectedIndex].Id;
+            employee.Id = FilteredEmployeeDtos[DataGrid.SelectedIndex].Id;
             employee.FirstName = FirstNameTextBox.Text;
             employee.LastName = LastNameTextBox.Text;
             employee.PhoneNumber = PhoneNumberTextBox.Text;
@@ -228,8 +239,22 @@ namespace GroceryStore.Views
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            _employeeService.Delete(EmployeeDtos[DataGrid.SelectedIndex].Id);
+            _employeeService.Delete(FilteredEmployeeDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
+        }
+
+        private void ClearFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            MarketFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void MarketFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (MarketFilterComboBox.SelectedItem != null)
+            {
+                UpdateDataGrid();
+            }
         }
     }
 }

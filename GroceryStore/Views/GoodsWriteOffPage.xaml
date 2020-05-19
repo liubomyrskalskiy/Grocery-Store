@@ -13,7 +13,7 @@
             <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="Padding" Value="10, 0, 100, 0" />
+            <Setter Property="Padding" Value="10, 0" />
             <Setter Property='HorizontalContentAlignment' Value="Left" />
         </Style>
 
@@ -42,7 +42,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Good" Binding="{Binding Path=GoodTitle}" />
                     <DataGridTextColumn Header="Product Code" Binding="{Binding Path=ProductCode}" />
-                    <DataGridTextColumn Header="Consignment Number" Binding="{Binding Path=ConsignmentNumber}" />
+                    <DataGridTextColumn Header="Shipment Date" Binding="{Binding Path=ShipmentDateTime}" />
                     <DataGridTextColumn Header="Amount" Binding="{Binding Path=Amount}" />
                     <DataGridTextColumn Header="Date" Binding="{Binding Path=Date}" />
                     <DataGridTextColumn Header="Reason" Binding="{Binding Path=Reason}" />
