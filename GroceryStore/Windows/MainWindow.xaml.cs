@@ -270,6 +270,7 @@ namespace GroceryStore.Windows
             NameLabel.Content = _currentEmployee.FullName;
             RoleLabel.Content = _currentEmployee.RoleTitle;
             MarketLabel.Content = "Market: "+_currentEmployee.FullMarketAddress;
+            MarketLabel.Visibility = Visibility.Visible;
             LoginTextBox.Text = "";
             PasswordTextBox.Password = "";
 
@@ -285,6 +286,7 @@ namespace GroceryStore.Windows
                 StaffManagementMenuCloseBtn.Visibility = Visibility.Visible;
                 OtherManagementMenuOpenBtn.Visibility = Visibility.Visible;
                 OtherManagementMenuCloseBtn.Visibility = Visibility.Visible;
+                MarketLabel.Visibility = Visibility.Collapsed;
 
                 GoodsInMarketLessBtn.Height = 0;
                 GoodsInMarketOwnLessBtn.Height = 0;

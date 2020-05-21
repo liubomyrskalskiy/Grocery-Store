@@ -42,10 +42,26 @@ namespace GroceryStore.Views
         {
             ClientDtos = _mapper.Map<List<Client>, List<ClientDTO>>(_clientService.GetAll());
             FilteredClientDtos = ClientDtos;
+
+            if (Regex.Match(SurnameFilterTextBox.Text, @"^\D{1,30}$").Success)
+            {
+                var tempList = FilteredClientDtos.Where(item => item.LastName.Contains(SurnameFilterTextBox.Text))
+                    .ToList();
+                FilteredClientDtos = tempList;
+            }
+
+            if (Regex.Match(PhoneFilterTextBox.Text, @"^\d{4,10}$").Success)
+            {
+                var tempList = FilteredClientDtos.Where(item => item.PhoneNumber.Contains(PhoneFilterTextBox.Text))
+                    .ToList();
+                FilteredClientDtos = tempList;
+            }
+
             if (CityFilterComboBox.SelectedItem != null)
             {
-                CityDTO tempCity = (CityDTO) CityFilterComboBox.SelectedItem;
-                FilteredClientDtos = ClientDtos.Where(item => item.CityTitle == tempCity.Title).ToList();
+                var tempCity = (CityDTO) CityFilterComboBox.SelectedItem;
+                var tempList = FilteredClientDtos.Where(item => item.CityTitle == tempCity.Title).ToList();
+                FilteredClientDtos = tempList;
             }
             DataGrid.ItemsSource = FilteredClientDtos;
         }
@@ -180,6 +196,70 @@ namespace GroceryStore.Views
         {
             CityFilterComboBox.SelectedItem = null;
             UpdateDataGrid();
+        }
+
+        private void SurnameFilterTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!SurnameFilterTextBox.Text.Equals(""))
+            {
+                PhoneFilterTextBox.Text = "";
+                PhoneFilterTextBox.IsEnabled = false;
+            }
+            else
+            {
+                PhoneFilterTextBox.IsEnabled = true;
+            }
+        }
+
+        private void ClearSurnameFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            SurnameFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchSurnameBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(SurnameFilterTextBox.Text, @"^\D{1,30}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Last name must consist of at least 1 character and not exceed 30 characters!");
+                SurnameFilterTextBox.Focus();
+            }
+        }
+
+        private void PhoneFilterTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!PhoneFilterTextBox.Text.Equals(""))
+            {
+                SurnameFilterTextBox.Text = "";
+                SurnameFilterTextBox.IsEnabled = false;
+            }
+            else
+            {
+                SurnameFilterTextBox.IsEnabled = true;
+            }
+        }
+
+        private void ClearPhoneFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            PhoneFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchPhoneBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(PhoneFilterTextBox.Text, @"^\d{4,10}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("To search employee by phone, it must consist of at least 4 digits and not exceed 10 digits");
+                PhoneFilterTextBox.Focus();
+            }
         }
     }
 }

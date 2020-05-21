@@ -5,8 +5,9 @@ namespace GroceryStore.Core.DTO
     public class GoodsInMarketOwnDTO
     {
         public int Id { get; set; }
-        public string GoodsTitle { get; set; }
         public string ProductCode { get; set; }
+        public string Category { get; set; }
+        public string Good { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public string Price { get; set; }
         public string Weight { get; set; }

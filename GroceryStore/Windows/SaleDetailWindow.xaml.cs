@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +32,7 @@ namespace GroceryStore.Windows
         private AppSettings _settings;
         private readonly IMapper _mapper;
         private string _checkNumber;
+        private SaleDTO _currentSale;
         public List<UniversalBasketDTO> UniversalBasketDtos { get; set; }
 
         public List<UniversalBasketDTO> BasketDtos { get; set; }
@@ -54,7 +57,8 @@ namespace GroceryStore.Windows
 
         public Task ActivateAsync(object parameter)
         {
-            _checkNumber = parameter.ToString();
+            _currentSale = (SaleDTO) parameter;
+            //_checkNumber = parameter.ToString();
 
             UpdateDataGrid();
 
@@ -65,10 +69,38 @@ namespace GroceryStore.Windows
         {
             BasketDtos = _mapper.Map<List<Basket>, List<UniversalBasketDTO>>(_basketService.GetAll());
             BasketOwnDtos = _mapper.Map<List<BasketOwn>, List<UniversalBasketDTO>>(_basketOwnService.GetAll());
-            UniversalBasketDtos = BasketDtos.Where(item => item.CheckNumber == _checkNumber).ToList();
-            UniversalBasketDtos.AddRange(BasketOwnDtos.Where(item => item.CheckNumber == _checkNumber).ToList());
+            UniversalBasketDtos = BasketDtos.Where(item => item.CheckNumber == _currentSale.CheckNumber).ToList();
+            UniversalBasketDtos.AddRange(BasketOwnDtos.Where(item => item.CheckNumber == _currentSale.CheckNumber).ToList());
 
             DataGrid.ItemsSource = UniversalBasketDtos;
+        }
+
+        private void CheckBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            List<string> lines = new List<string>(){ $"Check#          {_currentSale.CheckNumber}", $"Employee:          {_currentSale.FullName}", $"Date:     {_currentSale.Date}" };
+            lines.Add("----------------------------------------");
+            foreach (var universalBasketDto in UniversalBasketDtos)
+            {
+                lines.Add("");
+                lines.Add($"{universalBasketDto.Title}     {universalBasketDto.Amount}     {universalBasketDto.Price}");
+                lines.Add("----------------------------------------");
+            }
+            lines.Add("----------------------------------------");
+            lines.Add($"Total:          {_currentSale.Total}");
+
+            if (File.Exists($"Check#{_currentSale.CheckNumber}.txt"))
+            {
+                File.Delete($"Check#{_currentSale.CheckNumber}.txt");
+            }
+
+            using (StreamWriter file = File.CreateText($"Check#{_currentSale.CheckNumber}.txt"))
+            {
+                foreach (string line in lines)
+                {
+                    file.WriteLine(line.PadLeft(40));
+                }
+            }
+            Process.Start("notepad.exe", $"Check#{_currentSale.CheckNumber}.txt");
         }
     }
 }

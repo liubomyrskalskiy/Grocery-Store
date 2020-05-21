@@ -21,7 +21,7 @@ namespace GroceryStore.Views
     {
         private readonly IGoodsOwnService _goodsOwnService;
         private readonly ICategoryService _categoryService;
-        private AppSettings _settings;
+        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
 
         public List<GoodsOwnDTO> GoodsOwnDtos { get; set; }
@@ -44,10 +44,18 @@ namespace GroceryStore.Views
         {
             GoodsOwnDtos = _mapper.Map<List<GoodsOwn>, List<GoodsOwnDTO>>(_goodsOwnService.GetAll());
             FilteredGoodsOwnDtos = GoodsOwnDtos;
+
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                var tempList = FilteredGoodsOwnDtos.Where(item => item.Title.Contains(TitleFilterTextBox.Text)).ToList();
+                FilteredGoodsOwnDtos = tempList;
+            }
+
             if (CategoryFilterComboBox.SelectedItem != null)
             {
-                CategoryDTO tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
-                FilteredGoodsOwnDtos = GoodsOwnDtos.Where(item => item.Category == tempCategoty.Title).ToList();
+                var tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
+                var tempList = FilteredGoodsOwnDtos.Where(item => item.Category == tempCategoty.Title).ToList();
+                FilteredGoodsOwnDtos = tempList;
             }
 
             DataGrid.ItemsSource = FilteredGoodsOwnDtos;
@@ -172,6 +180,26 @@ namespace GroceryStore.Views
         {
             CategoryFilterComboBox.SelectedItem = null;
             UpdateDataGrid();
+        }
+
+        private void ClearTitleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            TitleFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchTitleBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
+                TitleFilterTextBox.Focus();
+                return;
+            }
         }
     }
 }

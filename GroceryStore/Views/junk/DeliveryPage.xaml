@@ -31,7 +31,7 @@
         <Grid Margin="0,300,50,0">
             <Border CornerRadius="0,20,0,0">
                 <Border.Background>
-                    <ImageBrush ImageSource="../src/category_grid_background.png" Stretch="None" />
+                    <ImageBrush ImageSource="/src/category_grid_background.png" Stretch="None" />
                 </Border.Background>
             </Border>
             <DataGrid Margin="0, 0, 850 ,0" Name="DataGrid" FontFamily="Consolas" AutoGenerateColumns="False"

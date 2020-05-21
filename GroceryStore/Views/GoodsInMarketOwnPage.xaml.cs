@@ -25,17 +25,20 @@ namespace GroceryStore.Views
         private readonly IGoodsOwnService _goodsOwnService;
         private readonly IBasketOwnService _basketOwnService;
         private readonly IGoodsWriteOffOwnService _goodsWriteOffOwnService;
+        private readonly ICategoryService _categoryService;
         private readonly AppSettings _settings;
         private readonly IMapper _mapper;
         private EmployeeDTO _currentEmployee;
 
         public List<GoodsInMarketOwnDTO> GoodsInMarketOwnDtos { get; set; }
-
+        public List<GoodsInMarketOwnDTO> FilteredGoodsInMarketOwnDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
         public List<ProductionDTO> ProductionDtos { get; set; }
+        public List<ProductionDTO> FilterProductionDtos { get; set; }
 
         public GoodsInMarketOwnPage(IGoodsInMarketOwnService goodsInMarketOwnService, IMarketService marketService,
             IProductionService productionService, IOptions<AppSettings> settings, IMapper mapper,
-            IGoodsOwnService goodsOwnService, IBasketOwnService basketOwnService, IGoodsWriteOffOwnService goodsWriteOffOwnService)
+            IGoodsOwnService goodsOwnService, IBasketOwnService basketOwnService, IGoodsWriteOffOwnService goodsWriteOffOwnService, ICategoryService categoryService)
         {
             _goodsInMarketOwnService = goodsInMarketOwnService;
             _marketService = marketService;
@@ -45,6 +48,7 @@ namespace GroceryStore.Views
             _goodsOwnService = goodsOwnService;
             _basketOwnService = basketOwnService;
             _goodsWriteOffOwnService = goodsWriteOffOwnService;
+            _categoryService = categoryService;
 
             InitializeComponent();
 
@@ -55,8 +59,23 @@ namespace GroceryStore.Views
         {
             GoodsInMarketOwnDtos =
                 _mapper.Map<List<GoodsInMarketOwn>, List<GoodsInMarketOwnDTO>>(_goodsInMarketOwnService.GetAll());
+            FilteredGoodsInMarketOwnDtos = GoodsInMarketOwnDtos.Where(item => item.Address == _currentEmployee.MarketAddress).ToList();
 
-            DataGrid.ItemsSource = GoodsInMarketOwnDtos.Where(item => item.Address == _currentEmployee.MarketAddress).ToList();
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                var tempCategory = (CategoryDTO) CategoryFilterComboBox.SelectedItem;
+                var tempList = FilteredGoodsInMarketOwnDtos.Where(item => item.Category == tempCategory.Title).ToList();
+                FilteredGoodsInMarketOwnDtos = tempList;
+            }
+
+            if (ManufactureDateFilterComboBox.SelectedItem != null)
+            {
+                var tempProduction = (ProductionDTO)ManufactureDateFilterComboBox.SelectedItem;
+                var tempList = FilteredGoodsInMarketOwnDtos.Where(item => item.ManufactureDate == tempProduction.ManufactureDate).ToList();
+                FilteredGoodsInMarketOwnDtos = tempList;
+            }
+
+            DataGrid.ItemsSource = FilteredGoodsInMarketOwnDtos;
         }
 
         private bool ValidateForm()
@@ -74,7 +93,11 @@ namespace GroceryStore.Views
         public Task ActivateAsync(object parameter)
         {
             _currentEmployee = (EmployeeDTO)parameter;
-            
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
+            FilterProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
+            ManufactureDateFilterComboBox.ItemsSource = FilterProductionDtos.GroupBy(item => item.ManufactureDate).Select(item => item.First());
+
             UpdateDataGrid();
             return Task.CompletedTask;
         }
@@ -83,9 +106,9 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                AmountTextBox.Text = GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Amount.ToString();
+                AmountTextBox.Text = FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Amount.ToString();
                 ProductionComboBox.SelectedItem = ProductionDtos.FirstOrDefault(item =>
-                    item.ProductionCode == GoodsInMarketOwnDtos[DataGrid.SelectedIndex].ProductionCode);
+                    item.ProductionCode == FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].ProductionCode);
             }
         }
 
@@ -135,19 +158,19 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (_basketOwnService.GetAll().FirstOrDefault(item =>
-                    item.IdGoodsInMarketOwn == GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
+                    item.IdGoodsInMarketOwn == FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
             {
                 MessageBox.Show("You can not delete this row because it is referenced by some Sales!");
                 return;
             }
 
             if (_goodsWriteOffOwnService.GetAll().FirstOrDefault(item =>
-                    item.IdGoodsInMarketOwn == GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
+                    item.IdGoodsInMarketOwn == FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
             {
                 MessageBox.Show("You can not delete this row because it is referenced by some write-off!");
                 return;
             }
-            _goodsInMarketOwnService.Delete(GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id);
+            _goodsInMarketOwnService.Delete(FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
 
@@ -202,6 +225,34 @@ namespace GroceryStore.Views
             }
             else
                 AmountLabel.Content = "";
+        }
+
+        private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                UpdateDataGrid();
+            }
+        }
+
+        private void ManufactureDateFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ManufactureDateFilterComboBox.SelectedItem != null)
+            {
+                UpdateDataGrid();
+            } 
+        }
+
+        private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void ClearManufactureDateFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            ManufactureDateFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
         }
     }
 }

@@ -13,6 +13,7 @@ namespace GroceryStore.Core.DTO
         public DateTime? BestBefore { get; set; }
         public int? Amount { get; set; }
         public string Login { get; set; }
+        public string FullName { get; set; }
         public double? TotalCost { get; set; }
         public string StringTotalCost { get; set; }
     }

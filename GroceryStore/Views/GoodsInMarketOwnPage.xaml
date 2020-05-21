@@ -3,6 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
       mc:Ignorable="d" Height="1080" Width="1920">
 
     <Page.Resources>
@@ -27,6 +28,54 @@
     </Page.Resources>
 
     <Grid Background="Transparent">
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="500,50,800,0" Height="200">
+            <Border CornerRadius="20">
+                <Border.Background>
+                    <ImageBrush ImageSource="/src/category_grid_background.png" Stretch="None" />
+                </Border.Background>
+            </Border>
+            <StackPanel VerticalAlignment="Center" Margin="25, 0">
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Category:</Label>
+                    <ComboBox x:Name="CategoryFilterComboBox" ItemsSource="{Binding Path=ProducerDtos}"
+                              DisplayMemberPath="Title" SelectedValuePath="Title"
+                              SelectedValue="{Binding Path=ProducerDTO}" Margin="125,0,40,5"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
+                        <ComboBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </ComboBox.Effect>
+                    </ComboBox>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearCategoryFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Manufactured:</Label>
+                    <ComboBox x:Name="ManufactureDateFilterComboBox" ItemsSource="{Binding Path=ProductionDtos}"
+                              DisplayMemberPath="ManufactureDate" SelectedValuePath="ManufactureDate"
+                              SelectedValue="{Binding Path=ProductionDTO}" Margin="125,0,40,0"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="ManufactureDateFilterComboBox_OnSelectionChanged">
+                        <ComboBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </ComboBox.Effect>
+                    </ComboBox>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearManufactureDateFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+            </StackPanel>
+        </Grid>
         <Grid Margin="0,300,50,0">
             <Border CornerRadius="0,20,0,0">
                 <Border.Background>
@@ -42,8 +91,9 @@
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
                           SelectionChanged="DataGrid_OnSelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Product Code" Binding="{Binding Path=ProductCode}" />
-                        <DataGridTextColumn Header="Title" Binding="{Binding Path=GoodsTitle}" />
+                        <DataGridTextColumn Header="Code" Binding="{Binding Path=ProductCode}" />
+                        <DataGridTextColumn Header="Category" Binding="{Binding Path=Category}" />
+                        <DataGridTextColumn Header="Title" Binding="{Binding Path=Good}" />
                         <DataGridTextColumn Header="Manufacture Date" Binding="{Binding Path=ManufactureDate}" />
                         <DataGridTextColumn Header="Price" Binding="{Binding Path=Price}" />
                         <DataGridTextColumn Header="Weight" Binding="{Binding Path=Weight}" />

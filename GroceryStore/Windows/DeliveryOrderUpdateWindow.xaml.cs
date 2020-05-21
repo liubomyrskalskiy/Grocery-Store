@@ -63,6 +63,7 @@ namespace GroceryStore.Windows
             _currentConsignment = (Consignment)parameter;
             _currentConsignment.ConsignmentNumber = _currentConsignment.Id.ToString("D12");
             ConsignmentLabel.Content = "Consignment number: " + _currentConsignment.ConsignmentNumber;
+            AmountLabel.Content = $"Amount: {_currentConsignment.Amount,0:0.000}";
             MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
             MarketComboBox.ItemsSource = MarketDtos;
 
@@ -82,6 +83,22 @@ namespace GroceryStore.Windows
                 MessageBox.Show("Invalid amount! Check the data you've entered!");
                 AmountTextBox.Focus();
                 return false;
+            }
+            else
+            {
+                double totalAmount = 0;
+                foreach (var currentDeliveryShipmentDto in CurrentDeliveryShipmentDtos)
+                {
+                    totalAmount += currentDeliveryShipmentDto.Amount ?? 0;
+                }
+
+                totalAmount += Convert.ToDouble(AmountTextBox.Text);
+                if (totalAmount > _currentConsignment.Amount)
+                {
+                    MessageBox.Show("Invalid amount! You're trying to distribute more goods than actually ordered!");
+                    AmountTextBox.Focus();
+                    return false;
+                }
             }
 
             DateTime dt;

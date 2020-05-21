@@ -12,6 +12,7 @@ namespace GroceryStore.Core.DTO
         public string ProductionCode { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public string Login { get; set; }
+        public string FullName { get; set; }
         public string Reason { get; set; }
     }
 }

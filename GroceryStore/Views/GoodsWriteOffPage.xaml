@@ -41,12 +41,12 @@
                       ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Good" Binding="{Binding Path=GoodTitle}" />
-                    <DataGridTextColumn Header="Product Code" Binding="{Binding Path=ProductCode}" />
+                    <DataGridTextColumn Header="Code" Binding="{Binding Path=ProductCode}" />
                     <DataGridTextColumn Header="Shipment Date" Binding="{Binding Path=ShipmentDateTime}" />
                     <DataGridTextColumn Header="Amount" Binding="{Binding Path=Amount}" />
                     <DataGridTextColumn Header="Date" Binding="{Binding Path=Date}" />
                     <DataGridTextColumn Header="Reason" Binding="{Binding Path=Reason}" />
-                    <DataGridTextColumn Header="Login" Binding="{Binding Path=Login}" />
+                    <DataGridTextColumn Header="Name" Binding="{Binding Path=FullName}" />
                 </DataGrid.Columns>
             </DataGrid>
             <Grid x:Name="AppGridMenu" VerticalAlignment="Center" HorizontalAlignment="Right" Width="800">

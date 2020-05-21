@@ -303,8 +303,8 @@
         </Grid.Background>
         <Frame x:Name="Main" Margin="0,0,0,0" NavigationUIVisibility="Hidden" />
 
-        <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0, 60, 60,0" Width="700">
-            <StackPanel Orientation="Vertical">
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0, 50, 50,0" Width="700">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                     <Label x:Name="RoleLabel" Content="" Foreground="White" Margin="0,0,10,0" FontSize="20" VerticalAlignment="Top" FontFamily="Comic Sans MS"/>
                     <Label x:Name="NameLabel" Content="" Foreground="White" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Top" FontFamily="Comic Sans MS"/>

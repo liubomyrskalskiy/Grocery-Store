@@ -176,8 +176,8 @@ namespace GroceryStore.Windows
                 else
                 {
                     goodsInMarketDto = _mapper.Map<GoodsInMarket, GoodsInMarketDTO>(tempgim);
-                    GoodTitleLabel.Content = "Good: " + goodsInMarketDto.GoodsTitle;
-                    ProducerTitleLabel.Content = "Producer: " + goodsInMarketDto.ProducerTitle;
+                    GoodTitleLabel.Content = "Good: " + goodsInMarketDto.Good;
+                    ProducerTitleLabel.Content = "Producer: " + goodsInMarketDto.Producer;
                     WeightLabel.Content = "Unit weight: " + goodsInMarketDto.Weight;
                     PriceLabel.Content = "Price: " + goodsInMarketDto.Price.ToString();
                     AmountLabel.Content = "Remains in store: " + goodsInMarketDto.Amount.ToString();

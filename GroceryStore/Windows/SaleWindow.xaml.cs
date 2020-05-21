@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -34,7 +36,7 @@ namespace GroceryStore.Windows
         private readonly IGoodsInMarketOwnService _goodsInMarketOwnService;
         private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-        private Sale _curerntSale;
+        private Sale _currentSale;
         private EmployeeDTO _curreEmployee;
 
         public List<Basket> CurrentBaskets { get; set; }
@@ -63,9 +65,9 @@ namespace GroceryStore.Windows
         public Task ActivateAsync(object parameter)
         {
             var data = (SaleNTO) parameter;
-            _curerntSale = data.Sale;
+            _currentSale = data.Sale;
             _curreEmployee = data.EmployeeDto;
-            CheckLabel.Content = "Сheck number: " + _curerntSale.CheckNumber;
+            CheckLabel.Content = "Сheck number: " + _currentSale.CheckNumber;
 
             CurrentBaskets = new List<Basket>();
             CurrentBasketOwns = new List<BasketOwn>();
@@ -79,14 +81,14 @@ namespace GroceryStore.Windows
         {
             BasketDtos = _mapper.Map<List<Basket>, List<UniversalBasketDTO>>(_basketService.GetAll());
             BasketOwnDtos = _mapper.Map<List<BasketOwn>, List<UniversalBasketDTO>>(_basketOwnService.GetAll());
-            UniversalBasketDtos = BasketDtos.Where(item => item.CheckNumber == _curerntSale.CheckNumber).ToList();
-            UniversalBasketDtos.AddRange(BasketOwnDtos.Where(item => item.CheckNumber == _curerntSale.CheckNumber)
+            UniversalBasketDtos = BasketDtos.Where(item => item.CheckNumber == _currentSale.CheckNumber).ToList();
+            UniversalBasketDtos.AddRange(BasketOwnDtos.Where(item => item.CheckNumber == _currentSale.CheckNumber)
                 .ToList());
-            _saleService.Refresh(_curerntSale);
-            _curerntSale = _saleService.GetId(_curerntSale.Id);
+            _saleService.Refresh(_currentSale);
+            _currentSale = _saleService.GetId(_currentSale.Id);
 
-            DateLabel.Content = _curerntSale.Date.ToString();
-            TotalLabel.Content = $"{_curerntSale.Total,0:C2}";
+            DateLabel.Content = _currentSale.Date.ToString();
+            TotalLabel.Content = $"{_currentSale.Total,0:C2}";
 
             DataGrid.ItemsSource = UniversalBasketDtos;
         }
@@ -105,7 +107,7 @@ namespace GroceryStore.Windows
                 }
             }
 
-            _saleService.Delete(_curerntSale.Id);
+            _saleService.Delete(_currentSale.Id);
             Close();
         }
 
@@ -144,7 +146,7 @@ namespace GroceryStore.Windows
                 GoodsInMarketOwn tempGimo;
                 basketOwn.Id = BasketOwnDtos[^1]?.Id + 1 ?? 1;
                 basketOwn.Amount = Convert.ToDouble(AmountTextBox.Text);
-                basketOwn.IdSale = _curerntSale.Id;
+                basketOwn.IdSale = _currentSale.Id;
 
                 if ((tempGimo = _goodsInMarketOwnService.GetAll()
                         .FirstOrDefault(gim =>
@@ -177,7 +179,7 @@ namespace GroceryStore.Windows
                 GoodsInMarket tempgim;
                 basket.Id = BasketDtos[^1]?.Id + 1 ?? 1;
                 basket.Amount = Convert.ToDouble(AmountTextBox.Text);
-                basket.IdSale = _curerntSale.Id;
+                basket.IdSale = _currentSale.Id;
                 if ((tempgim = _goodsInMarketService.GetAll()
                         .FirstOrDefault(gim =>
                             gim.IdGoodsNavigation.ProductCode == ProductCodeTextBox.Text &&
@@ -225,7 +227,7 @@ namespace GroceryStore.Windows
                     else
                     {
                         goodsInMarketOwnDto = _mapper.Map<GoodsInMarketOwn, GoodsInMarketOwnDTO>(tempGimo);
-                        GoodTitleLabel.Content = "Good: " + goodsInMarketOwnDto.GoodsTitle;
+                        GoodTitleLabel.Content = "Good: " + goodsInMarketOwnDto.Good;
                         ProducerTitleLabel.Content =
                             "Manufacture date: " + goodsInMarketOwnDto.ManufactureDate.ToString();
                         WeightLabel.Content = "Unit weight: " + goodsInMarketOwnDto.Weight;
@@ -252,8 +254,8 @@ namespace GroceryStore.Windows
                     else
                     {
                         goodsInMarketDto = _mapper.Map<GoodsInMarket, GoodsInMarketDTO>(tempgim);
-                        GoodTitleLabel.Content = "Good: " + goodsInMarketDto.GoodsTitle;
-                        ProducerTitleLabel.Content = "Producer: " + goodsInMarketDto.ProducerTitle;
+                        GoodTitleLabel.Content = "Good: " + goodsInMarketDto.Good;
+                        ProducerTitleLabel.Content = "Producer: " + goodsInMarketDto.Producer;
                         WeightLabel.Content = "Unit weight: " + goodsInMarketDto.Weight;
                         PriceLabel.Content = "Price: " + goodsInMarketDto.Price.ToString();
                         AmountLabel.Content = "Remains in store: " + goodsInMarketDto.Amount.ToString();
@@ -262,10 +264,38 @@ namespace GroceryStore.Windows
             }
         }
 
+        private void formCheck()
+        {
+            List<string> lines = new List<string>() { $"Check#          {_currentSale.CheckNumber}", $"Employee:          {_curreEmployee.FullName}", $"Date:     {_currentSale.Date}" };
+            lines.Add("----------------------------------------");
+            foreach (var universalBasketDto in UniversalBasketDtos)
+            {
+                lines.Add("");
+                lines.Add($"{universalBasketDto.Title}     {universalBasketDto.Amount,0:0.00}     {universalBasketDto.Price}");
+                lines.Add("----------------------------------------");
+            }
+            lines.Add("----------------------------------------");
+            lines.Add($"Total:          {_currentSale.Total,0:C2}");
+
+            if (File.Exists($"Check#{_currentSale.CheckNumber}.txt"))
+            {
+                File.Delete($"Check#{_currentSale.CheckNumber}.txt");
+            }
+
+            using (StreamWriter file = File.CreateText($"Check#{_currentSale.CheckNumber}.txt"))
+            {
+                foreach (string line in lines)
+                {
+                    file.WriteLine(line.PadLeft(40));
+                }
+            }
+            Process.Start("notepad.exe", $"Check#{_currentSale.CheckNumber}.txt");
+        }
+
         private void DoneGoodBtn_OnClick(object sender, RoutedEventArgs e)
         {
-            _saleService.Refresh(_curerntSale);
-            _curerntSale = _saleService.GetId(_curerntSale.Id);
+            _saleService.Refresh(_currentSale);
+            _currentSale = _saleService.GetId(_currentSale.Id);
             foreach (var currentBasket in CurrentBaskets)
             {
                 var gim = _goodsInMarketService.GetId(currentBasket.IdGoodsInMarket ?? 0);
@@ -279,6 +309,8 @@ namespace GroceryStore.Windows
                 gimo.Amount -= currentBasketOwn.Amount;
                 _goodsInMarketOwnService.Update(gimo);
             }
+
+            formCheck();
 
             Close();
         }

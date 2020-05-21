@@ -28,6 +28,69 @@
     </Page.Resources>
 
     <Grid Background="Transparent">
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="500,50,800,0" Height="200">
+            <Border CornerRadius="20">
+                <Border.Background>
+                    <ImageBrush ImageSource="/src/category_grid_background.png" Stretch="None" />
+                </Border.Background>
+            </Border>
+            <StackPanel VerticalAlignment="Center" Margin="25, 0">
+                
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Market:</Label>
+                    <ComboBox x:Name="MarketFilterComboBox" ItemsSource="{Binding Path=MarketDtos}"
+                              DisplayMemberPath="FullAddress" SelectedValuePath="FullAddress"
+                               Margin="100,0,0,5"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="MarketFilterComboBox_OnSelectionChanged">
+                        <ComboBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </ComboBox.Effect>
+                    </ComboBox>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Category:</Label>
+                    <ComboBox x:Name="CategoryFilterComboBox" ItemsSource="{Binding Path=ProducerDtos}"
+                              DisplayMemberPath="Title" SelectedValuePath="Title"
+                              SelectedValue="{Binding Path=ProducerDTO}" Margin="100,0,40,5"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
+                        <ComboBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </ComboBox.Effect>
+                    </ComboBox>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearCategoryFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Producer:</Label>
+                    <ComboBox x:Name="ProducerFilterComboBox" ItemsSource="{Binding Path=ProducerDtos}"
+                              DisplayMemberPath="Title" SelectedValuePath="Title"
+                              SelectedValue="{Binding Path=ProducerDTO}" Margin="100,0,40,0"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="ProducerFilterComboBox_OnSelectionChanged">
+                        <ComboBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </ComboBox.Effect>
+                    </ComboBox>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearProducerFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+                
+            </StackPanel>
+        </Grid>
         <Grid Margin="0,300,50,0">
             <Border CornerRadius="0,20,0,0">
                 <Border.Background>
@@ -43,19 +106,19 @@
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
                           SelectionChanged="DataGrid_OnSelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Title" Binding="{Binding Path=GoodsTitle}" />
-                        <DataGridTextColumn Header="Producer" Binding="{Binding Path=ProducerTitle}" />
                         <DataGridTextColumn Header="Product Code" Binding="{Binding Path=ProductCode}" />
-                        <DataGridTextColumn Header="Price" Binding="{Binding Path=Price}" />
+                        <DataGridTextColumn Header="Producer" Binding="{Binding Path=Producer}" />
+                        <DataGridTextColumn Header="Category" Binding="{Binding Path=Category}" />
+                        <DataGridTextColumn Header="Title" Binding="{Binding Path=Good}" />
                         <DataGridTextColumn Header="Weight" Binding="{Binding Path=Weight}" />
-                        <DataGridTextColumn Header="Market" Binding="{Binding Path=FullMarketAddress}" />
+                        <DataGridTextColumn Header="Price" Binding="{Binding Path=Price}" />
                         <DataGridTextColumn Header="Amount" Binding="{Binding Path=Amount}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
             <Grid x:Name="AppGridMenu" VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="800">
 
-                <Grid VerticalAlignment="top" HorizontalAlignment="Stretch" Width="750" Margin="0,20,0,0">
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="750">
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <StackPanel Margin="10,0,10,10" VerticalAlignment="Top">
                             <Label x:Name="GoodTitleLabel" Foreground="#FF393D47" FontSize="14" VerticalAlignment="Top"
@@ -119,64 +182,6 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-                <StackPanel VerticalAlignment="Bottom" Margin="25, 0,25,20">
-                    <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Producer</Label>
-
-                    <Grid HorizontalAlignment="Stretch">
-                        <ComboBox x:Name="ProducerFilterComboBox" ItemsSource="{Binding Path=ProducerDtos}"
-                              DisplayMemberPath="Title" SelectedValuePath="Title"
-                              SelectedValue="{Binding Path=ProducerDTO}" Margin="0,0,40,0"
-                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
-                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="ProducerFilterComboBox_OnSelectionChanged">
-                            <ComboBox.Effect>
-                                <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                              BlurRadius="20" />
-                            </ComboBox.Effect>
-                        </ComboBox>
-                        <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
-                            BorderBrush="Transparent" Padding="0" Click="ClearProducerFilterBtn_OnClick">
-                            <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
-                        </Button>
-                    </Grid>
-                    <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Market Address</Label>
-                    <Grid HorizontalAlignment="Stretch">
-                        <ComboBox x:Name="MarketFilterComboBox" ItemsSource="{Binding Path=MarketDtos}"
-                              DisplayMemberPath="FullAddress" SelectedValuePath="FullAddress"
-                              SelectedValue="{Binding Path=MarketDTO}" Margin="0,0,40,0"
-                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
-                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="MarketFilterComboBox_OnSelectionChanged">
-                            <ComboBox.Effect>
-                                <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                              BlurRadius="20" />
-                            </ComboBox.Effect>
-                        </ComboBox>
-                        <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
-                            BorderBrush="Transparent" Padding="0" Click="ClearMarketFilterBtn_OnClick">
-                            <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
-                        </Button>
-                    </Grid>
-                    <!--<Button x:Name="ClearFilterBtn"
-                            Margin="0,10,0,0"
-                            HorizontalAlignment="Stretch"
-                            Height="40"
-                            BorderBrush="{x:Null}"
-                            Padding="0"
-                            Content="Clear Filter"
-                            Background="#FF393D47"
-                            Foreground="#FFFFFFFF"
-                            FontFamily="Comic Sans MS"
-                            Click="ClearFilterBtn_OnClick">
-                        <Button.Effect>
-                            <DropShadowEffect ShadowDepth="4"
-                                              Direction="-90"
-                                              Color="Black"
-                                              Opacity="0.5"
-                                              BlurRadius="20" />
-                        </Button.Effect>
-                    </Button>-->
-                </StackPanel>
             </Grid>
         </Grid>
     </Grid>

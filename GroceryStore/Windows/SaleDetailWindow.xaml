@@ -42,9 +42,9 @@
             </DataGrid>
         </StackPanel>
 
-        <Button x:Name="CloseBtn" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="200"
-                Height="40" BorderBrush="{x:Null}" Padding="0" Content="Close" Background="#FFD18143"
-                Foreground="#FFFFFFFF" FontFamily="Comic Sans MS" Click="BtnClose">
+        <Button x:Name="CheckBtn" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="200"
+                Height="40" BorderBrush="{x:Null}" Padding="0" Content="Print Check" Background="#FFD18143"
+                Foreground="#FFFFFFFF" FontFamily="Comic Sans MS" Click="CheckBtn_OnClick">
             <Button.Effect>
                 <DropShadowEffect ShadowDepth="4"
                                   Direction="-90"

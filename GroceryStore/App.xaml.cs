@@ -95,6 +95,7 @@ namespace GroceryStore
             services.AddTransient<DeliveryOrderWindow>();
             services.AddTransient<DeliveryOrderUpdateWindow>();
             services.AddTransient<DeliveryOrderDetailWindow>();
+            services.AddTransient<DeliveryDetailWindow>();
 
             services.AddTransient<CategoryPage>();
             services.AddTransient<BasketPage>();

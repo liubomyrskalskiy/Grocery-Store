@@ -41,23 +41,26 @@ namespace GroceryStore.Views
             _settings = settings.Value;
 
             InitializeComponent();
-
-
         }
 
         private void UpdateDataGrid()
         {
             GoodsDtos = _mapper.Map<List<Goods>, List<GoodsDTO>>(_goodsService.GetAll());
             FilteredGoodsDtos = GoodsDtos;
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                var tempList = FilteredGoodsDtos.Where(item => item.Title.Contains(TitleFilterTextBox.Text)).ToList();
+                FilteredGoodsDtos = tempList;
+            }
             if (ProducerFilterComboBox.SelectedItem != null)
             {
-                ProducerDTO tempProducer = (ProducerDTO)ProducerFilterComboBox.SelectedItem;
+                var tempProducer = (ProducerDTO)ProducerFilterComboBox.SelectedItem;
                 var tempList = FilteredGoodsDtos.Where(item => item.ProducerTitle == tempProducer.Title).ToList();
                 FilteredGoodsDtos = tempList;
             }
             if (CategoryFilterComboBox.SelectedItem != null)
             {
-                CategoryDTO tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
+                var tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
                 var tempList = FilteredGoodsDtos.Where(item => item.CategoryTitle == tempCategoty.Title).ToList();
                 FilteredGoodsDtos = tempList;
             }
@@ -233,6 +236,26 @@ namespace GroceryStore.Views
         private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
         {
             CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void SearchTitleBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
+                TitleFilterTextBox.Focus();
+                return;
+            }
+        }
+
+        private void ClearTitleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            TitleFilterTextBox.Text = "";
             UpdateDataGrid();
         }
     }

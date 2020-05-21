@@ -28,6 +28,85 @@
     </Page.Resources>
 
     <Grid Background="Transparent">
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="500,50,850,0" Height="200">
+            <Border CornerRadius="20">
+                <Border.Background>
+                    <ImageBrush ImageSource="/src/category_grid_background.png" Stretch="None" />
+                </Border.Background>
+            </Border>
+            <StackPanel VerticalAlignment="Center" Margin="25, 0">
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Surname:</Label>
+                    <TextBox x:Name="SurnameFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1" Margin="85,0,80,5"
+                             TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                             SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                             BorderThickness="2" Background="#26FFFFFF" TextChanged="SurnameFilterTextBox_OnTextChanged">
+                        <TextBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </TextBox.Effect>
+                    </TextBox>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearSurnameFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="SearchSurnameBtn_OnClick" Margin="0,0,40,0">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Phone:</Label>
+                    <TextBox x:Name="PhoneFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1" Margin="85,0,80,5"
+                             TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                             SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                             BorderThickness="2" Background="#26FFFFFF" TextChanged="PhoneFilterTextBox_OnTextChanged">
+                        <TextBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </TextBox.Effect>
+                    </TextBox>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearPhoneFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="SearchPhoneBtn_OnClick" Margin="0,0,40,0">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
+
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">City:</Label>
+
+                    <ComboBox x:Name="CityFilterComboBox" ItemsSource="{Binding Path=CityDtos}"
+                              HorizontalAlignment="Stretch"
+                              DisplayMemberPath="Title" SelectedValuePath="Title"
+                              SelectedValue="{Binding Path=CityDTO}" Margin="85,0,40,0"
+                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CityFilterComboBox_OnSelectionChanged">
+                        <ComboBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </ComboBox.Effect>
+                    </ComboBox>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+            </StackPanel>
+        </Grid>
         <Grid Margin="0,300,50,0">
             <Border CornerRadius="0,20,0,0">
                 <Border.Background>
@@ -181,52 +260,6 @@
                         </Button>
                     </StackPanel>
                 </Grid>
-
-                <StackPanel VerticalAlignment="Bottom" Margin="25,0,25,20" HorizontalAlignment="Stretch">
-                    <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">City</Label>
-                    
-                    <Grid HorizontalAlignment="Stretch">
-
-                        <ComboBox x:Name="CityFilterComboBox" ItemsSource="{Binding Path=CityDtos}"
-                                  HorizontalAlignment="Stretch" Margin="0,0,40,0"
-                                  DisplayMemberPath="Title" SelectedValuePath="Title"
-                                  SelectedValue="{Binding Path=CityDTO}"
-                                  Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
-                                  FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                                  VerticalContentAlignment="Stretch" BorderThickness="2" SelectionChanged="CityFilterComboBox_OnSelectionChanged">
-                            <ComboBox.Effect>
-                                <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                  BlurRadius="20" />
-                            </ComboBox.Effect>
-                        </ComboBox>
-
-                        <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
-                                BorderBrush="Transparent" Padding="0" Click="ClearFilterBtn_OnClick">
-                            <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
-                        </Button>
-                    </Grid>
-                    
-
-                    <!--<Button x:Name="ClearFilterBtn"
-                            Margin="0,10,0,0"
-                            HorizontalAlignment="Stretch"
-                            Height="40"
-                            BorderBrush="{x:Null}"
-                            Padding="0"
-                            Content="Clear Filter"
-                            Background="#FF393D47"
-                            Foreground="#FFFFFFFF"
-                            FontFamily="Comic Sans MS"
-                            Click="ClearFilterBtn_OnClick">
-                        <Button.Effect>
-                            <DropShadowEffect ShadowDepth="4"
-                                              Direction="-90"
-                                              Color="Black"
-                                              Opacity="0.5"
-                                              BlurRadius="20" />
-                        </Button.Effect>
-                    </Button>-->
-                </StackPanel>
             </Grid>
         </Grid>
     </Grid>

@@ -12,7 +12,7 @@
             <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="Padding" Value="10, 0, 20, 0" />
+            <Setter Property="Padding" Value="10, 0" />
             <Setter Property='HorizontalContentAlignment' Value="Left" />
         </Style>
 
@@ -50,7 +50,7 @@
                         <DataGridTextColumn Header="Best Before" Binding="{Binding Path=BestBefore}" />
                         <DataGridTextColumn Header="Amount" Binding="{Binding Path=Amount}" />
                         <DataGridTextColumn Header="Total Cost" Binding="{Binding Path=StringTotalCost}" />
-                        <DataGridTextColumn Header="Login" Binding="{Binding Path=Login}" />
+                        <DataGridTextColumn Header="Employee" Binding="{Binding Path=FullName}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

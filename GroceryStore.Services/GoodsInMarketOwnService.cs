@@ -22,6 +22,7 @@ namespace GroceryStore.Services
                 .Include(gimo => gimo.IdMarketNavigation)
                 .Include(gimo => gimo.IdMarketNavigation.IdCityNavigation)
                 .Include(gimo => gimo.IdProductionNavigation.IdGoodsOwnNavigation)
+                .Include(gimo => gimo.IdProductionNavigation.IdGoodsOwnNavigation.IdCategoryNavigation)
                 .ToList();
         }
 

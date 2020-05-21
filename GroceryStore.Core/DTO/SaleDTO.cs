@@ -10,5 +10,6 @@ namespace GroceryStore.Core.DTO
         public string CheckNumber { get; set; }
         public string AccountNumber { get; set; }
         public string Login { get; set; }
+        public string FullName { get; set; }
     }
 }

@@ -164,7 +164,7 @@ namespace GroceryStore.Views
         private async void DataGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            await _navigationService.ShowDialogAsync<SaleDetailWindow>(SaleDtos[DataGrid.SelectedIndex].CheckNumber);
+            await _navigationService.ShowDialogAsync<SaleDetailWindow>(SaleDtos[DataGrid.SelectedIndex]);
         }
     }
 }

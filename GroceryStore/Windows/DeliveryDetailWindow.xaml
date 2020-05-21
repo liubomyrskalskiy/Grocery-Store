@@ -1,0 +1,89 @@
+﻿<Window x:Class="GroceryStore.Windows.DeliveryDetailWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GroceryStore.Windows"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" Height="720" Width="900" ResizeMode="NoResize" WindowStartupLocation="CenterScreen"
+        WindowStyle="None">
+
+    <Window.Resources>
+        <Style x:Key="ColumnHeaderStyle1" TargetType="DataGridColumnHeader">
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="Padding" Value="10, 0" />
+            <Setter Property='HorizontalContentAlignment' Value="Left" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Border BorderBrush="#FF393D47">
+            <Border.Background>
+                <ImageBrush ImageSource="/src/background.png" />
+            </Border.Background>
+        </Border>
+        <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" Margin="0,80,0,0" Background="Transparent">
+            <DataGrid Margin="0, 0, 0, 50" VerticalAlignment="Stretch" Name="DataGrid" FontFamily="Consolas"
+                      AutoGenerateColumns="False" ItemsSource="{Binding Path=CurrentConsignmentDtos}"
+                      HorizontalGridLinesBrush="White" Foreground="White" Background="Transparent"
+                      CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
+                      ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True" MouseDoubleClick="DataGrid_OnMouseDoubleClick">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Code" Binding="{Binding Path=ProductCode}" />
+                    <DataGridTextColumn Header="Producer" Binding="{Binding Path=ProducerTitle}" />
+                    <DataGridTextColumn Header="Title" Binding="{Binding Path=GoodTitle}" />
+                    <DataGridTextColumn Header="Consignment" Binding="{Binding Path=ConsignmentNumber}" />
+                    <DataGridTextColumn Header="Ordered" Binding="{Binding Path=StringOrderAmount}" />
+                    <DataGridTextColumn Header="Price" Binding="{Binding Path=StringIncomePrice}" />
+                    <DataGridTextColumn Header="Manufactured" Binding="{Binding Path=ManufactureDate}" />
+                    <DataGridTextColumn Header="Best Before" Binding="{Binding Path=BestBefore}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+
+        <Grid x:Name="SameMenu" VerticalAlignment="Top" HorizontalAlignment="Center" Width="450" Height="75"
+              Margin="0,0,0,0">
+            <Border CornerRadius="0,0,20,20">
+                <Border.Background>
+                    <ImageBrush ImageSource="/src/category_grid_background.png" Stretch="None" />
+                </Border.Background>
+            </Border>
+            <Grid HorizontalAlignment="Stretch">
+                <StackPanel Margin="10,0" VerticalAlignment="Center">
+                    <Label x:Name="DeliveryLabel" Foreground="White" FontSize="20" VerticalAlignment="Top"
+                       FontFamily="Comic Sans MS" Content="Order number: " HorizontalAlignment="Left" />
+                    <Label x:Name="DateLabel" Foreground="White" FontSize="15" VerticalAlignment="Top"
+                       FontFamily="Comic Sans MS" Content="Order Date: " HorizontalAlignment="Left" />
+                </StackPanel>
+
+                <StackPanel Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <Label Foreground="White" FontSize="20" VerticalAlignment="Top"
+                           FontFamily="Comic Sans MS" Content="Total: " HorizontalAlignment="Left" />
+                    <Label x:Name="TotalLabel" Foreground="White" FontSize="15" VerticalAlignment="Top"
+                           FontFamily="Comic Sans MS" HorizontalAlignment="Left" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <Button x:Name="DoneGoodBtn" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Width="200" Height="40" BorderBrush="{x:Null}" Padding="0" Content="Close" Background="#FFD18143"
+                Foreground="#FFFFFFFF" FontFamily="Comic Sans MS" Click="BtnClose">
+            <Button.Effect>
+                <DropShadowEffect ShadowDepth="4"
+                                  Direction="-90"
+                                  Color="Black"
+                                  Opacity="0.5"
+                                  BlurRadius="20" />
+            </Button.Effect>
+        </Button>
+
+        <Button VerticalAlignment="Top" HorizontalAlignment="Right" Width="40" Height="40" Background="{x:Null}"
+                BorderBrush="{x:Null}" Padding="0" Click="BtnClose">
+            <materialDesign:PackIcon Foreground="#ffffff" Kind="Close" Width="30" Height="30" />
+        </Button>
+    </Grid>
+</Window>

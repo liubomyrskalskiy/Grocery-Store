@@ -176,6 +176,7 @@ namespace GroceryStore.Windows
                 deliveryContents.IdConsignment = currentConsignment.Id;
 
                 _deliveryContentsService.Create(deliveryContents);
+                DeliveryContentses = _deliveryContentsService.GetAll();
             }
             Close();
         }

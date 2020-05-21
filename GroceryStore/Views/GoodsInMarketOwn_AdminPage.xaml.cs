@@ -33,6 +33,7 @@ namespace GroceryStore.Views
         private readonly IGoodsOwnService _goodsOwnService;
         private readonly IBasketOwnService _basketOwnService;
         private readonly IGoodsWriteOffOwnService _goodsWriteOffOwnService;
+        private readonly ICategoryService _categoryService;
         private readonly AppSettings _settings;
         private readonly IMapper _mapper;
         private EmployeeDTO _currentEmployee;
@@ -41,10 +42,12 @@ namespace GroceryStore.Views
         public List<GoodsInMarketOwnDTO> FilteredGoodsInMarketOwnDtos { get; set; }
         public List<MarketDTO> MarketDtos { get; set; }
         public List<ProductionDTO> ProductionDtos { get; set; }
+        public List<ProductionDTO> FilterProductionDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
 
         public GoodsInMarketOwn_AdminPage(IGoodsInMarketOwnService goodsInMarketOwnService, IMarketService marketService,
             IProductionService productionService, IOptions<AppSettings> settings, IMapper mapper,
-            IGoodsOwnService goodsOwnService, IBasketOwnService basketOwnService, IGoodsWriteOffOwnService goodsWriteOffOwnService)
+            IGoodsOwnService goodsOwnService, IBasketOwnService basketOwnService, IGoodsWriteOffOwnService goodsWriteOffOwnService, ICategoryService categoryService)
         {
             _goodsInMarketOwnService = goodsInMarketOwnService;
             _marketService = marketService;
@@ -54,6 +57,7 @@ namespace GroceryStore.Views
             _goodsOwnService = goodsOwnService;
             _basketOwnService = basketOwnService;
             _goodsWriteOffOwnService = goodsWriteOffOwnService;
+            _categoryService = categoryService;
 
             InitializeComponent();
 
@@ -71,8 +75,22 @@ namespace GroceryStore.Views
             if (MarketFilterComboBox.SelectedItem != null)
             {
                 var tempMarket = (MarketDTO)MarketFilterComboBox.SelectedItem;
-                FilteredGoodsInMarketOwnDtos = GoodsInMarketOwnDtos
-                    .Where(item => item.FullAddress == tempMarket.FullAddress).ToList();
+                var tempList = FilteredGoodsInMarketOwnDtos.Where(item => item.FullAddress == tempMarket.FullAddress).ToList();
+                FilteredGoodsInMarketOwnDtos = tempList;
+            }
+
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                var tempCategory = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
+                var tempList = FilteredGoodsInMarketOwnDtos.Where(item => item.Category == tempCategory.Title).ToList();
+                FilteredGoodsInMarketOwnDtos = tempList;
+            }
+
+            if (ManufactureDateFilterComboBox.SelectedItem != null)
+            {
+                var tempProduction = (ProductionDTO)ManufactureDateFilterComboBox.SelectedItem;
+                var tempList = FilteredGoodsInMarketOwnDtos.Where(item => item.ManufactureDate == tempProduction.ManufactureDate).ToList();
+                FilteredGoodsInMarketOwnDtos = tempList;
             }
 
             DataGrid.ItemsSource = FilteredGoodsInMarketOwnDtos;
@@ -101,7 +119,11 @@ namespace GroceryStore.Views
             _currentEmployee = (EmployeeDTO)parameter;
             MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
             MarketFilterComboBox.ItemsSource = MarketDtos;
-
+            MarketFilterComboBox.SelectedItem = MarketDtos[0];
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
+            FilterProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
+            ManufactureDateFilterComboBox.ItemsSource = FilterProductionDtos.GroupBy(item=>item.ManufactureDate).Select(item => item.First());
             UpdateDataGrid();
             return Task.CompletedTask;
         }
@@ -112,7 +134,7 @@ namespace GroceryStore.Views
             {
                 AmountTextBox.Text = GoodsInMarketOwnDtos[DataGrid.SelectedIndex].Amount.ToString();
                 ProductionComboBox.SelectedItem = ProductionDtos.FirstOrDefault(item =>
-                    item.ProductionCode == GoodsInMarketOwnDtos[DataGrid.SelectedIndex].ProductionCode);
+                    item.ProductionCode == FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].ProductionCode);
             }
         }
 
@@ -233,9 +255,31 @@ namespace GroceryStore.Views
             }
         }
 
-        private void ClearFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            MarketFilterComboBox.SelectedItem = null;
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                UpdateDataGrid();
+            }
+        }
+
+        private void ManufactureDateFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ManufactureDateFilterComboBox.SelectedItem != null)
+            {
+                UpdateDataGrid();
+            }
+        }
+
+        private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void ClearManufactureDateFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            ManufactureDateFilterComboBox.SelectedItem = null;
             UpdateDataGrid();
         }
     }

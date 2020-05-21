@@ -21,6 +21,8 @@ namespace GroceryStore.Services
                 .Include(item => item.IdProductionNavigation)
                 .Include(item => item.IdGoodsInMarketNavigation)
                 .Include(item => item.IdGoodsInMarketNavigation.IdGoodsNavigation)
+                .Include(item => item.IdGoodsInMarketNavigation.IdGoodsNavigation.IdCategoryNavigation)
+                .Include(item => item.IdGoodsInMarketNavigation.IdGoodsNavigation.IdProducerNavigation)
                 .ToList();
         }
 
