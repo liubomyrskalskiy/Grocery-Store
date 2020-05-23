@@ -40,19 +40,14 @@ namespace GroceryStore.DAL.Repositories.Base
         public TEntity GetById(object id)
         {
             return _context.Set<TEntity>().Find(id);
-            //return _context.Set<TEntity>().Find(id);
         }
 
         public TEntity Update(TEntity entity)
         {
-            //
             var local = _context.Set<TEntity>().Local.FirstOrDefault(entry => entry.Id.Equals(entity.Id));
-            if(local != null)
-            {
-                _context.Entry(local).State = EntityState.Detached;
-            }
+            if (local != null) _context.Entry(local).State = EntityState.Detached;
+
             _context.Entry(entity).State = EntityState.Modified;
-            //_context.Set<TEntity>().Update(entity);
             _context.SaveChanges();
             return _context.Set<TEntity>().Find(entity.Id);
         }

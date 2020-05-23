@@ -1,6 +1,6 @@
 ﻿namespace GroceryStore.Core.Models
 {
-    public partial class VProductProducersv2
+    public class VProductProducersv2
     {
         public string TitleТовару { get; set; }
         public string ProductCode { get; set; }

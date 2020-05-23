@@ -17,7 +17,11 @@ namespace GroceryStore.Services
 
         public List<Consignment> GetAll()
         {
-            return unitOfWork.ConsignmentRepository.GetAll().Include(goods => goods.IdGoodsNavigation).ToList();
+            return unitOfWork.ConsignmentRepository.GetAll()
+                .Include(goods => goods.IdGoodsNavigation)
+                .Include(goods => goods.IdGoodsNavigation.IdCategoryNavigation)
+                .Include(goods => goods.IdGoodsNavigation.IdProducerNavigation)
+                .ToList();
         }
 
         public Consignment GetId(int id)

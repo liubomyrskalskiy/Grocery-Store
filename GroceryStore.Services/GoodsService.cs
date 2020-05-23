@@ -17,7 +17,8 @@ namespace GroceryStore.Services
 
         public List<Goods> GetAll()
         {
-            return unitOfWork.GoodsRepository.GetAll().Include(category => category.IdCategoryNavigation).Include(producer => producer.IdProducerNavigation).ToList();
+            return unitOfWork.GoodsRepository.GetAll().Include(category => category.IdCategoryNavigation)
+                .Include(producer => producer.IdProducerNavigation).ToList();
         }
 
         public Goods GetId(int id)

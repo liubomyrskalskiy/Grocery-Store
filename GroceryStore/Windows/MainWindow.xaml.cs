@@ -16,12 +16,10 @@ namespace GroceryStore.Windows
     public partial class MainWindow : Window
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IMapper _mapper;
         private readonly SimpleNavigationService _navigationService;
         private readonly AppSettings _settings;
-        private readonly IMapper _mapper;
         private readonly Storyboard sb;
-
-        public List<EmployeeDTO> EmployeeDtos { get; set; }
 
         private EmployeeDTO _currentEmployee;
 
@@ -38,11 +36,13 @@ namespace GroceryStore.Windows
 
             InitializeComponent();
 
-            sb = (FindResource("LogInMenuClose") as Storyboard);
+            sb = FindResource("LogInMenuClose") as Storyboard;
             LogOutBtn.Visibility = Visibility.Collapsed;
 
             HideMenu();
         }
+
+        public List<EmployeeDTO> EmployeeDtos { get; set; }
 
         private void BtnClose(object sender, RoutedEventArgs e)
         {
@@ -269,7 +269,7 @@ namespace GroceryStore.Windows
 
             NameLabel.Content = _currentEmployee.FullName;
             RoleLabel.Content = _currentEmployee.RoleTitle;
-            MarketLabel.Content = "Market: "+_currentEmployee.FullMarketAddress;
+            MarketLabel.Content = "Market: " + _currentEmployee.FullMarketAddress;
             MarketLabel.Visibility = Visibility.Visible;
             LoginTextBox.Text = "";
             PasswordTextBox.Password = "";

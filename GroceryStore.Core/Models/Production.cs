@@ -4,7 +4,7 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class Production : IBaseEntity
+    public class Production : IBaseEntity
     {
         public Production()
         {
@@ -13,7 +13,6 @@ namespace GroceryStore.Core.Models
             ProductionContents = new HashSet<ProductionContents>();
         }
 
-        public int Id { get; set; }
         public int? IdGoodsOwn { get; set; }
         public string ProductionCode { get; set; }
         public DateTime? ManufactureDate { get; set; }
@@ -27,5 +26,7 @@ namespace GroceryStore.Core.Models
         public virtual ICollection<GoodsInMarketOwn> GoodsInMarketOwn { get; set; }
         public virtual ICollection<GoodsWriteOffOwn> GoodsWriteOffOwn { get; set; }
         public virtual ICollection<ProductionContents> ProductionContents { get; set; }
+
+        public int Id { get; set; }
     }
 }

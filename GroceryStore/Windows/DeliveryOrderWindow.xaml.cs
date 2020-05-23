@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AutoMapper;
 using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
@@ -22,25 +15,22 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Windows
 {
     /// <summary>
-    /// Interaction logic for DeliveryOrderWindow.xaml
+    ///     Interaction logic for DeliveryOrderWindow.xaml
     /// </summary>
     public partial class DeliveryOrderWindow : Window, IActivable
     {
         private readonly IConsignmentService _consignmentService;
         private readonly IDeliveryContentsService _deliveryContentsService;
-        private readonly IGoodsService _goodsService;
         private readonly IDeliveryService _deliveryService;
-        private readonly AppSettings _settings;
+        private readonly IGoodsService _goodsService;
         private readonly IMapper _mapper;
+        private readonly AppSettings _settings;
 
         private Delivery _currentDelivery;
 
-        public List<DeliveryContents> DeliveryContentses { get; set; }
-        public List<ConsignmentDTO> ConsignmentDtos { get; set; }
-        public List<Consignment> CurrentConsignments { get; set; }
-        public List<ConsignmentDTO> CurrentConsignmentDtos { get; set; }
-
-        public DeliveryOrderWindow(IConsignmentService consignmentService, IDeliveryContentsService deliveryContentsService, IMapper mapper, IOptions<AppSettings> settings, IGoodsService goodsService, IDeliveryService deliveryService)
+        public DeliveryOrderWindow(IConsignmentService consignmentService,
+            IDeliveryContentsService deliveryContentsService, IMapper mapper, IOptions<AppSettings> settings,
+            IGoodsService goodsService, IDeliveryService deliveryService)
         {
             _consignmentService = consignmentService;
             _deliveryContentsService = deliveryContentsService;
@@ -52,12 +42,17 @@ namespace GroceryStore.Windows
             InitializeComponent();
         }
 
+        public List<DeliveryContents> DeliveryContentses { get; set; }
+        public List<ConsignmentDTO> ConsignmentDtos { get; set; }
+        public List<Consignment> CurrentConsignments { get; set; }
+        public List<ConsignmentDTO> CurrentConsignmentDtos { get; set; }
+
         public Task ActivateAsync(object parameter)
         {
             _currentDelivery = (Delivery) parameter;
             DeliveryContentses = _deliveryContentsService.GetAll();
-            DeliveryLabel.Content = "Order number: "+_currentDelivery.DeliveryNumber;
-            DateLabel.Content = "Order Date: "+_currentDelivery.DeliveryDate;
+            DeliveryLabel.Content = "Order number: " + _currentDelivery.DeliveryNumber;
+            DateLabel.Content = "Order Date: " + _currentDelivery.DeliveryDate;
             CurrentConsignments = new List<Consignment>();
 
             UpdateDataGrid();
@@ -88,7 +83,8 @@ namespace GroceryStore.Windows
                 return false;
             }
 
-            if (!Regex.Match(IncomePriceTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success || IncomePriceTextBox.Text == "")
+            if (!Regex.Match(IncomePriceTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success ||
+                IncomePriceTextBox.Text == "")
             {
                 MessageBox.Show("Invalid price! Check the data you've entered!");
                 IncomePriceTextBox.Focus();
@@ -103,7 +99,6 @@ namespace GroceryStore.Windows
         {
             if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
-                return;
             }
             else
             {
@@ -117,7 +112,6 @@ namespace GroceryStore.Windows
                     ProducerTitleLabel.Content = "";
                     WeightLabel.Content = "";
                     PriceLabel.Content = "";
-                    return;
                 }
                 else
                 {
@@ -127,14 +121,13 @@ namespace GroceryStore.Windows
                     WeightLabel.Content = "Unit weight: " + goodsDto.Weight;
                     PriceLabel.Content = "Price: " + $"{goodsDto.Price,0:C2}";
                 }
-
             }
         }
 
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Consignment consignment = new Consignment();
+            var consignment = new Consignment();
             Goods tempGoods;
             consignment.Id = ConsignmentDtos[^1]?.Id + 1 ?? 1;
             consignment.ConsignmentNumber = "";
@@ -145,9 +138,9 @@ namespace GroceryStore.Windows
                 MessageBox.Show("There is no such product in database!");
                 return;
             }
-            else
-                consignment.IdGoods = tempGoods.Id;
-                
+
+            consignment.IdGoods = tempGoods.Id;
+
             consignment.IncomePrice = Convert.ToDouble(IncomePriceTextBox.Text);
 
             _consignmentService.Create(consignment);
@@ -170,23 +163,24 @@ namespace GroceryStore.Windows
         {
             foreach (var currentConsignment in CurrentConsignments)
             {
-                DeliveryContents deliveryContents = new DeliveryContents();
-                deliveryContents.Id = DeliveryContentses[^1]?.Id + 1 ?? 1;
-                deliveryContents.IdDelivery = _currentDelivery.Id;
-                deliveryContents.IdConsignment = currentConsignment.Id;
+                var deliveryContents = new DeliveryContents
+                {
+                    Id = DeliveryContentses[^1]?.Id + 1 ?? 1,
+                    IdDelivery = _currentDelivery.Id,
+                    IdConsignment = currentConsignment.Id
+                };
 
                 _deliveryContentsService.Create(deliveryContents);
                 DeliveryContentses = _deliveryContentsService.GetAll();
             }
+
             Close();
         }
 
         private void BtnClose(object sender, RoutedEventArgs e)
         {
-            foreach (var currentConsignment in CurrentConsignments)
-            {
-                _consignmentService.Delete(currentConsignment.Id);
-            }
+            foreach (var currentConsignment in CurrentConsignments) _consignmentService.Delete(currentConsignment.Id);
+
             _deliveryService.Delete(_currentDelivery.Id);
             Close();
         }

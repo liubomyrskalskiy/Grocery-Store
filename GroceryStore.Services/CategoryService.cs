@@ -16,7 +16,7 @@ namespace GroceryStore.Services
 
         public List<Category> GetAll()
         {
-            List<Category> categories = unitOfWork.CategoryRepository.GetAll().ToList();
+            var categories = unitOfWork.CategoryRepository.GetAll().ToList();
             unitOfWork.SaveChanges();
             return categories;
         }

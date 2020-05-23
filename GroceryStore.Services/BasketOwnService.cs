@@ -21,7 +21,9 @@ namespace GroceryStore.Services
                 .Include(basketOwn => basketOwn.IdSaleNavigation)
                 .Include(basketOwn => basketOwn.IdGoodsInMarketOwnNavigation)
                 .Include(basketOwn => basketOwn.IdGoodsInMarketOwnNavigation.IdProductionNavigation)
-                .Include(basketOwn => basketOwn.IdGoodsInMarketOwnNavigation.IdProductionNavigation.IdGoodsOwnNavigation).ToList();
+                .Include(
+                    basketOwn => basketOwn.IdGoodsInMarketOwnNavigation.IdProductionNavigation.IdGoodsOwnNavigation)
+                .ToList();
         }
 
         public BasketOwn GetId(int id)

@@ -18,25 +18,25 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for ProductionPage.xaml
+    ///     Interaction logic for ProductionPage.xaml
     /// </summary>
     public partial class ProductionPage : Page, IActivable
     {
-        private readonly IProductionService _productionService;
+        private readonly ICategoryService _categoryService;
         private readonly IEmployeeService _employeeService;
         private readonly IGoodsOwnService _goodsOwnService;
-        private readonly IProductionContentsService _productionContentsService;
-        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
         private readonly SimpleNavigationService _navigationService;
+        private readonly IProductionContentsService _productionContentsService;
+        private readonly IProductionService _productionService;
+        private readonly AppSettings _settings;
         private EmployeeDTO _currentEmployee;
         private ProductionNTO _productionNto;
 
-        private List<ProductionDTO> ProductionDtos { get; set; }
-
         public ProductionPage(IProductionService productionService, IEmployeeService employeeService,
             IGoodsOwnService goodsOwnService, IOptions<AppSettings> settings, IMapper mapper,
-            SimpleNavigationService navigationService, IProductionContentsService productionContentsService)
+            SimpleNavigationService navigationService, IProductionContentsService productionContentsService,
+            ICategoryService categoryService)
         {
             _productionService = productionService;
             _employeeService = employeeService;
@@ -45,16 +45,67 @@ namespace GroceryStore.Views
             _navigationService = navigationService;
             _productionContentsService = productionContentsService;
             _settings = settings.Value;
+            _categoryService = categoryService;
             InitializeComponent();
 
             UpdateDataGrid();
+        }
+
+        private List<ProductionDTO> ProductionDtos { get; set; }
+        private List<ProductionDTO> FilteredProductionDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            _currentEmployee = (EmployeeDTO) parameter;
+            if (_currentEmployee.RoleTitle.Equals("Адміністратор"))
+                DeleteBtn.IsEnabled = true;
+            else
+                DeleteBtn.IsEnabled = false;
+
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
+
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
         {
             ProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
 
-            DataGrid.ItemsSource = ProductionDtos;
+            FilteredProductionDtos = ProductionDtos;
+
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                var tempList = FilteredProductionDtos.Where(item => item.Title.Contains(TitleFilterTextBox.Text))
+                    .ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            if (DateFromFilterTextBox.Text != "")
+            {
+                var tempDate = DateTime.Parse(DateFromFilterTextBox.Text);
+                var tempList = FilteredProductionDtos
+                    .Where(item => DateTime.Compare(item.ManufactureDate ?? default, tempDate) >= 0).ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            if (DateToFilterTextBox.Text != "")
+            {
+                var tempDate = DateTime.Parse(DateToFilterTextBox.Text);
+                var tempList = FilteredProductionDtos
+                    .Where(item => DateTime.Compare(item.ManufactureDate ?? default, tempDate) <= 0).ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                var tempCategoty = (CategoryDTO) CategoryFilterComboBox.SelectedItem;
+                var tempList = FilteredProductionDtos.Where(item => item.Category == tempCategoty.Title).ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            DataGrid.ItemsSource = FilteredProductionDtos;
         }
 
         private bool ValidateForm()
@@ -76,27 +127,12 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            _currentEmployee = (EmployeeDTO) parameter;
-            if (_currentEmployee.RoleTitle.Equals("Адміністратор"))
-            {
-                DeleteBtn.IsEnabled = true;
-            }
-            else
-            {
-                DeleteBtn.IsEnabled = false;
-            }
-
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                ProductCodeTextBox.Text = ProductionDtos[DataGrid.SelectedIndex].ProductCode;
-                AmountTextBox.Text = ProductionDtos[DataGrid.SelectedIndex].Amount.ToString();
+                ProductCodeTextBox.Text = FilteredProductionDtos[DataGrid.SelectedIndex].ProductCode;
+                AmountTextBox.Text = FilteredProductionDtos[DataGrid.SelectedIndex].Amount.ToString();
             }
         }
 
@@ -127,7 +163,7 @@ namespace GroceryStore.Views
         private async void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Production production = new Production();
+            var production = new Production();
             GoodsOwn tempGoodsOwn;
             production.Id = ProductionDtos[^1]?.Id + 1 ?? 1;
             production.ProductionCode = production.Id.ToString("D10");
@@ -138,8 +174,8 @@ namespace GroceryStore.Views
                 MessageBox.Show("There is no such own product in database!");
                 return;
             }
-            else
-                production.IdGoodsOwn = tempGoodsOwn.Id;
+
+            production.IdGoodsOwn = tempGoodsOwn.Id;
 
             production.ManufactureDate = DateTime.Now;
             production.BestBefore = DateTime.Now.AddDays(1);
@@ -158,20 +194,88 @@ namespace GroceryStore.Views
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            List<ProductionContents> productionContents = _productionContentsService.GetAll()
-                .Where(item => item.IdProduction == ProductionDtos[DataGrid.SelectedIndex].Id).ToList();
+            var productionContents = _productionContentsService.GetAll()
+                .Where(item => item.IdProduction == FilteredProductionDtos[DataGrid.SelectedIndex].Id).ToList();
             foreach (var productionContent in productionContents)
-            {
                 _productionContentsService.Delete(productionContent.Id);
-            }
-            _productionService.Delete(ProductionDtos[DataGrid.SelectedIndex].Id);
+
+            _productionService.Delete(FilteredProductionDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
 
         private async void DataGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            await _navigationService.ShowDialogAsync<ProductionDetailWindow>(ProductionDtos[DataGrid.SelectedIndex].ProductionCode);
+            await _navigationService.ShowDialogAsync<ProductionDetailWindow>(
+                FilteredProductionDtos[DataGrid.SelectedIndex].ProductionCode);
+        }
+
+        private void ClearTitleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            TitleFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchTitleBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
+                TitleFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearDateFromFilterFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            DateFromFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchDateFromFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DateTime.TryParse(DateFromFilterTextBox.Text, out _))
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Cannot parse date you've entered! Please check data you've entered");
+                DateFromFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearDateToFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            DateToFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchDateToFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DateTime.TryParse(DateToFilterTextBox.Text, out _))
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Cannot parse date you've entered! Please check data you've entered");
+                DateToFilterTextBox.Focus();
+            }
+        }
+
+        private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CategoryFilterComboBox.SelectedItem != null) UpdateDataGrid();
+        }
+
+        private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
         }
     }
 }

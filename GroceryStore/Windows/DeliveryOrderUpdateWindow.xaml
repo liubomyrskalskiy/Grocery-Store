@@ -38,7 +38,6 @@
                     <DataGridTextColumn Header="Market" Binding="{Binding Path=Address}" />
                     <DataGridTextColumn Header="Shipment Date" Binding="{Binding Path=ShipmentDateTime}" />
                     <DataGridTextColumn Header="Amount" Binding="{Binding Path=StringAmount}" />
-                    <!--<DataGridTextColumn Header="Price" Binding="{Binding Path=StringIncomePrice}" />-->
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
@@ -60,17 +59,6 @@
 
             <StackPanel Margin="10,80,10,0" VerticalAlignment="Top">
                 <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">Market</Label>
-
-                <!--<TextBox x:Name="ProductCodeTextBox" Foreground="White" Padding="5,0,0,0" Height="40"
-                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1" TextAlignment="Left"
-                         VerticalContentAlignment="Center" SelectionBrush="White" SelectionTextBrush="White"
-                         CaretBrush="White" BorderBrush="White" BorderThickness="2" Background="#26FFFFFF"
-                         TextChanged="ProductCodeTextBox_OnTextChanged">
-
-                    <TextBox.Effect>
-                        <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5" BlurRadius="20" />
-                    </TextBox.Effect>
-                </TextBox>-->
 
                 <ComboBox x:Name="MarketComboBox" ItemsSource="{Binding Path=MarketDtos}"
                           DisplayMemberPath="FullAddress" SelectedValuePath="FullAddress"

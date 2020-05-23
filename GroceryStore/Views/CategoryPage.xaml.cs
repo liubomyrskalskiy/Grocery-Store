@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,15 +13,13 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for CategoryPage.xaml
+    ///     Interaction logic for CategoryPage.xaml
     /// </summary>
     public partial class CategoryPage : Page, IActivable
     {
         private readonly ICategoryService _categoryService;
-        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-
-        public List<CategoryDTO> CategoryDtos { get; set; }
+        private readonly AppSettings _settings;
 
         public CategoryPage(ICategoryService categoryService, IOptions<AppSettings> settings, IMapper mapper)
         {
@@ -33,6 +30,13 @@ namespace GroceryStore.Views
             _settings = settings.Value;
 
             UpdateDataGrid();
+        }
+
+        public List<CategoryDTO> CategoryDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -61,18 +65,15 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Category category = new Category();
-            category.Id = CategoryDtos[^1]?.Id + 1 ?? 1;
-            category.Title = TitleTextBox.Text;
-            category.Description = DescriptionTextBox.Text;
+            var category = new Category
+            {
+                Id = CategoryDtos[^1]?.Id + 1 ?? 1,
+                Title = TitleTextBox.Text,
+                Description = DescriptionTextBox.Text
+            };
 
             _categoryService.Create(category);
             UpdateDataGrid();
@@ -82,10 +83,12 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Category category = new Category();
-            category.Id = CategoryDtos[DataGrid.SelectedIndex].Id;
-            category.Title = TitleTextBox.Text;
-            category.Description = DescriptionTextBox.Text;
+            var category = new Category
+            {
+                Id = CategoryDtos[DataGrid.SelectedIndex].Id,
+                Title = TitleTextBox.Text,
+                Description = DescriptionTextBox.Text
+            };
 
             _categoryService.Update(category);
             UpdateDataGrid();

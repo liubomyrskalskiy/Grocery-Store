@@ -35,7 +35,8 @@
                 </Border.Background>
             </Border>
             <DataGrid Margin="0, 0, 850 ,0" Name="DataGrid" FontFamily="Consolas" AutoGenerateColumns="False"
-                      ItemsSource="{Binding Path=CategoryDtos}" HorizontalGridLinesBrush="#FF393D47" Foreground="#FF393D47"
+                      ItemsSource="{Binding Path=CategoryDtos}" HorizontalGridLinesBrush="#FF393D47"
+                      Foreground="#FF393D47"
                       Background="Transparent"
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                       CanUserSortColumns="False" CanUserResizeRows="False" CanUserResizeColumns="False"
@@ -54,7 +55,8 @@
                         <TextBox x:Name="TitleTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
                                  TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2"
                                  Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
@@ -66,8 +68,10 @@
 
                         <TextBox x:Name="DescriptionTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />

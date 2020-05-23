@@ -3,7 +3,7 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class Employee : IBaseEntity
+    public class Employee : IBaseEntity
     {
         public Employee()
         {
@@ -12,7 +12,7 @@ namespace GroceryStore.Core.Models
             Production = new HashSet<Production>();
             Sale = new HashSet<Sale>();
         }
-        public int Id { get; set; }
+
         public string LastName { get; set; }
         public string FirstName { get; set; }
         public string PhoneNumber { get; set; }
@@ -31,5 +31,7 @@ namespace GroceryStore.Core.Models
         public virtual ICollection<GoodsWriteOffOwn> GoodsWriteOffOwn { get; set; }
         public virtual ICollection<Production> Production { get; set; }
         public virtual ICollection<Sale> Sale { get; set; }
+
+        public int Id { get; set; }
     }
 }

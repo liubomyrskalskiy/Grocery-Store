@@ -53,50 +53,50 @@
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Address
                         </Label>
 
                         <TextBox x:Name="AddressTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Phone Number
                         </Label>
 
                         <TextBox x:Name="PhoneNumberTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             City Title
                         </Label>
 
                         <TextBox x:Name="CityTitleTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
                     </StackPanel>

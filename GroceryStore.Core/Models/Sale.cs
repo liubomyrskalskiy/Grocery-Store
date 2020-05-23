@@ -4,7 +4,7 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class Sale : IBaseEntity
+    public class Sale : IBaseEntity
     {
         public Sale()
         {
@@ -12,7 +12,6 @@ namespace GroceryStore.Core.Models
             BasketOwn = new HashSet<BasketOwn>();
         }
 
-        public int Id { get; set; }
         public DateTime? Date { get; set; }
         public double? Total { get; set; }
         public string CheckNumber { get; set; }
@@ -23,5 +22,7 @@ namespace GroceryStore.Core.Models
         public virtual Employee IdEmployeeNavigation { get; set; }
         public virtual ICollection<Basket> Basket { get; set; }
         public virtual ICollection<BasketOwn> BasketOwn { get; set; }
+
+        public int Id { get; set; }
     }
 }

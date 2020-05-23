@@ -15,30 +15,25 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for GoodsInMarketOwnPage.xaml
+    ///     Interaction logic for GoodsInMarketOwnPage.xaml
     /// </summary>
     public partial class GoodsInMarketOwnPage : Page, IActivable
     {
+        private readonly IBasketOwnService _basketOwnService;
+        private readonly ICategoryService _categoryService;
         private readonly IGoodsInMarketOwnService _goodsInMarketOwnService;
+        private readonly IGoodsOwnService _goodsOwnService;
+        private readonly IGoodsWriteOffOwnService _goodsWriteOffOwnService;
+        private readonly IMapper _mapper;
         private readonly IMarketService _marketService;
         private readonly IProductionService _productionService;
-        private readonly IGoodsOwnService _goodsOwnService;
-        private readonly IBasketOwnService _basketOwnService;
-        private readonly IGoodsWriteOffOwnService _goodsWriteOffOwnService;
-        private readonly ICategoryService _categoryService;
         private readonly AppSettings _settings;
-        private readonly IMapper _mapper;
         private EmployeeDTO _currentEmployee;
-
-        public List<GoodsInMarketOwnDTO> GoodsInMarketOwnDtos { get; set; }
-        public List<GoodsInMarketOwnDTO> FilteredGoodsInMarketOwnDtos { get; set; }
-        public List<CategoryDTO> CategoryDtos { get; set; }
-        public List<ProductionDTO> ProductionDtos { get; set; }
-        public List<ProductionDTO> FilterProductionDtos { get; set; }
 
         public GoodsInMarketOwnPage(IGoodsInMarketOwnService goodsInMarketOwnService, IMarketService marketService,
             IProductionService productionService, IOptions<AppSettings> settings, IMapper mapper,
-            IGoodsOwnService goodsOwnService, IBasketOwnService basketOwnService, IGoodsWriteOffOwnService goodsWriteOffOwnService, ICategoryService categoryService)
+            IGoodsOwnService goodsOwnService, IBasketOwnService basketOwnService,
+            IGoodsWriteOffOwnService goodsWriteOffOwnService, ICategoryService categoryService)
         {
             _goodsInMarketOwnService = goodsInMarketOwnService;
             _marketService = marketService;
@@ -55,11 +50,38 @@ namespace GroceryStore.Views
             ProductionComboBox.IsEnabled = false;
         }
 
+        public List<GoodsInMarketOwnDTO> GoodsInMarketOwnDtos { get; set; }
+        public List<GoodsInMarketOwnDTO> FilteredGoodsInMarketOwnDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
+        public List<ProductionDTO> ProductionDtos { get; set; }
+        public List<ProductionDTO> FilterProductionDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            _currentEmployee = (EmployeeDTO) parameter;
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
+            FilterProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
+            ManufactureDateFilterComboBox.ItemsSource = FilterProductionDtos.GroupBy(item => item.ManufactureDate)
+                .Select(item => item.First());
+
+            UpdateDataGrid();
+            return Task.CompletedTask;
+        }
+
         private void UpdateDataGrid()
         {
             GoodsInMarketOwnDtos =
                 _mapper.Map<List<GoodsInMarketOwn>, List<GoodsInMarketOwnDTO>>(_goodsInMarketOwnService.GetAll());
-            FilteredGoodsInMarketOwnDtos = GoodsInMarketOwnDtos.Where(item => item.Address == _currentEmployee.MarketAddress).ToList();
+            FilteredGoodsInMarketOwnDtos = GoodsInMarketOwnDtos
+                .Where(item => item.Address == _currentEmployee.MarketAddress).ToList();
+
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                var tempList = FilteredGoodsInMarketOwnDtos.Where(item => item.Good.Contains(TitleFilterTextBox.Text))
+                    .ToList();
+                FilteredGoodsInMarketOwnDtos = tempList;
+            }
 
             if (CategoryFilterComboBox.SelectedItem != null)
             {
@@ -70,8 +92,9 @@ namespace GroceryStore.Views
 
             if (ManufactureDateFilterComboBox.SelectedItem != null)
             {
-                var tempProduction = (ProductionDTO)ManufactureDateFilterComboBox.SelectedItem;
-                var tempList = FilteredGoodsInMarketOwnDtos.Where(item => item.ManufactureDate == tempProduction.ManufactureDate).ToList();
+                var tempProduction = (ProductionDTO) ManufactureDateFilterComboBox.SelectedItem;
+                var tempList = FilteredGoodsInMarketOwnDtos
+                    .Where(item => item.ManufactureDate == tempProduction.ManufactureDate).ToList();
                 FilteredGoodsInMarketOwnDtos = tempList;
             }
 
@@ -90,23 +113,11 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            _currentEmployee = (EmployeeDTO)parameter;
-            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
-            CategoryFilterComboBox.ItemsSource = CategoryDtos;
-            FilterProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
-            ManufactureDateFilterComboBox.ItemsSource = FilterProductionDtos.GroupBy(item => item.ManufactureDate).Select(item => item.First());
-
-            UpdateDataGrid();
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                AmountTextBox.Text = FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Amount.ToString();
+                AmountTextBox.Text = FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Amount;
                 ProductionComboBox.SelectedItem = ProductionDtos.FirstOrDefault(item =>
                     item.ProductionCode == FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].ProductionCode);
             }
@@ -115,7 +126,7 @@ namespace GroceryStore.Views
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            GoodsInMarketOwn goodsInMarketOwn = new GoodsInMarketOwn();
+            var goodsInMarketOwn = new GoodsInMarketOwn();
             ProductionDTO tempProduction;
             Market tempMarket;
 
@@ -126,29 +137,30 @@ namespace GroceryStore.Views
                 MessageBox.Show("Please select production date");
                 return;
             }
+
+            tempProduction = (ProductionDTO) ProductionComboBox.SelectedItem;
+            if (tempProduction.Amount >= goodsInMarketOwn.Amount)
+            {
+                goodsInMarketOwn.IdProduction = tempProduction.Id;
+            }
             else
             {
-                tempProduction = (ProductionDTO) ProductionComboBox.SelectedItem;
-                if (tempProduction.Amount >= goodsInMarketOwn.Amount)
-                    goodsInMarketOwn.IdProduction = tempProduction.Id;
-                else
-                {
-                    MessageBox.Show("There is not enough goods with such manufacture date");
-                    return;
-                }
+                MessageBox.Show("There is not enough goods with such manufacture date");
+                return;
             }
 
             if ((tempMarket =
-                    _marketService.GetAll().FirstOrDefault(market => market.Address == _currentEmployee.MarketAddress)) == null)
+                    _marketService.GetAll()
+                        .FirstOrDefault(market => market.Address == _currentEmployee.MarketAddress)) == null)
             {
                 MessageBox.Show("There is no market on such address in database!");
                 return;
             }
-            else
-                goodsInMarketOwn.IdMarket = tempMarket.Id;
+
+            goodsInMarketOwn.IdMarket = tempMarket.Id;
 
             _goodsInMarketOwnService.Create(goodsInMarketOwn);
-            Production currentProduction = _productionService.GetId(tempProduction.Id);
+            var currentProduction = _productionService.GetId(tempProduction.Id);
             currentProduction.Amount -= Convert.ToInt32(goodsInMarketOwn.Amount);
             _productionService.Update(currentProduction);
             UpdateDataGrid();
@@ -170,6 +182,7 @@ namespace GroceryStore.Views
                 MessageBox.Show("You can not delete this row because it is referenced by some write-off!");
                 return;
             }
+
             _goodsInMarketOwnService.Delete(FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
@@ -220,27 +233,23 @@ namespace GroceryStore.Views
         {
             if (ProductionComboBox.SelectedItem != null)
             {
-                ProductionDTO tempProduction = (ProductionDTO) ProductionComboBox.SelectedItem;
+                var tempProduction = (ProductionDTO) ProductionComboBox.SelectedItem;
                 AmountLabel.Content = "Amount: " + tempProduction.Amount;
             }
             else
+            {
                 AmountLabel.Content = "";
+            }
         }
 
         private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CategoryFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (CategoryFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void ManufactureDateFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ManufactureDateFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            } 
+            if (ManufactureDateFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
@@ -252,6 +261,25 @@ namespace GroceryStore.Views
         private void ClearManufactureDateFilterBtn_OnClick(object sender, RoutedEventArgs e)
         {
             ManufactureDateFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void SearchTitleBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
+                TitleFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearTitleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            TitleFilterTextBox.Text = "";
             UpdateDataGrid();
         }
     }

@@ -3,14 +3,14 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class Goods : IBaseEntity
+    public class Goods : IBaseEntity
     {
         public Goods()
         {
             Consignment = new HashSet<Consignment>();
             GoodsInMarket = new HashSet<GoodsInMarket>();
         }
-        public int Id { get; set; }
+
         public string Description { get; set; }
         public double? Weight { get; set; }
         public string Components { get; set; }
@@ -24,5 +24,7 @@ namespace GroceryStore.Core.Models
         public virtual Producer IdProducerNavigation { get; set; }
         public virtual ICollection<Consignment> Consignment { get; set; }
         public virtual ICollection<GoodsInMarket> GoodsInMarket { get; set; }
+
+        public int Id { get; set; }
     }
 }

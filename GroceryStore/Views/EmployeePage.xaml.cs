@@ -10,28 +10,21 @@ using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
 using GroceryStore.Core.DTO;
 using GroceryStore.Core.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Options;
 
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for EmployeePage.xaml
+    ///     Interaction logic for EmployeePage.xaml
     /// </summary>
     public partial class EmployeePage : Page, IActivable
     {
-        private readonly IEmployeeService _employeeService;
         private readonly ICityService _cityService;
-        private readonly IRoleService _roleService;
-        private readonly IMarketService _marketService;
-        private AppSettings _settings;
+        private readonly IEmployeeService _employeeService;
         private readonly IMapper _mapper;
-
-        public List<EmployeeDTO> EmployeeDtos { get; set; }
-        public List<EmployeeDTO> FilteredEmployeeDtos { get; set; }
-        public List<RoleDTO> RoleDtos { get; set; }
-        public List<MarketDTO> MarketDtos { get; set; }
-        public List<CityDTO> CityDtos { get; set; }
+        private readonly IMarketService _marketService;
+        private readonly IRoleService _roleService;
+        private readonly AppSettings _settings;
 
         public EmployeePage(IEmployeeService employeeService, ICityService cityService, IRoleService roleService,
             IMarketService marketService, IOptions<AppSettings> settings, IMapper mapper)
@@ -44,6 +37,25 @@ namespace GroceryStore.Views
             _mapper = mapper;
 
             InitializeComponent();
+        }
+
+        public List<EmployeeDTO> EmployeeDtos { get; set; }
+        public List<EmployeeDTO> FilteredEmployeeDtos { get; set; }
+        public List<RoleDTO> RoleDtos { get; set; }
+        public List<MarketDTO> MarketDtos { get; set; }
+        public List<CityDTO> CityDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            RoleDtos = _mapper.Map<List<Role>, List<RoleDTO>>(_roleService.GetAll());
+            MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
+            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
+
+            MarketFilterComboBox.ItemsSource = MarketDtos;
+            RoleFilterComboBox.ItemsSource = RoleDtos;
+            UpdateDataGrid();
+
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -72,7 +84,15 @@ namespace GroceryStore.Views
             if (MarketFilterComboBox.SelectedItem != null)
             {
                 var tempMarket = (MarketDTO) MarketFilterComboBox.SelectedItem;
-                var tempList = FilteredEmployeeDtos.Where(item => item.FullMarketAddress == tempMarket.FullAddress).ToList();
+                var tempList = FilteredEmployeeDtos.Where(item => item.FullMarketAddress == tempMarket.FullAddress)
+                    .ToList();
+                FilteredEmployeeDtos = tempList;
+            }
+
+            if (RoleFilterComboBox.SelectedItem != null)
+            {
+                var tempRole = (RoleDTO) RoleFilterComboBox.SelectedItem;
+                var tempList = FilteredEmployeeDtos.Where(item => item.RoleTitle == tempRole.Title).ToList();
                 FilteredEmployeeDtos = tempList;
             }
 
@@ -151,18 +171,6 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            RoleDtos = _mapper.Map<List<Role>, List<RoleDTO>>(_roleService.GetAll());
-            MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
-            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
-
-            MarketFilterComboBox.ItemsSource = MarketDtos;
-            UpdateDataGrid();
-
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
@@ -175,18 +183,20 @@ namespace GroceryStore.Views
                 LoginTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].Login;
                 PasswordTextBox.Text = FilteredEmployeeDtos[DataGrid.SelectedIndex].Password;
                 RoleComboBox.SelectedItem =
-                    RoleDtos.FirstOrDefault(item => item.Title == FilteredEmployeeDtos[DataGrid.SelectedIndex].RoleTitle);
+                    RoleDtos.FirstOrDefault(
+                        item => item.Title == FilteredEmployeeDtos[DataGrid.SelectedIndex].RoleTitle);
                 MarketComboBox.SelectedItem = MarketDtos.FirstOrDefault(item =>
                     item.FullAddress == FilteredEmployeeDtos[DataGrid.SelectedIndex].FullMarketAddress);
                 CityComboBox.SelectedItem =
-                    CityDtos.FirstOrDefault(item => item.Title == FilteredEmployeeDtos[DataGrid.SelectedIndex].CityTitle);
+                    CityDtos.FirstOrDefault(
+                        item => item.Title == FilteredEmployeeDtos[DataGrid.SelectedIndex].CityTitle);
             }
         }
 
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Employee employee = new Employee();
+            var employee = new Employee();
             RoleDTO tempRole;
             CityDTO tempCity;
             MarketDTO tempMarket;
@@ -201,14 +211,15 @@ namespace GroceryStore.Views
                 MessageBox.Show("This login is already captured!");
                 return;
             }
-            else
-                employee.Login = LoginTextBox.Text;
+
+            employee.Login = LoginTextBox.Text;
+
             employee.Password = PasswordTextBox.Text;
-            tempRole = (RoleDTO)RoleComboBox.SelectedItem;
+            tempRole = (RoleDTO) RoleComboBox.SelectedItem;
             employee.IdRole = tempRole.Id;
-            tempMarket = (MarketDTO)MarketComboBox.SelectedItem;
+            tempMarket = (MarketDTO) MarketComboBox.SelectedItem;
             employee.IdMarket = tempMarket.Id;
-            tempCity = (CityDTO)CityComboBox.SelectedItem;
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
             employee.IdCity = tempCity.Id;
 
             _employeeService.Create(employee);
@@ -219,7 +230,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Employee employee = new Employee();
+            var employee = new Employee();
             RoleDTO tempRole;
             CityDTO tempCity;
             MarketDTO tempMarket;
@@ -234,14 +245,15 @@ namespace GroceryStore.Views
                 MessageBox.Show("This login is already captured!");
                 return;
             }
-            else
-                employee.Login = LoginTextBox.Text;
+
+            employee.Login = LoginTextBox.Text;
+
             employee.Password = PasswordTextBox.Text;
-            tempRole = (RoleDTO)RoleComboBox.SelectedItem;
+            tempRole = (RoleDTO) RoleComboBox.SelectedItem;
             employee.IdRole = tempRole.Id;
-            tempMarket = (MarketDTO)MarketComboBox.SelectedItem;
+            tempMarket = (MarketDTO) MarketComboBox.SelectedItem;
             employee.IdMarket = tempMarket.Id;
-            tempCity = (CityDTO)CityComboBox.SelectedItem;
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
             employee.IdCity = tempCity.Id;
 
             _employeeService.Update(employee);
@@ -263,10 +275,7 @@ namespace GroceryStore.Views
 
         private void MarketFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (MarketFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (MarketFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void ClearSurnameFilterBtn_OnClick(object sender, RoutedEventArgs e)
@@ -296,7 +305,8 @@ namespace GroceryStore.Views
             }
             else
             {
-                MessageBox.Show("To search employee by phone, it must consist of at least 4 digits and not exceed 10 digits");
+                MessageBox.Show(
+                    "To search employee by phone, it must consist of at least 4 digits and not exceed 10 digits");
                 PhoneFilterTextBox.Focus();
             }
         }
@@ -331,6 +341,17 @@ namespace GroceryStore.Views
             {
                 SurnameFilterTextBox.IsEnabled = true;
             }
+        }
+
+        private void RoleFilterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (RoleFilterComboBox.SelectedItem != null) UpdateDataGrid();
+        }
+
+        private void ClearRoleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            RoleFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
         }
     }
 }

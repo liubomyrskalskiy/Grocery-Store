@@ -13,15 +13,13 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for WriteOffReasonPage.xaml
+    ///     Interaction logic for WriteOffReasonPage.xaml
     /// </summary>
     public partial class WriteOffReasonPage : Page, IActivable
     {
-        private readonly IWriteOffReasonService _writeOffReasonService;
-        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-
-        public List<WriteOffReasonDTO> WriteOffReasonDtos { get; set; }
+        private readonly AppSettings _settings;
+        private readonly IWriteOffReasonService _writeOffReasonService;
 
         public WriteOffReasonPage(IWriteOffReasonService writeOffReasonService, IOptions<AppSettings> settings,
             IMapper mapper)
@@ -33,6 +31,13 @@ namespace GroceryStore.Views
             InitializeComponent();
 
             UpdateDataGrid();
+        }
+
+        public List<WriteOffReasonDTO> WriteOffReasonDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -55,17 +60,14 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            WriteOffReason writeOffReason = new WriteOffReason();
-            writeOffReason.Id = WriteOffReasonDtos[^1]?.Id + 1 ?? 1;
-            writeOffReason.Description = DescriptionTextBox.Text;
+            var writeOffReason = new WriteOffReason
+            {
+                Id = WriteOffReasonDtos[^1]?.Id + 1 ?? 1,
+                Description = DescriptionTextBox.Text
+            };
 
             _writeOffReasonService.Create(writeOffReason);
             UpdateDataGrid();
@@ -75,9 +77,11 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            WriteOffReason writeOffReason = new WriteOffReason();
-            writeOffReason.Id = WriteOffReasonDtos[DataGrid.SelectedIndex].Id;
-            writeOffReason.Description = DescriptionTextBox.Text;
+            var writeOffReason = new WriteOffReason
+            {
+                Id = WriteOffReasonDtos[DataGrid.SelectedIndex].Id,
+                Description = DescriptionTextBox.Text
+            };
 
             _writeOffReasonService.Update(writeOffReason);
             UpdateDataGrid();
@@ -87,7 +91,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                WriteOffReasonDTO writeOffReasonDto = WriteOffReasonDtos[DataGrid.SelectedIndex];
+                var writeOffReasonDto = WriteOffReasonDtos[DataGrid.SelectedIndex];
                 DescriptionTextBox.Text = writeOffReasonDto.Description;
             }
         }

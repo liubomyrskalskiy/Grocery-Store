@@ -34,8 +34,8 @@
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                       ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
-                    <DataGridTextColumn Header="Product Code" Binding="{Binding Path=ProductCode}" />
+                    <DataGridTextColumn Header="Code" Binding="{Binding Path=ProductCode}" />
+                    <DataGridTextColumn Header="Title" Binding="{Binding Path=FullTitle}" />
                     <DataGridTextColumn Header="Amount" Binding="{Binding Path=Amount}" />
                     <DataGridTextColumn Header="Price" Binding="{Binding Path=Price}" />
                 </DataGrid.Columns>

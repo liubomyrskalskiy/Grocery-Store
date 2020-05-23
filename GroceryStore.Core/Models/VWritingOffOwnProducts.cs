@@ -2,7 +2,7 @@
 
 namespace GroceryStore.Core.Models
 {
-    public partial class VWritingOffOwnProducts
+    public class VWritingOffOwnProducts
     {
         public int? IdGoodsInMarketOwn { get; set; }
         public DateTime? Date { get; set; }

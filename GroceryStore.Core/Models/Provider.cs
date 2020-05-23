@@ -3,14 +3,13 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class Provider : IBaseEntity
+    public class Provider : IBaseEntity
     {
         public Provider()
         {
             Delivery = new HashSet<Delivery>();
         }
 
-        public int Id { get; set; }
         public string CompanyTitle { get; set; }
         public string ContactPerson { get; set; }
         public string PhoneNumber { get; set; }
@@ -19,5 +18,7 @@ namespace GroceryStore.Core.Models
 
         public virtual City IdCityNavigation { get; set; }
         public virtual ICollection<Delivery> Delivery { get; set; }
+
+        public int Id { get; set; }
     }
 }

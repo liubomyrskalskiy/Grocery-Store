@@ -7,29 +7,28 @@ namespace GroceryStore.DAL
 {
     public class UnitOfWork : IUnitOfWork
     {
-
-        private GroceryStoreDbContext _context;
-        private IBasketRepository _basketRepository;
         private IBasketOwnRepository _basketOwnRepository;
+        private IBasketRepository _basketRepository;
         private ICategoryRepository _categoryRepository;
         private ICityRepository _cityRepository;
         private IClientRepository _clientRepository;
         private IConsignmentRepository _consignmentRepository;
+        private GroceryStoreDbContext _context;
         private ICountryRepository _countryRepository;
-        private IDeliveryRepository _deliveryRepository;
         private IDeliveryContentsRepository _deliveryContentsRepository;
+        private IDeliveryRepository _deliveryRepository;
         private IDeliveryShipmentRepository _deliveryShipmentRepository;
         private IEmployeeRepository _employeeRepository;
-        private IGoodsRepository _goodsRepository;
-        private IGoodsInMarketRepository _goodsInMarketRepository;
         private IGoodsInMarketOwnRepository _goodsInMarketOwnRepository;
+        private IGoodsInMarketRepository _goodsInMarketRepository;
         private IGoodsOwnRepository _goodsOwnRepository;
-        private IGoodsWriteOffRepository _goodsWriteOffRepository;
+        private IGoodsRepository _goodsRepository;
         private IGoodsWriteOffOwnRepository _goodsWriteOffOwnRepository;
+        private IGoodsWriteOffRepository _goodsWriteOffRepository;
         private IMarketRepository _marketRepository;
         private IProducerRepository _producerRepository;
-        private IProductionRepository _productionRepository;
         private IProductionContentsRepository _productionContentsRepository;
+        private IProductionRepository _productionRepository;
         private IProviderRepository _providerRepository;
         private IRoleRepository _roleRepository;
         private ISaleRepository _saleRepository;

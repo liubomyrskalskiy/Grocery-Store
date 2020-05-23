@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace GroceryStore
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
@@ -29,7 +29,7 @@ namespace GroceryStore
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                .AddJsonFile("appsettings.json", false, true);
 
             Configuration = builder.Build();
 
@@ -40,7 +40,7 @@ namespace GroceryStore
 
             var navigationService = ServiceProvider
                 .GetRequiredService<SimpleNavigationService>();
-            var task = navigationService.ShowAsync<MainWindow>();
+            _ = navigationService.ShowAsync<MainWindow>();
         }
 
         private void ConfigureServices(IServiceCollection services)
@@ -84,7 +84,7 @@ namespace GroceryStore
 
             var mappingConfig = new MapperConfiguration(mc => { mc.AddProfile(new MappingProfile()); });
 
-            IMapper mapper = mappingConfig.CreateMapper();
+            var mapper = mappingConfig.CreateMapper();
             services.AddSingleton(mapper);
 
             services.AddTransient<MainWindow>();
@@ -98,20 +98,15 @@ namespace GroceryStore
             services.AddTransient<DeliveryDetailWindow>();
 
             services.AddTransient<CategoryPage>();
-            services.AddTransient<BasketPage>();
             services.AddTransient<CountryPage>();
             services.AddTransient<CityPage>();
             services.AddTransient<ProducerPage>();
             services.AddTransient<ProviderPage>();
-            services.AddTransient<DeliveryPage>();
             services.AddTransient<GoodsPage>();
-            services.AddTransient<ConsignmentPage>();
             services.AddTransient<DeliveryContentsPage>();
-            services.AddTransient<DeliveryShipmentPage>();
             services.AddTransient<WriteOffReasonPage>();
             services.AddTransient<GoodsWriteOffPage>();
             services.AddTransient<GoodsWriteOffOwnPage>();
-            services.AddTransient<BasketOwnPage>();
             services.AddTransient<SalePage>();
             services.AddTransient<RolesPage>();
             services.AddTransient<ClientPage>();
@@ -121,7 +116,6 @@ namespace GroceryStore
             services.AddTransient<GoodsOwnPage>();
             services.AddTransient<ProductionPage>();
             services.AddTransient<GoodsInMarketOwnPage>();
-            services.AddTransient<ProductionContentsPage>();
 
             services.AddTransient<GoodsInMarketOwnLessPage>();
             services.AddTransient<GoodsInMarketLessPage>();

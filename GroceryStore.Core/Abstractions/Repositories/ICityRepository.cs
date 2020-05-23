@@ -6,6 +6,5 @@ namespace GroceryStore.Core.Abstractions.Repositories
     public interface ICityRepository : IBaseRepository<City>
 
     {
-
     }
 }

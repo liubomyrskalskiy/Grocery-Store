@@ -5,6 +5,5 @@ namespace GroceryStore.Core.Abstractions.IServices
 {
     public interface IRoleService : IBaseService<Role>
     {
-        
     }
 }

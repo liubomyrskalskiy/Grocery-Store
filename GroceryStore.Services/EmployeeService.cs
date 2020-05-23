@@ -19,8 +19,9 @@ namespace GroceryStore.Services
         {
             return unitOfWork.EmployeeRepository.GetAll()
                 .Include(employee => employee.IdCityNavigation)
-                .Include(employee=> employee.IdMarketNavigation)
-                .Include(employee=>employee.IdRoleNavigation).ToList();
+                .Include(employee => employee.IdCityNavigation.IdCountryNavigation)
+                .Include(employee => employee.IdMarketNavigation)
+                .Include(employee => employee.IdRoleNavigation).ToList();
         }
 
         public Employee GetId(int id)

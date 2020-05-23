@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,16 +13,14 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for MarketPage.xaml
+    ///     Interaction logic for MarketPage.xaml
     /// </summary>
     public partial class MarketPage : Page, IActivable
     {
-        private readonly IMarketService _marketService;
         private readonly ICityService _cityService;
-        private AppSettings _settings;
         private readonly IMapper _mapper;
-        public List<MarketDTO> MarketDtos { get; set; }
-        public List<CityDTO> CityDtos { get; set; }
+        private readonly IMarketService _marketService;
+        private readonly AppSettings _settings;
 
         public MarketPage(IMarketService marketService, ICityService cityService, IOptions<AppSettings> settings,
             IMapper mapper)
@@ -36,6 +33,16 @@ namespace GroceryStore.Views
             InitializeComponent();
 
             UpdateDataGrid();
+        }
+
+        public List<MarketDTO> MarketDtos { get; set; }
+        public List<CityDTO> CityDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
+            CityComboBox.ItemsSource = CityDtos;
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -64,41 +71,31 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
-            CityComboBox.ItemsSource = CityDtos;
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
             {
                 AddressTextBox.Text = MarketDtos[DataGrid.SelectedIndex].Address;
                 PhoneNumberTextBox.Text = MarketDtos[DataGrid.SelectedIndex].PhoneNumber;
-                //CityTitleTextBox.Text = MarketDtos[DataGrid.SelectedIndex].CityTitle;
             }
         }
 
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Market market = new Market();
+            var market = new Market();
             CityDTO tempCity;
             market.Id = MarketDtos[^1]?.Id + 1 ?? 1;
             market.Address = AddressTextBox.Text;
             market.PhoneNumber = PhoneNumberTextBox.Text;
-            if(CityComboBox.SelectedItem == null)
+            if (CityComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Please select city");
                 return;
             }
-            else
-            {
-                tempCity = (CityDTO) CityComboBox.SelectedItem;
-                market.IdCity = tempCity.Id;
-            }
+
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
+            market.IdCity = tempCity.Id;
 
             _marketService.Create(market);
             UpdateDataGrid();
@@ -108,7 +105,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Market market = new Market();
+            var market = new Market();
             CityDTO tempCity;
             market.Id = MarketDtos[DataGrid.SelectedIndex].Id;
             market.Address = AddressTextBox.Text;
@@ -118,11 +115,9 @@ namespace GroceryStore.Views
                 MessageBox.Show("Please select city");
                 return;
             }
-            else
-            {
-                tempCity = (CityDTO)CityComboBox.SelectedItem;
-                market.IdCity = tempCity.Id;
-            }
+
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
+            market.IdCity = tempCity.Id;
 
             _marketService.Update(market);
             UpdateDataGrid();

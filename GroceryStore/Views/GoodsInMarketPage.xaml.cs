@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,25 +14,18 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for GoodsInMarketPage.xaml
+    ///     Interaction logic for GoodsInMarketPage.xaml
     /// </summary>
     public partial class GoodsInMarketPage : Page, IActivable
     {
-        private readonly IGoodsInMarketService _goodsInMarketService;
-        private readonly IProducerService _producerService;
-        private readonly IGoodsService _goodsService;
-        private readonly IMarketService _marketService;
         private readonly ICategoryService _categoryService;
-        private readonly AppSettings _settings;
+        private readonly IGoodsInMarketService _goodsInMarketService;
+        private readonly IGoodsService _goodsService;
         private readonly IMapper _mapper;
+        private readonly IMarketService _marketService;
+        private readonly IProducerService _producerService;
+        private readonly AppSettings _settings;
         private EmployeeDTO _currentEmployee;
-
-
-        public List<GoodsInMarketDTO> GoodsInMarketDtos { get; set; }
-        public List<MarketDTO> MarketDtos { get; set; }
-        public List<CategoryDTO> CategoryDtos { get; set; }
-        public List<ProducerDTO> ProducerDtos { get; set; }
-        public List<GoodsInMarketDTO> FilteredGoodsInMarketDtos { get; set; }
 
         public GoodsInMarketPage(IGoodsInMarketService goodsInMarketService, IGoodsService goodsService,
             IMarketService marketService, IOptions<AppSettings> settings, IMapper mapper,
@@ -50,6 +42,28 @@ namespace GroceryStore.Views
             InitializeComponent();
         }
 
+
+        public List<GoodsInMarketDTO> GoodsInMarketDtos { get; set; }
+        public List<MarketDTO> MarketDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
+        public List<ProducerDTO> ProducerDtos { get; set; }
+        public List<GoodsInMarketDTO> FilteredGoodsInMarketDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            _currentEmployee = (EmployeeDTO) parameter;
+            MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
+            ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            MarketComboBox.ItemsSource = MarketDtos;
+            MarketFilterComboBox.ItemsSource = MarketDtos;
+            MarketFilterComboBox.SelectedItem = MarketDtos[0];
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
+            ProducerFilterComboBox.ItemsSource = ProducerDtos;
+            UpdateDataGrid();
+            return Task.CompletedTask;
+        }
+
         private void UpdateDataGrid()
         {
             GoodsInMarketDtos =
@@ -61,6 +75,13 @@ namespace GroceryStore.Views
             {
                 var tempMarket = (MarketDTO) MarketFilterComboBox.SelectedItem;
                 var tempList = FilteredGoodsInMarketDtos.Where(item => item.FullMarketAddress == tempMarket.FullAddress)
+                    .ToList();
+                FilteredGoodsInMarketDtos = tempList;
+            }
+
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                var tempList = FilteredGoodsInMarketDtos.Where(item => item.Good.Contains(TitleFilterTextBox.Text))
                     .ToList();
                 FilteredGoodsInMarketDtos = tempList;
             }
@@ -100,34 +121,16 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            _currentEmployee = (EmployeeDTO) parameter;
-            MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
-            ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
-            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
-            MarketComboBox.ItemsSource = MarketDtos;
-            MarketFilterComboBox.ItemsSource = MarketDtos;
-            MarketFilterComboBox.SelectedItem = MarketDtos[0];
-            CategoryFilterComboBox.ItemsSource = CategoryDtos;
-            ProducerFilterComboBox.ItemsSource = ProducerDtos;
-            UpdateDataGrid();
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
-            {
                 ProductCodeTextBox.Text = FilteredGoodsInMarketDtos[DataGrid.SelectedIndex].ProductCode;
-            }
         }
 
         private void ProductCodeTextBox_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
-                return;
             }
             else
             {
@@ -141,7 +144,6 @@ namespace GroceryStore.Views
                     ProducerTitleLabel.Content = "";
                     WeightLabel.Content = "";
                     PriceLabel.Content = "";
-                    return;
                 }
                 else
                 {
@@ -151,7 +153,6 @@ namespace GroceryStore.Views
                     WeightLabel.Content = "Unit weight: " + goodsDto.Weight;
                     PriceLabel.Content = "Price: " + $"{goodsDto.Price,0:C2}";
                 }
-
             }
         }
 
@@ -160,7 +161,7 @@ namespace GroceryStore.Views
             if (!ValidateForm()) return;
 
 
-            GoodsInMarket goodsInMarket = new GoodsInMarket();
+            var goodsInMarket = new GoodsInMarket();
             Goods tempGoods;
             var tempMarket = (MarketDTO) MarketComboBox.SelectedItem;
             if (GoodsInMarketDtos.FirstOrDefault(item =>
@@ -179,8 +180,8 @@ namespace GroceryStore.Views
                 MessageBox.Show("There is no such product in database!");
                 return;
             }
-            else
-                goodsInMarket.IdGoods = tempGoods.Id;
+
+            goodsInMarket.IdGoods = tempGoods.Id;
 
             goodsInMarket.IdMarket = tempMarket.Id;
 
@@ -190,26 +191,17 @@ namespace GroceryStore.Views
 
         private void ProducerFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ProducerFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (ProducerFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void MarketFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (MarketFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (MarketFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CategoryFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (CategoryFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void ClearProducerFilterBtn_OnClick(object sender, RoutedEventArgs e)
@@ -221,6 +213,25 @@ namespace GroceryStore.Views
         private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
         {
             CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
+        }
+
+        private void SearchTitleBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
+                TitleFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearTitleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            TitleFilterTextBox.Text = "";
             UpdateDataGrid();
         }
     }

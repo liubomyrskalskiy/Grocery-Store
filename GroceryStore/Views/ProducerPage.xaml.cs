@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,17 +13,14 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for ProducerPage.xaml
+    ///     Interaction logic for ProducerPage.xaml
     /// </summary>
     public partial class ProducerPage : Page, IActivable
     {
-        private readonly IProducerService _producerService;
         private readonly ICountryService _countryService;
-        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-
-        public List<ProducerDTO> ProducerDtos { get; set; }
-        public List<CountryDTO> CountryDtos { get; set; }
+        private readonly IProducerService _producerService;
+        private readonly AppSettings _settings;
 
         public ProducerPage(IProducerService producerService, ICountryService countryService,
             IOptions<AppSettings> settings, IMapper mapper)
@@ -37,6 +33,16 @@ namespace GroceryStore.Views
             InitializeComponent();
 
             UpdateDataGrid();
+        }
+
+        public List<ProducerDTO> ProducerDtos { get; set; }
+        public List<CountryDTO> CountryDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
+            CountryComboBox.ItemsSource = CountryDtos;
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -64,21 +70,14 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
-            CountryComboBox.ItemsSource = CountryDtos;
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Producer producer = new Producer();
+            var producer = new Producer();
             CountryDTO tempCountry;
             producer.Id = ProducerDtos[^1]?.Id + 1 ?? 1;
             producer.Title = TitleTextBox.Text;
-            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            tempCountry = (CountryDTO) CountryComboBox.SelectedItem;
             producer.IdCountry = tempCountry.Id;
 
             _producerService.Create(producer);
@@ -89,11 +88,11 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Producer producer = new Producer();
+            var producer = new Producer();
             CountryDTO tempCountry;
             producer.Id = ProducerDtos[DataGrid.SelectedIndex].Id;
             producer.Title = TitleTextBox.Text;
-            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            tempCountry = (CountryDTO) CountryComboBox.SelectedItem;
             producer.IdCountry = tempCountry.Id;
 
             _producerService.Update(producer);
@@ -104,7 +103,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                ProducerDTO producerDto = ProducerDtos[DataGrid.SelectedIndex];
+                var producerDto = ProducerDtos[DataGrid.SelectedIndex];
                 TitleTextBox.Text = producerDto.Title;
             }
         }

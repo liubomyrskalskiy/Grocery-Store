@@ -13,7 +13,7 @@
             <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="Padding" Value="10, 0, 70, 0" />
+            <Setter Property="Padding" Value="10, 0" />
             <Setter Property='HorizontalContentAlignment' Value="Left" />
         </Style>
 
@@ -39,7 +39,8 @@
                 <Grid HorizontalAlignment="Stretch">
                     <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Title:</Label>
                     <TextBox x:Name="TitleFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1" Margin="85,0,80,5"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
+                             Margin="85,0,80,5"
                              TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
                              SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
                              BorderThickness="2" Background="#26FFFFFF">
@@ -48,12 +49,14 @@
                                               BlurRadius="20" />
                         </TextBox.Effect>
                     </TextBox>
-                    
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="ClearTitleFilterBtn_OnClick">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
                     </Button>
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="SearchTitleBtn_OnClick" Margin="0,0,40,0">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
                     </Button>
@@ -67,13 +70,15 @@
                               SelectedValue="{Binding Path=ProducerDTO}" Margin="85,0,40,5"
                               Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
                               FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
+                              VerticalContentAlignment="Center" BorderThickness="2"
+                              SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
                         <ComboBox.Effect>
                             <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                               BlurRadius="20" />
                         </ComboBox.Effect>
                     </ComboBox>
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="ClearCategoryFilterBtn_OnClick">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
                     </Button>
@@ -96,7 +101,7 @@
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
                           SelectionChanged="DataGrid_OnSelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Product Code" Binding="{Binding Path=ProductCode}" />
+                        <DataGridTextColumn Header="Code" Binding="{Binding Path=ProductCode}" />
                         <DataGridTextColumn Header="Title" Binding="{Binding Path=Title}" />
                         <DataGridTextColumn Header="Category" Binding="{Binding Path=Category}" />
                         <DataGridTextColumn Header="Weight" Binding="{Binding Path=StringWeight}" />
@@ -110,192 +115,150 @@
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Title
                         </Label>
 
                         <TextBox x:Name="TitleTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Category
                         </Label>
 
                         <ComboBox x:Name="CategoryComboBox" ItemsSource="{Binding Path=CategoryDtos}"
-                                          DisplayMemberPath="Title" SelectedValuePath="Title"
-                                          SelectedValue="{Binding Path=CategoryrDTO}"
-                                          Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
-                                          FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                                          VerticalContentAlignment="Center" BorderThickness="2">
+                                  DisplayMemberPath="Title" SelectedValuePath="Title"
+                                  SelectedValue="{Binding Path=CategoryrDTO}"
+                                  Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                                  FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                                  VerticalContentAlignment="Center" BorderThickness="2">
                             <ComboBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </ComboBox.Effect>
                         </ComboBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Weight
                         </Label>
 
                         <TextBox x:Name="WeightTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Price
                         </Label>
 
                         <TextBox x:Name="PriceTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Components
                         </Label>
 
                         <TextBox x:Name="ComponentnsTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Button x:Name="CreateBtn"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        Height="40"
-                                        BorderBrush="{x:Null}"
-                                        Padding="0"
-                                        Content="Create"
-                                        Background="#FF393D47"
-                                        Foreground="#FFFFFFFF"
-                                        FontFamily="Comic Sans MS"
-                                        Click="CreateBtn_OnClick">
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Stretch"
+                                Height="40"
+                                BorderBrush="{x:Null}"
+                                Padding="0"
+                                Content="Create"
+                                Background="#FF393D47"
+                                Foreground="#FFFFFFFF"
+                                FontFamily="Comic Sans MS"
+                                Click="CreateBtn_OnClick">
 
                             <Button.Effect>
                                 <DropShadowEffect ShadowDepth="4"
-                                                          Direction="-90"
-                                                          Color="Black"
-                                                          Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  Direction="-90"
+                                                  Color="Black"
+                                                  Opacity="0.5"
+                                                  BlurRadius="20" />
                             </Button.Effect>
                         </Button>
 
                         <Button x:Name="UpdateBtn"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        Height="40"
-                                        BorderBrush="{x:Null}"
-                                        Padding="0"
-                                        Content="Update"
-                                        Background="#FF393D47"
-                                        Foreground="#FFFFFFFF"
-                                        FontFamily="Comic Sans MS"
-                                        Click="UpdateBtn_OnClick">
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Stretch"
+                                Height="40"
+                                BorderBrush="{x:Null}"
+                                Padding="0"
+                                Content="Update"
+                                Background="#FF393D47"
+                                Foreground="#FFFFFFFF"
+                                FontFamily="Comic Sans MS"
+                                Click="UpdateBtn_OnClick">
 
                             <Button.Effect>
                                 <DropShadowEffect ShadowDepth="4"
-                                                          Direction="-90"
-                                                          Color="Black"
-                                                          Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  Direction="-90"
+                                                  Color="Black"
+                                                  Opacity="0.5"
+                                                  BlurRadius="20" />
                             </Button.Effect>
                         </Button>
 
                         <Button x:Name="DeleteBtn"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        Height="40"
-                                        BorderBrush="{x:Null}"
-                                        Padding="0"
-                                        Content="Delete"
-                                        Background="#FF393D47"
-                                        Foreground="#FFFFFFFF"
-                                        FontFamily="Comic Sans MS"
-                                        Click="DeleteBtn_OnClick">
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Stretch"
+                                Height="40"
+                                BorderBrush="{x:Null}"
+                                Padding="0"
+                                Content="Delete"
+                                Background="#FF393D47"
+                                Foreground="#FFFFFFFF"
+                                FontFamily="Comic Sans MS"
+                                Click="DeleteBtn_OnClick">
 
                             <Button.Effect>
                                 <DropShadowEffect ShadowDepth="4"
-                                                          Direction="-90"
-                                                          Color="Black"
-                                                          Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  Direction="-90"
+                                                  Color="Black"
+                                                  Opacity="0.5"
+                                                  BlurRadius="20" />
                             </Button.Effect>
                         </Button>
                     </StackPanel>
                 </Grid>
-                <!--<StackPanel VerticalAlignment="Bottom" Margin="25,0,25,20">
-                    <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                           FontFamily="Comic Sans MS">
-                        Category
-                    </Label>
-                    <Grid HorizontalAlignment="Stretch">
-                        <ComboBox x:Name="CategoryFilterComboBox" ItemsSource="{Binding Path=CategoryDtos}"
-                              DisplayMemberPath="Title" SelectedValuePath="Title"
-                              SelectedValue="{Binding Path=CategoryrDTO}" Margin="0,0,40,0"
-                              Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
-                              FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
-                            <ComboBox.Effect>
-                                <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                              BlurRadius="20" />
-                            </ComboBox.Effect>
-                        </ComboBox>
-                        <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
-                            BorderBrush="Transparent" Padding="0" Click="ClearCategoryFilterBtn_OnClick">
-                            <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
-                        </Button>
-                    </Grid>
-                    --><!--<Button x:Name="ClearFilterBtn"
-                            Margin="0,10,0,0"
-                            HorizontalAlignment="Stretch"
-                            Height="40"
-                            BorderBrush="{x:Null}"
-                            Padding="0"
-                            Content="Clear Filter"
-                            Background="#FF393D47"
-                            Foreground="#FFFFFFFF"
-                            FontFamily="Comic Sans MS"
-                            Click="ClearFilterBtn_OnClick">
-                        <Button.Effect>
-                            <DropShadowEffect ShadowDepth="4"
-                                              Direction="-90"
-                                              Color="Black"
-                                              Opacity="0.5"
-                                              BlurRadius="20" />
-                        </Button.Effect>
-                    </Button>--><!--
-                </StackPanel>-->
             </Grid>
         </Grid>
     </Grid>

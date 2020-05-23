@@ -14,18 +14,14 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for ClientPage.xaml
+    ///     Interaction logic for ClientPage.xaml
     /// </summary>
     public partial class ClientPage : Page, IActivable
     {
-        private readonly IClientService _clientService;
         private readonly ICityService _cityService;
-        private AppSettings _settings;
+        private readonly IClientService _clientService;
         private readonly IMapper _mapper;
-
-        public List<ClientDTO> ClientDtos { get; set; }
-        public List<ClientDTO> FilteredClientDtos { get; set; }
-        public List<CityDTO> CityDtos { get; set; }
+        private readonly AppSettings _settings;
 
         public ClientPage(IClientService clientService, ICityService cityService, IOptions<AppSettings> settings,
             IMapper mapper)
@@ -36,6 +32,20 @@ namespace GroceryStore.Views
             _mapper = mapper;
 
             InitializeComponent();
+        }
+
+        public List<ClientDTO> ClientDtos { get; set; }
+        public List<ClientDTO> FilteredClientDtos { get; set; }
+        public List<CityDTO> CityDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
+            CityComboBox.ItemsSource = CityDtos;
+            CityFilterComboBox.ItemsSource = CityDtos;
+            UpdateDataGrid();
+
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -63,6 +73,7 @@ namespace GroceryStore.Views
                 var tempList = FilteredClientDtos.Where(item => item.CityTitle == tempCity.Title).ToList();
                 FilteredClientDtos = tempList;
             }
+
             DataGrid.ItemsSource = FilteredClientDtos;
         }
 
@@ -99,16 +110,6 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
-            CityComboBox.ItemsSource = CityDtos;
-            CityFilterComboBox.ItemsSource = CityDtos;
-            UpdateDataGrid();
-
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
@@ -125,7 +126,7 @@ namespace GroceryStore.Views
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Client client = new Client();
+            var client = new Client();
             CityDTO tempCity;
             client.Id = ClientDtos[^1]?.Id + 1 ?? 1;
             client.FirstName = FirstNameTextBox.Text;
@@ -139,11 +140,9 @@ namespace GroceryStore.Views
                 MessageBox.Show("Please select city");
                 return;
             }
-            else
-            {
-                tempCity = (CityDTO) CityComboBox.SelectedItem;
-                client.IdCity = tempCity.Id;
-            }
+
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
+            client.IdCity = tempCity.Id;
 
             _clientService.Create(client);
             UpdateDataGrid();
@@ -153,7 +152,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Client client = new Client();
+            var client = new Client();
             CityDTO tempCity;
             client.Id = FilteredClientDtos[DataGrid.SelectedIndex].Id;
             client.FirstName = FirstNameTextBox.Text;
@@ -162,16 +161,14 @@ namespace GroceryStore.Views
             client.Bonuses = FilteredClientDtos[DataGrid.SelectedIndex].Bonuses;
             client.PhoneNumber = PhoneNumberTextBox.Text;
             client.AccountNumber = FilteredClientDtos[DataGrid.SelectedIndex].AccountNumber;
-            if(CityComboBox.SelectedItem == null)
+            if (CityComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Please select city");
                 return;
             }
-            else
-            {
-                tempCity = (CityDTO)CityComboBox.SelectedItem;
-                client.IdCity = tempCity.Id;
-            }
+
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
+            client.IdCity = tempCity.Id;
 
             _clientService.Update(client);
             UpdateDataGrid();
@@ -186,10 +183,7 @@ namespace GroceryStore.Views
 
         private void CityFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CityFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (CityFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void ClearFilterBtn_OnClick(object sender, RoutedEventArgs e)
@@ -257,7 +251,8 @@ namespace GroceryStore.Views
             }
             else
             {
-                MessageBox.Show("To search employee by phone, it must consist of at least 4 digits and not exceed 10 digits");
+                MessageBox.Show(
+                    "To search employee by phone, it must consist of at least 4 digits and not exceed 10 digits");
                 PhoneFilterTextBox.Focus();
             }
         }

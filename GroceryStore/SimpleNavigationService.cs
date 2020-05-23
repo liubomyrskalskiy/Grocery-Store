@@ -13,16 +13,13 @@ namespace GroceryStore
 
         public SimpleNavigationService(IServiceProvider serviceProvider)
         {
-            this._serviceProvider = serviceProvider;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task ShowAsync<T>(object parameter = null) where T : Window
         {
             var window = _serviceProvider.GetRequiredService<T>();
-            if (window is IActivable activableWindow)
-            {
-                await activableWindow.ActivateAsync(parameter);
-            }
+            if (window is IActivable activableWindow) await activableWindow.ActivateAsync(parameter);
 
             window.Show();
         }
@@ -30,10 +27,7 @@ namespace GroceryStore
         public async Task<Page> GetPageAsync<T>(object parameter = null) where T : Page
         {
             var page = _serviceProvider.GetRequiredService<T>();
-            if (page is IActivable activableWindow)
-            {
-                await activableWindow.ActivateAsync(parameter);
-            }
+            if (page is IActivable activableWindow) await activableWindow.ActivateAsync(parameter);
 
             return page;
         }
@@ -42,10 +36,7 @@ namespace GroceryStore
             where T : Window
         {
             var window = _serviceProvider.GetRequiredService<T>();
-            if (window is IActivable activableWindow)
-            {
-                await activableWindow.ActivateAsync(parameter);
-            }
+            if (window is IActivable activableWindow) await activableWindow.ActivateAsync(parameter);
 
             return window.ShowDialog();
         }

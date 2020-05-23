@@ -3,7 +3,7 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class Market : IBaseEntity
+    public class Market : IBaseEntity
     {
         public Market()
         {
@@ -11,7 +11,7 @@ namespace GroceryStore.Core.Models
             GoodsInMarket = new HashSet<GoodsInMarket>();
             GoodsInMarketOwn = new HashSet<GoodsInMarketOwn>();
         }
-        public int Id { get; set; }
+
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
         public int? IdCity { get; set; }
@@ -20,5 +20,7 @@ namespace GroceryStore.Core.Models
         public virtual ICollection<Employee> Employee { get; set; }
         public virtual ICollection<GoodsInMarket> GoodsInMarket { get; set; }
         public virtual ICollection<GoodsInMarketOwn> GoodsInMarketOwn { get; set; }
+
+        public int Id { get; set; }
     }
 }

@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AutoMapper;
 using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
@@ -23,21 +16,17 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Windows
 {
     /// <summary>
-    /// Interaction logic for ProductionWindow.xaml
+    ///     Interaction logic for ProductionWindow.xaml
     /// </summary>
     public partial class ProductionWindow : Window, IActivable
     {
+        private readonly IGoodsInMarketService _goodsInMarketService;
+        private readonly IMapper _mapper;
         private readonly IProductionContentsService _productionContentsService;
         private readonly IProductionService _productionService;
-        private readonly IGoodsInMarketService _goodsInMarketService;
         private readonly AppSettings _settings;
-        private readonly IMapper _mapper;
-        private Production _currentProduction;
         private EmployeeDTO _curreEmployee;
-
-        private List<ProductionContentsDTO> ProductionContentsDtos { get; set; }
-        private List<ProductionContentsDTO> CurrentProductionContentsDtos { get; set; }
-        private List<ProductionContents> CurrentProductionContentses { get; set; }
+        private Production _currentProduction;
 
         public ProductionWindow(IProductionContentsService productionContentsService,
             IProductionService productionService, IGoodsInMarketService goodsInMarketService, IMapper mapper,
@@ -50,6 +39,10 @@ namespace GroceryStore.Windows
             _settings = settings.Value;
             InitializeComponent();
         }
+
+        private List<ProductionContentsDTO> ProductionContentsDtos { get; set; }
+        private List<ProductionContentsDTO> CurrentProductionContentsDtos { get; set; }
+        private List<ProductionContents> CurrentProductionContentses { get; set; }
 
         public Task ActivateAsync(object parameter)
         {
@@ -71,7 +64,7 @@ namespace GroceryStore.Windows
                 _mapper.Map<List<ProductionContents>, List<ProductionContentsDTO>>(_productionContentsService.GetAll());
 
             ProductionLabel.Content = "Production number: " + _currentProduction.ProductionCode;
-            DateLabel.Content = "Manufacture Date: " + _currentProduction.ManufactureDate.ToString();
+            DateLabel.Content = "Manufacture Date: " + _currentProduction.ManufactureDate;
             TotalLabel.Content = $"Total: {_currentProduction.TotalCost,0:C2}";
 
             CurrentProductionContentsDtos = ProductionContentsDtos
@@ -101,7 +94,7 @@ namespace GroceryStore.Windows
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            ProductionContents productionContents = new ProductionContents();
+            var productionContents = new ProductionContents();
             GoodsInMarket tempGoodsInMarket;
             productionContents.Id = ProductionContentsDtos[^1]?.Id + 1 ?? 1;
             productionContents.Amount = Convert.ToDouble(AmountTextBox.Text);
@@ -115,12 +108,12 @@ namespace GroceryStore.Windows
                 MessageBox.Show("There is no such product or there is not enough product in your store!");
                 return;
             }
-            else
-                productionContents.IdGoodsInMarket = tempGoodsInMarket.Id;
+
+            productionContents.IdGoodsInMarket = tempGoodsInMarket.Id;
 
             CurrentProductionContentses.Add(productionContents);
 
-            ProductionContentsDTO tempProductionContentsDto =
+            var tempProductionContentsDto =
                 _mapper.Map<ProductionContents, ProductionContentsDTO>(
                     _productionContentsService.Create(productionContents));
             _currentProduction.TotalCost += tempProductionContentsDto.Price;
@@ -155,7 +148,6 @@ namespace GroceryStore.Windows
         {
             if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
-                return;
             }
             else
             {
@@ -171,7 +163,6 @@ namespace GroceryStore.Windows
                     WeightLabel.Content = "";
                     PriceLabel.Content = "";
                     AmountLabel.Content = "";
-                    return;
                 }
                 else
                 {
@@ -179,8 +170,8 @@ namespace GroceryStore.Windows
                     GoodTitleLabel.Content = "Good: " + goodsInMarketDto.Good;
                     ProducerTitleLabel.Content = "Producer: " + goodsInMarketDto.Producer;
                     WeightLabel.Content = "Unit weight: " + goodsInMarketDto.Weight;
-                    PriceLabel.Content = "Price: " + goodsInMarketDto.Price.ToString();
-                    AmountLabel.Content = "Remains in store: " + goodsInMarketDto.Amount.ToString();
+                    PriceLabel.Content = "Price: " + goodsInMarketDto.Price;
+                    AmountLabel.Content = "Remains in store: " + goodsInMarketDto.Amount;
                 }
             }
         }
@@ -188,9 +179,7 @@ namespace GroceryStore.Windows
         private void BtnClose(object sender, RoutedEventArgs e)
         {
             foreach (var currentProductionContentsDto in CurrentProductionContentsDtos)
-            {
                 _productionContentsService.Delete(currentProductionContentsDto.Id);
-            }
 
             _productionService.Delete(_currentProduction.Id);
             Close();

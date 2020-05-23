@@ -17,7 +17,10 @@ namespace GroceryStore.Services
 
         public List<Provider> GetAll()
         {
-            return unitOfWork.ProviderRepository.GetAll().Include(provider => provider.IdCityNavigation).ToList();
+            return unitOfWork.ProviderRepository.GetAll()
+                .Include(provider => provider.IdCityNavigation)
+                .Include(provider => provider.IdCityNavigation.IdCountryNavigation)
+                .ToList();
         }
 
         public Provider GetId(int id)

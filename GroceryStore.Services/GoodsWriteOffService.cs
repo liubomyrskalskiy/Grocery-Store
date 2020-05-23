@@ -17,8 +17,10 @@ namespace GroceryStore.Services
 
         public List<GoodsWriteOff> GetAll()
         {
-            return unitOfWork.GoodsWriteOffRepository.GetAll().Include(writeOff => writeOff.IdDeliveryShipmentNavigation.IdConsignmentNavigation)
-                .Include(writeOff => writeOff.IdEmployeeNavigation).Include(writeOff => writeOff.IdWriteOffReasonNavigation)
+            return unitOfWork.GoodsWriteOffRepository.GetAll().Include(writeOff =>
+                    writeOff.IdDeliveryShipmentNavigation.IdConsignmentNavigation)
+                .Include(writeOff => writeOff.IdEmployeeNavigation)
+                .Include(writeOff => writeOff.IdWriteOffReasonNavigation)
                 .Include(writeOff => writeOff.IdGoodsInMarketNavigation.IdGoodsNavigation).ToList();
         }
 

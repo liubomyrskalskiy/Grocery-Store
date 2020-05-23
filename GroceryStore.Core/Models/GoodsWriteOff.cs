@@ -3,9 +3,8 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class GoodsWriteOff : IBaseEntity
+    public class GoodsWriteOff : IBaseEntity
     {
-        public int Id { get; set; }
         public DateTime? Date { get; set; }
         public int? IdEmployee { get; set; }
         public int? IdWriteOffReason { get; set; }
@@ -17,5 +16,6 @@ namespace GroceryStore.Core.Models
         public virtual Employee IdEmployeeNavigation { get; set; }
         public virtual GoodsInMarket IdGoodsInMarketNavigation { get; set; }
         public virtual WriteOffReason IdWriteOffReasonNavigation { get; set; }
+        public int Id { get; set; }
     }
 }

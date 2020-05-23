@@ -1,9 +1,10 @@
-﻿using GroceryStore.Core.Models;
+﻿using System;
+using GroceryStore.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GroceryStore.DAL
 {
-    public partial class GroceryStoreDbContext : DbContext
+    public class GroceryStoreDbContext : DbContext
     {
         public GroceryStoreDbContext()
         {
@@ -48,10 +49,10 @@ namespace GroceryStore.DAL
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-H0Q68PRE\\LIUBOMYRSERV;Initial Catalog=GroceryStore;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-            }
+                optionsBuilder.UseSqlServer(
+                    "Data Source=LAPTOP-H0Q68PRE\\LIUBOMYRSERV;Initial Catalog=GroceryStore;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Basket>(entity =>
@@ -242,7 +243,7 @@ namespace GroceryStore.DAL
 
             modelBuilder.Entity<DeliveryContents>(entity =>
             {
-                entity.HasKey(e => new { e.IdConsignment, e.IdDelivery })
+                entity.HasKey(e => new {e.IdConsignment, e.IdDelivery})
                     .HasName("XPKDelivery_Contents");
 
                 entity.ToTable("Delivery_Contents");
@@ -899,6 +900,9 @@ namespace GroceryStore.DAL
             OnModelCreatingPartial(modelBuilder);
         }
 
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+        private void OnModelCreatingPartial(ModelBuilder modelBuilder)
+        {
+            
+        }
     }
 }

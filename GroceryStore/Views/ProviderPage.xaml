@@ -13,7 +13,7 @@
             <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="Padding" Value="10, 0, 50, 0" />
+            <Setter Property="Padding" Value="10, 0" />
             <Setter Property='HorizontalContentAlignment' Value="Left" />
         </Style>
 
@@ -35,13 +35,14 @@
                 </Border.Background>
             </Border>
             <DataGrid Margin="0, 0, 850 ,0" Name="DataGrid" FontFamily="Consolas" AutoGenerateColumns="False"
-                      ItemsSource="{Binding Path=ProviderDtos}" HorizontalGridLinesBrush="#FF393D47" Foreground="#FF393D47"
+                      ItemsSource="{Binding Path=ProviderDtos}" HorizontalGridLinesBrush="#FF393D47"
+                      Foreground="#FF393D47"
                       Background="Transparent"
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                       ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
                       SelectionChanged="DataGrid_OnSelectionChanged">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Company Title" Binding="{Binding Path=CompanyTitle}" />
+                    <DataGridTextColumn Header="Company" Binding="{Binding Path=CompanyTitle}" />
                     <DataGridTextColumn Header="Contact Person" Binding="{Binding Path=ContactPerson}" />
                     <DataGridTextColumn Header="Phone Number" Binding="{Binding Path=PhoneNumber}" />
                     <DataGridTextColumn Header="Address" Binding="{Binding Path=FullAddress}" />
@@ -55,7 +56,8 @@
                         <TextBox x:Name="TitleTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
                                  TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2"
                                  Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
@@ -67,8 +69,10 @@
 
                         <TextBox x:Name="ContactTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />
@@ -79,8 +83,10 @@
 
                         <TextBox x:Name="PhoneTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />
@@ -91,8 +97,10 @@
 
                         <TextBox x:Name="AddressTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />
@@ -102,7 +110,7 @@
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">City</Label>
 
                         <ComboBox x:Name="CityComboBox" ItemsSource="{Binding Path=CityDtos}"
-                                  DisplayMemberPath="Title" SelectedValuePath="Title"
+                                  DisplayMemberPath="FullTitle" SelectedValuePath="FullTitle"
                                   SelectedValue="{Binding Path=CityDTO}"
                                   Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
                                   FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"

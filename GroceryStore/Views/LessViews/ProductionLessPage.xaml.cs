@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using AutoMapper;
 using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
@@ -22,15 +15,13 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views.LessViews
 {
     /// <summary>
-    /// Interaction logic for ProductionLessPage.xaml
+    ///     Interaction logic for ProductionLessPage.xaml
     /// </summary>
     public partial class ProductionLessPage : Page, IActivable
     {
-        private readonly IProductionService _productionService;
-        private AppSettings _settings;
         private readonly IMapper _mapper;
-
-        private List<ProductionDTO> ProductionDtos { get; set; }
+        private readonly IProductionService _productionService;
+        private readonly AppSettings _settings;
 
         public ProductionLessPage(IProductionService productionService, IOptions<AppSettings> settings, IMapper mapper)
         {
@@ -42,28 +33,131 @@ namespace GroceryStore.Views.LessViews
             UpdateDataGrid();
         }
 
-        private void UpdateDataGrid()
-        {
-            ProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
-
-            DataGrid.ItemsSource = ProductionDtos;
-        }
+        private List<ProductionDTO> ProductionDtos { get; set; }
+        private List<ProductionDTO> FilteredProductionDtos { get; set; }
 
         public Task ActivateAsync(object parameter)
         {
             return Task.CompletedTask;
         }
 
+        private void UpdateDataGrid()
+        {
+            ProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
+
+            FilteredProductionDtos = ProductionDtos;
+
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                var tempList = FilteredProductionDtos.Where(item => item.Title.Contains(TitleFilterTextBox.Text))
+                    .ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            if (DateFromFilterTextBox.Text != "")
+            {
+                var tempDate = DateTime.Parse(DateFromFilterTextBox.Text);
+                var tempList = FilteredProductionDtos
+                    .Where(item => DateTime.Compare(item.ManufactureDate ?? default, tempDate) >= 0).ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            if (DateToFilterTextBox.Text != "")
+            {
+                var tempDate = DateTime.Parse(DateToFilterTextBox.Text);
+                var tempList = FilteredProductionDtos
+                    .Where(item => DateTime.Compare(item.ManufactureDate ?? default, tempDate) <= 0).ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            if (CategoryFilterComboBox.SelectedItem != null)
+            {
+                var tempCategoty = (CategoryDTO) CategoryFilterComboBox.SelectedItem;
+                var tempList = FilteredProductionDtos.Where(item => item.Category == tempCategoty.Title).ToList();
+                FilteredProductionDtos = tempList;
+            }
+
+            DataGrid.ItemsSource = FilteredProductionDtos;
+        }
+
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
             {
-                ProductCodeTextBox.Text = ProductionDtos[DataGrid.SelectedIndex].ProductCode;
-                ProductionCodeTextBox.Text = ProductionDtos[DataGrid.SelectedIndex].ProductionCode;
-                AmountTextBox.Text = ProductionDtos[DataGrid.SelectedIndex].Amount.ToString();
-                LoginTextBox.Text = ProductionDtos[DataGrid.SelectedIndex].Login;
-                TotalCostTextBox.Text = ProductionDtos[DataGrid.SelectedIndex].TotalCost.ToString();
+                ProductCodeTextBox.Text = FilteredProductionDtos[DataGrid.SelectedIndex].ProductCode;
+                ProductionCodeTextBox.Text = FilteredProductionDtos[DataGrid.SelectedIndex].ProductionCode;
+                AmountTextBox.Text = FilteredProductionDtos[DataGrid.SelectedIndex].Amount.ToString();
+                LoginTextBox.Text = FilteredProductionDtos[DataGrid.SelectedIndex].Login;
+                TotalCostTextBox.Text = FilteredProductionDtos[DataGrid.SelectedIndex].TotalCost.ToString();
             }
+        }
+
+        private void ClearTitleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            TitleFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchTitleBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
+                TitleFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearDateFromFilterFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            DateFromFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchDateFromFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DateTime.TryParse(DateFromFilterTextBox.Text, out _))
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Cannot parse date you've entered! Please check data you've entered");
+                DateFromFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearDateToFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            DateToFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchDateToFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DateTime.TryParse(DateToFilterTextBox.Text, out _))
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Cannot parse date you've entered! Please check data you've entered");
+                DateToFilterTextBox.Focus();
+            }
+        }
+
+        private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CategoryFilterComboBox.SelectedItem != null) UpdateDataGrid();
+        }
+
+        private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            CategoryFilterComboBox.SelectedItem = null;
+            UpdateDataGrid();
         }
     }
 }

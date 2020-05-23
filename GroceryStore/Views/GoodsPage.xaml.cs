@@ -9,27 +9,21 @@ using AutoMapper;
 using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
 using GroceryStore.Core.DTO;
-using GroceryStore.Core.Mapping;
 using GroceryStore.Core.Models;
 using Microsoft.Extensions.Options;
 
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for GoodsPage.xaml
+    ///     Interaction logic for GoodsPage.xaml
     /// </summary>
     public partial class GoodsPage : Page, IActivable
     {
-        private readonly IGoodsService _goodsService;
         private readonly ICategoryService _categoryService;
+        private readonly IGoodsService _goodsService;
+        private readonly IMapper _mapper;
         private readonly IProducerService _producerService;
         private readonly AppSettings _settings;
-        private readonly IMapper _mapper;
-
-        public List<GoodsDTO> GoodsDtos { get; set; }
-        public List<GoodsDTO> FilteredGoodsDtos { get; set; }
-        public List<CategoryDTO> CategoryDtos { get; set; }
-        public List<ProducerDTO> ProducerDtos { get; set; }
 
         public GoodsPage(IGoodsService goodsService, ICategoryService categoryService, IProducerService producerService,
             IOptions<AppSettings> settings, IMapper mapper)
@@ -43,6 +37,25 @@ namespace GroceryStore.Views
             InitializeComponent();
         }
 
+        public List<GoodsDTO> GoodsDtos { get; set; }
+        public List<GoodsDTO> FilteredGoodsDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
+        public List<ProducerDTO> ProducerDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
+
+            ProducerComboBox.ItemsSource = ProducerDtos;
+            ProducerFilterComboBox.ItemsSource = ProducerDtos;
+            CategoryComboBox.ItemsSource = CategoryDtos;
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
+            UpdateDataGrid();
+
+            return Task.CompletedTask;
+        }
+
         private void UpdateDataGrid()
         {
             GoodsDtos = _mapper.Map<List<Goods>, List<GoodsDTO>>(_goodsService.GetAll());
@@ -52,18 +65,21 @@ namespace GroceryStore.Views
                 var tempList = FilteredGoodsDtos.Where(item => item.Title.Contains(TitleFilterTextBox.Text)).ToList();
                 FilteredGoodsDtos = tempList;
             }
+
             if (ProducerFilterComboBox.SelectedItem != null)
             {
-                var tempProducer = (ProducerDTO)ProducerFilterComboBox.SelectedItem;
+                var tempProducer = (ProducerDTO) ProducerFilterComboBox.SelectedItem;
                 var tempList = FilteredGoodsDtos.Where(item => item.ProducerTitle == tempProducer.Title).ToList();
                 FilteredGoodsDtos = tempList;
             }
+
             if (CategoryFilterComboBox.SelectedItem != null)
             {
-                var tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
+                var tempCategoty = (CategoryDTO) CategoryFilterComboBox.SelectedItem;
                 var tempList = FilteredGoodsDtos.Where(item => item.CategoryTitle == tempCategoty.Title).ToList();
                 FilteredGoodsDtos = tempList;
             }
+
             DataGrid.ItemsSource = FilteredGoodsDtos;
         }
 
@@ -119,24 +135,10 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
-            ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
-
-            ProducerComboBox.ItemsSource = ProducerDtos;
-            ProducerFilterComboBox.ItemsSource = ProducerDtos;
-            CategoryComboBox.ItemsSource = CategoryDtos;
-            CategoryFilterComboBox.ItemsSource = CategoryDtos;
-            UpdateDataGrid();
-
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Goods goods = new Goods();
+            var goods = new Goods();
             CategoryDTO tempCategory;
             ProducerDTO tempProducer;
             goods.Id = GoodsDtos[^1]?.Id + 1 ?? 1;
@@ -146,9 +148,9 @@ namespace GroceryStore.Views
             goods.Components = ComponentsTextBox.Text;
             goods.Price = Convert.ToDouble(PriceTextBox.Text);
             goods.ProductCode = goods.Id.ToString("D5");
-            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            tempCategory = (CategoryDTO) CategoryComboBox.SelectedItem;
             goods.IdCategory = tempCategory.Id;
-            tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
+            tempProducer = (ProducerDTO) ProducerComboBox.SelectedItem;
             goods.IdProducer = tempProducer.Id;
 
             _goodsService.Create(goods);
@@ -159,7 +161,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Goods goods = new Goods();
+            var goods = new Goods();
             CategoryDTO tempCategory;
             ProducerDTO tempProducer;
             goods.Id = FilteredGoodsDtos[DataGrid.SelectedIndex].Id;
@@ -170,10 +172,10 @@ namespace GroceryStore.Views
             goods.Price = Convert.ToDouble(PriceTextBox.Text);
             goods.ProductCode = FilteredGoodsDtos[DataGrid.SelectedIndex].ProductCode;
 
-            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            tempCategory = (CategoryDTO) CategoryComboBox.SelectedItem;
             goods.IdCategory = tempCategory.Id;
 
-            tempProducer = (ProducerDTO)ProducerComboBox.SelectedItem;
+            tempProducer = (ProducerDTO) ProducerComboBox.SelectedItem;
             goods.IdProducer = tempProducer.Id;
 
             _goodsService.Update(goods);
@@ -191,7 +193,8 @@ namespace GroceryStore.Views
                 PriceTextBox.Text = FilteredGoodsDtos[DataGrid.SelectedIndex].Price.ToString();
                 ProducerComboBox.SelectedItem = ProducerDtos.FirstOrDefault(item =>
                     item.Title == FilteredGoodsDtos[DataGrid.SelectedIndex].ProducerTitle);
-                CategoryComboBox.SelectedItem = CategoryDtos.FirstOrDefault(item => item.Title == FilteredGoodsDtos[DataGrid.SelectedIndex].CategoryTitle);
+                CategoryComboBox.SelectedItem = CategoryDtos.FirstOrDefault(item =>
+                    item.Title == FilteredGoodsDtos[DataGrid.SelectedIndex].CategoryTitle);
             }
         }
 
@@ -213,18 +216,12 @@ namespace GroceryStore.Views
 
         private void ProducerFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ProducerFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (ProducerFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CategoryFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (CategoryFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void ClearProducerFilterBtn_OnClick(object sender, RoutedEventArgs e)
@@ -249,7 +246,6 @@ namespace GroceryStore.Views
             {
                 MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
                 TitleFilterTextBox.Focus();
-                return;
             }
         }
 

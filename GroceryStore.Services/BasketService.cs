@@ -17,7 +17,11 @@ namespace GroceryStore.Services
 
         public List<Basket> GetAll()
         {
-            return unitOfWork.BasketRepository.GetAll().Include(basket => basket.IdSaleNavigation).Include(basket => basket.IdGoodsInMarketNavigation.IdGoodsNavigation).ToList();
+            return unitOfWork.BasketRepository.GetAll()
+                .Include(basket => basket.IdSaleNavigation)
+                .Include(basket => basket.IdGoodsInMarketNavigation.IdGoodsNavigation)
+                .Include(basket => basket.IdGoodsInMarketNavigation.IdGoodsNavigation.IdProducerNavigation)
+                .ToList();
         }
 
         public Basket GetId(int id)

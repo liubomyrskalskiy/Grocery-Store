@@ -39,21 +39,25 @@
                 <Grid HorizontalAlignment="Stretch">
                     <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Surname:</Label>
                     <TextBox x:Name="SurnameFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1" Margin="85,0,80,5"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
+                             Margin="85,0,80,5"
                              TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
                              SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                             BorderThickness="2" Background="#26FFFFFF" TextChanged="SurnameFilterTextBox_OnTextChanged">
+                             BorderThickness="2" Background="#26FFFFFF"
+                             TextChanged="SurnameFilterTextBox_OnTextChanged">
                         <TextBox.Effect>
                             <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                               BlurRadius="20" />
                         </TextBox.Effect>
                     </TextBox>
 
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="ClearSurnameFilterBtn_OnClick">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
                     </Button>
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="SearchSurnameBtn_OnClick" Margin="0,0,40,0">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
                     </Button>
@@ -62,7 +66,8 @@
                 <Grid HorizontalAlignment="Stretch">
                     <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Phone:</Label>
                     <TextBox x:Name="PhoneFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1" Margin="85,0,80,5"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
+                             Margin="85,0,80,5"
                              TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
                              SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
                              BorderThickness="2" Background="#26FFFFFF" TextChanged="PhoneFilterTextBox_OnTextChanged">
@@ -72,11 +77,13 @@
                         </TextBox.Effect>
                     </TextBox>
 
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="ClearPhoneFilterBtn_OnClick">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
                     </Button>
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="SearchPhoneBtn_OnClick" Margin="0,0,40,0">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
                     </Button>
@@ -88,18 +95,20 @@
 
                     <ComboBox x:Name="CityFilterComboBox" ItemsSource="{Binding Path=CityDtos}"
                               HorizontalAlignment="Stretch"
-                              DisplayMemberPath="Title" SelectedValuePath="Title"
+                              DisplayMemberPath="FullTitle" SelectedValuePath="FullTitle"
                               SelectedValue="{Binding Path=CityDTO}" Margin="85,0,40,0"
                               Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
                               FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CityFilterComboBox_OnSelectionChanged">
+                              VerticalContentAlignment="Center" BorderThickness="2"
+                              SelectionChanged="CityFilterComboBox_OnSelectionChanged">
                         <ComboBox.Effect>
                             <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                               BlurRadius="20" />
                         </ComboBox.Effect>
                     </ComboBox>
 
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="ClearFilterBtn_OnClick">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
                     </Button>
@@ -121,24 +130,24 @@
                           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
                           SelectionChanged="DataGrid_OnSelectionChanged">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="First Name" Binding="{Binding Path=FirstName}" />
-                        <DataGridTextColumn Header="Last Name" Binding="{Binding Path=LastName}" />
+                        <DataGridTextColumn Header="Account" Binding="{Binding Path=AccountNumber}" />
+                        <DataGridTextColumn Header="Name" Binding="{Binding Path=FullName}" />
                         <DataGridTextColumn Header="Phone Number" Binding="{Binding Path=PhoneNumber}" />
                         <DataGridTextColumn Header="Address" Binding="{Binding Path=FullAddress}" />
-                        <DataGridTextColumn Header="Account Number" Binding="{Binding Path=AccountNumber}" />
                         <DataGridTextColumn Header="Bonuses" Binding="{Binding Path=Bonuses}" />
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
             <Grid x:Name="AppGridMenu" VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="800">
-                <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Width="750" Margin="0,20,0,0">
+                <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Width="750" Margin="0,20,0,0">
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">First Name</Label>
 
                         <TextBox x:Name="FirstNameTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
                                  TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2"
                                  Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
@@ -150,8 +159,10 @@
 
                         <TextBox x:Name="LastNameTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />
@@ -162,8 +173,10 @@
 
                         <TextBox x:Name="PhoneNumberTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />
@@ -174,8 +187,10 @@
 
                         <TextBox x:Name="AddressTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />
@@ -185,7 +200,7 @@
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top" FontFamily="Comic Sans MS">City</Label>
 
                         <ComboBox x:Name="CityComboBox" ItemsSource="{Binding Path=CityDtos}"
-                                  DisplayMemberPath="Title" SelectedValuePath="Title"
+                                  DisplayMemberPath="FullTitle" SelectedValuePath="FullTitle"
                                   SelectedValue="{Binding Path=CityDTO}"
                                   Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
                                   FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"

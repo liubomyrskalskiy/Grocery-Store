@@ -5,6 +5,5 @@ namespace GroceryStore.Core.Abstractions.IServices
 {
     public interface ICityService : IBaseService<City>
     {
-        
     }
 }

@@ -18,7 +18,6 @@ namespace GroceryStore.Services
         public List<City> GetAll()
         {
             return unitOfWork.CityRepository.GetAll().Include(city => city.IdCountryNavigation).ToList();
-
         }
 
         public City GetId(int id)

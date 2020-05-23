@@ -37,7 +37,6 @@
                     <DataGridTextColumn Header="Market" Binding="{Binding Path=Address}" />
                     <DataGridTextColumn Header="Shipment Date" Binding="{Binding Path=ShipmentDateTime}" />
                     <DataGridTextColumn Header="Amount" Binding="{Binding Path=StringAmount}" />
-                    <!--<DataGridTextColumn Header="Price" Binding="{Binding Path=StringIncomePrice}" />-->
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>

@@ -3,17 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using AutoMapper;
 using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
@@ -21,31 +14,26 @@ using GroceryStore.Core.DTO;
 using GroceryStore.Core.Models;
 using GroceryStore.NavigationTransferObjects;
 using Microsoft.Extensions.Options;
+using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Pdf;
 
 namespace GroceryStore.Windows
 {
     /// <summary>
-    /// Interaction logic for SaleWindow.xaml
+    ///     Interaction logic for SaleWindow.xaml
     /// </summary>
     public partial class SaleWindow : Window, IActivable
     {
-        private readonly ISaleService _saleService;
-        private readonly IBasketService _basketService;
         private readonly IBasketOwnService _basketOwnService;
-        private readonly IGoodsInMarketService _goodsInMarketService;
+        private readonly IBasketService _basketService;
         private readonly IGoodsInMarketOwnService _goodsInMarketOwnService;
-        private readonly AppSettings _settings;
+        private readonly IGoodsInMarketService _goodsInMarketService;
         private readonly IMapper _mapper;
-        private Sale _currentSale;
+        private readonly ISaleService _saleService;
+        private readonly AppSettings _settings;
         private EmployeeDTO _curreEmployee;
-
-        public List<Basket> CurrentBaskets { get; set; }
-        public List<BasketOwn> CurrentBasketOwns { get; set; }
-        public List<UniversalBasketDTO> UniversalBasketDtos { get; set; }
-
-        public List<UniversalBasketDTO> BasketDtos { get; set; }
-
-        public List<UniversalBasketDTO> BasketOwnDtos { get; set; }
+        private Sale _currentSale;
 
         public SaleWindow(ISaleService saleService, IOptions<AppSettings> settings, IMapper mapper,
             IBasketOwnService basketOwnService, IBasketService basketService,
@@ -61,6 +49,14 @@ namespace GroceryStore.Windows
 
             InitializeComponent();
         }
+
+        public List<Basket> CurrentBaskets { get; set; }
+        public List<BasketOwn> CurrentBasketOwns { get; set; }
+        public List<UniversalBasketDTO> UniversalBasketDtos { get; set; }
+
+        public List<UniversalBasketDTO> BasketDtos { get; set; }
+
+        public List<UniversalBasketDTO> BasketOwnDtos { get; set; }
 
         public Task ActivateAsync(object parameter)
         {
@@ -96,16 +92,10 @@ namespace GroceryStore.Windows
         private void BtnClose(object sender, RoutedEventArgs e)
         {
             foreach (var basketDto in UniversalBasketDtos)
-            {
                 if (!basketDto.IsOwn)
-                {
                     _basketService.Delete(basketDto.Id);
-                }
                 else
-                {
                     _basketOwnService.Delete(basketDto.Id);
-                }
-            }
 
             _saleService.Delete(_currentSale.Id);
             Close();
@@ -136,13 +126,13 @@ namespace GroceryStore.Windows
             if (OwnCheckBox.IsChecked == true)
             {
                 if (UniversalBasketDtos.FirstOrDefault(item =>
-                        item.ProductCode == ProductCodeTextBox.Text && item.IsOwn == true) != null)
+                        item.ProductCode == ProductCodeTextBox.Text && item.IsOwn) != null)
                 {
                     MessageBox.Show("There is such goods in basket already!");
                     return;
                 }
 
-                BasketOwn basketOwn = new BasketOwn();
+                var basketOwn = new BasketOwn();
                 GoodsInMarketOwn tempGimo;
                 basketOwn.Id = BasketOwnDtos[^1]?.Id + 1 ?? 1;
                 basketOwn.Amount = Convert.ToDouble(AmountTextBox.Text);
@@ -158,8 +148,8 @@ namespace GroceryStore.Windows
                     MessageBox.Show("There is no such product or there is not enough goods in your store!");
                     return;
                 }
-                else
-                    basketOwn.IdGoodsInMarketOwn = tempGimo.Id;
+
+                basketOwn.IdGoodsInMarketOwn = tempGimo.Id;
 
                 CurrentBasketOwns.Add(basketOwn);
 
@@ -175,7 +165,7 @@ namespace GroceryStore.Windows
                     return;
                 }
 
-                Basket basket = new Basket();
+                var basket = new Basket();
                 GoodsInMarket tempgim;
                 basket.Id = BasketDtos[^1]?.Id + 1 ?? 1;
                 basket.Amount = Convert.ToDouble(AmountTextBox.Text);
@@ -189,8 +179,8 @@ namespace GroceryStore.Windows
                     MessageBox.Show("There is no such product or there is not enough product in your store!");
                     return;
                 }
-                else
-                    basket.IdGoodsInMarket = tempgim.Id;
+
+                basket.IdGoodsInMarket = tempgim.Id;
 
                 CurrentBaskets.Add(basket);
 
@@ -203,7 +193,6 @@ namespace GroceryStore.Windows
         {
             if (!Regex.Match(ProductCodeTextBox.Text, @"^\d{5}$").Success)
             {
-                return;
             }
             else
             {
@@ -222,14 +211,13 @@ namespace GroceryStore.Windows
                         WeightLabel.Content = "";
                         PriceLabel.Content = "";
                         AmountLabel.Content = "";
-                        return;
                     }
                     else
                     {
                         goodsInMarketOwnDto = _mapper.Map<GoodsInMarketOwn, GoodsInMarketOwnDTO>(tempGimo);
                         GoodTitleLabel.Content = "Good: " + goodsInMarketOwnDto.Good;
                         ProducerTitleLabel.Content =
-                            "Manufacture date: " + goodsInMarketOwnDto.ManufactureDate.ToString();
+                            "Manufacture date: " + goodsInMarketOwnDto.ManufactureDate;
                         WeightLabel.Content = "Unit weight: " + goodsInMarketOwnDto.Weight;
                         PriceLabel.Content = "Price: " + goodsInMarketOwnDto.Price;
                         AmountLabel.Content = "Remains in store: " + goodsInMarketOwnDto.Amount;
@@ -249,7 +237,6 @@ namespace GroceryStore.Windows
                         WeightLabel.Content = "";
                         PriceLabel.Content = "";
                         AmountLabel.Content = "";
-                        return;
                     }
                     else
                     {
@@ -257,39 +244,75 @@ namespace GroceryStore.Windows
                         GoodTitleLabel.Content = "Good: " + goodsInMarketDto.Good;
                         ProducerTitleLabel.Content = "Producer: " + goodsInMarketDto.Producer;
                         WeightLabel.Content = "Unit weight: " + goodsInMarketDto.Weight;
-                        PriceLabel.Content = "Price: " + goodsInMarketDto.Price.ToString();
-                        AmountLabel.Content = "Remains in store: " + goodsInMarketDto.Amount.ToString();
+                        PriceLabel.Content = "Price: " + goodsInMarketDto.Price;
+                        AmountLabel.Content = "Remains in store: " + goodsInMarketDto.Amount;
                     }
                 }
             }
         }
 
-        private void formCheck()
+        private void FormCheck()
         {
-            List<string> lines = new List<string>() { $"Check#          {_currentSale.CheckNumber}", $"Employee:          {_curreEmployee.FullName}", $"Date:     {_currentSale.Date}" };
-            lines.Add("----------------------------------------");
+            var titleLines = new List<string>
+            {
+                $"Check №{_currentSale.CheckNumber,33}", $"Employee:{_curreEmployee.FullName,31}",
+                $"Date:{_currentSale.Date,35}", "----------------------------------------"
+            };
+
+            var goodsList = new List<string>();
             foreach (var universalBasketDto in UniversalBasketDtos)
             {
-                lines.Add("");
-                lines.Add($"{universalBasketDto.Title}     {universalBasketDto.Amount,0:0.00}     {universalBasketDto.Price}");
-                lines.Add("----------------------------------------");
-            }
-            lines.Add("----------------------------------------");
-            lines.Add($"Total:          {_currentSale.Total,0:C2}");
-
-            if (File.Exists($"Check#{_currentSale.CheckNumber}.txt"))
-            {
-                File.Delete($"Check#{_currentSale.CheckNumber}.txt");
+                goodsList.Add("----------------------------------------");
+                goodsList.Add($"{universalBasketDto.Producer}");
+                goodsList.Add($"{universalBasketDto.Title,10}");
+                goodsList.Add($"{universalBasketDto.Amount,20}{universalBasketDto.Price,20}");
             }
 
-            using (StreamWriter file = File.CreateText($"Check#{_currentSale.CheckNumber}.txt"))
+            var totalList = new List<string>
+                {"----------------------------------------", "----------------------------------------"};
+            if (_currentSale.IdClient != null) totalList.Add($"{"Discount:",30}{"5%",10}");
+
+            totalList.Add($"{"Total:",30}{_currentSale.Total,10}");
+
+            if (File.Exists($"Check{_currentSale.CheckNumber}.pdf"))
+                File.Delete($"Check{_currentSale.CheckNumber}.pdf");
+
+            var pdf = new PdfDocument();
+            var pdfPage = pdf.Pages.Add();
+            var graph = XGraphics.FromPdfPage(pdfPage);
+            var titleFont = new XFont("Consolas", 8, XFontStyle.Bold);
+            var font = new XFont("Consolas", 8, XFontStyle.Regular);
+            var tf = new XTextFormatter(graph);
+            var yPoint = 0;
+
+            foreach (var titleLine in titleLines)
             {
-                foreach (string line in lines)
-                {
-                    file.WriteLine(line.PadLeft(40));
-                }
+                tf.Alignment = XParagraphAlignment.Left;
+                tf.DrawString(titleLine, titleFont, XBrushes.Black, new XRect(8, yPoint, pdfPage.Width, pdfPage.Height),
+                    XStringFormats.TopLeft);
+                yPoint += 8;
             }
-            Process.Start("notepad.exe", $"Check#{_currentSale.CheckNumber}.txt");
+
+            foreach (var good in goodsList)
+            {
+                tf.Alignment = XParagraphAlignment.Left;
+                tf.DrawString(good, font, XBrushes.Black, new XRect(8, yPoint, pdfPage.Width, pdfPage.Height),
+                    XStringFormats.TopLeft);
+                yPoint += 8;
+            }
+
+            foreach (var total in totalList)
+            {
+                tf.Alignment = XParagraphAlignment.Left;
+                tf.DrawString(total, titleFont, XBrushes.Black, new XRect(8, yPoint, pdfPage.Width, pdfPage.Height),
+                    XStringFormats.TopLeft);
+                yPoint += 8;
+            }
+
+            var pdfFilename = $"Check{_currentSale.CheckNumber}.pdf";
+            pdf.Save(pdfFilename);
+            Process.Start("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+                Path.GetFullPath(pdfFilename));
         }
 
         private void DoneGoodBtn_OnClick(object sender, RoutedEventArgs e)
@@ -310,7 +333,7 @@ namespace GroceryStore.Windows
                 _goodsInMarketOwnService.Update(gimo);
             }
 
-            formCheck();
+            FormCheck();
 
             Close();
         }

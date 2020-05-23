@@ -4,14 +4,14 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class Consignment : IBaseEntity
+    public class Consignment : IBaseEntity
     {
         public Consignment()
         {
             DeliveryContents = new HashSet<DeliveryContents>();
             DeliveryShipment = new HashSet<DeliveryShipment>();
         }
-        public int Id { get; set; }
+
         public string ConsignmentNumber { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public DateTime? BestBefore { get; set; }
@@ -22,5 +22,7 @@ namespace GroceryStore.Core.Models
         public virtual Goods IdGoodsNavigation { get; set; }
         public virtual ICollection<DeliveryContents> DeliveryContents { get; set; }
         public virtual ICollection<DeliveryShipment> DeliveryShipment { get; set; }
+
+        public int Id { get; set; }
     }
 }

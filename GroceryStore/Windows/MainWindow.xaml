@@ -14,6 +14,46 @@
                 <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Height, ElementName=LogInGridMenu}" />
                 <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="280" />
             </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)"
+                                           Storyboard.TargetName="StoreManagementMenu">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Height, ElementName=StoreManagementMenu}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)"
+                                           Storyboard.TargetName="StoreManagementMenuCloseBtn">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Width, ElementName=StoreManagementMenuCloseBtn}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)"
+                                           Storyboard.TargetName="ProductManagementMenu">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Height, ElementName=ProductManagementMenu}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)"
+                                           Storyboard.TargetName="ProductManagementMenuCloseBtn">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Width, ElementName=ProductManagementMenuCloseBtn}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)"
+                                           Storyboard.TargetName="StaffManagementMenu">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Height, ElementName=StaffManagementMenu}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)"
+                                           Storyboard.TargetName="StaffManagementMenuCloseBtn">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Width, ElementName=StaffManagementMenuCloseBtn}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Height)"
+                                           Storyboard.TargetName="OtherManagementMenu">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Height, ElementName=OtherManagementMenu}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Width)"
+                                           Storyboard.TargetName="OtherManagementMenuCloseBtn">
+                <EasingDoubleKeyFrame KeyTime="0" Value="{Binding Width, ElementName=OtherManagementMenuCloseBtn}" />
+                <EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="0" />
+            </DoubleAnimationUsingKeyFrames>
         </Storyboard>
 
         <Storyboard x:Key="LogInMenuClose">
@@ -306,11 +346,14 @@
         <Grid VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0, 50, 50,0" Width="700">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                    <Label x:Name="RoleLabel" Content="" Foreground="White" Margin="0,0,10,0" FontSize="20" VerticalAlignment="Top" FontFamily="Comic Sans MS"/>
-                    <Label x:Name="NameLabel" Content="" Foreground="White" Margin="10,0,0,0" FontSize="20" VerticalAlignment="Top" FontFamily="Comic Sans MS"/>
+                    <Label x:Name="RoleLabel" Content="" Foreground="White" Margin="0,0,10,0" FontSize="20"
+                           VerticalAlignment="Top" FontFamily="Comic Sans MS" />
+                    <Label x:Name="NameLabel" Content="" Foreground="White" Margin="10,0,0,0" FontSize="20"
+                           VerticalAlignment="Top" FontFamily="Comic Sans MS" />
                 </StackPanel>
-                
-                <Label x:Name="MarketLabel" Content="" Foreground="White" FontSize="20" VerticalAlignment="Top" FontFamily="Comic Sans MS"/>
+
+                <Label x:Name="MarketLabel" Content="" Foreground="White" FontSize="20" VerticalAlignment="Top"
+                       FontFamily="Comic Sans MS" />
             </StackPanel>
             <Button x:Name="LogOutBtn" Margin="0,0,5,0" HorizontalAlignment="Right" Width="120" Height="40"
                     BorderBrush="{x:Null}" Padding="0" Content="Log Out" Background="#FFD18143"
@@ -458,49 +501,6 @@
                             HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
                             Click="ProductionLessBtn_Click" />
                 </ListViewItem>
-
-                <!--<ListViewItem HorizontalContentAlignment="Center" Padding="0">
-                    <StackPanel>
-                        <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="400">
-                            <Button x:Name="ProductionManagementMenuOpenBtn" Height="40" Background="{x:Null}"
-                                    BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Production management"
-                                    FontFamily="Comic Sans MS" />
-
-                            <Button x:Name="ProductionManagementMenuCloseBtn" VerticalAlignment="Stretch"
-                                    HorizontalAlignment="Right" Width="0" Height="40" Background="{x:Null}"
-                                    BorderBrush="{x:Null}" Padding="0">
-                                <materialDesign:PackIcon Foreground="#ffffff" Kind="KeyboardArrowUp" Width="30"
-                                                         Height="30" />
-                            </Button>
-                        </Grid>
-
-                        <Grid x:Name="ProductionManagementMenu" Background="#33FFFFFF" Height="0">
-                            <ListView ScrollViewer.VerticalScrollBarVisibility="Disabled" Margin="0"
-                                      VerticalAlignment="Stretch">
-                                <ListViewItem HorizontalContentAlignment="Center" Padding="0">
-                                    <Button x:Name="ProductionBtn" Height="40" Background="{x:Null}"
-                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Production"
-                                            HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
-                                            Click="ProductionBtn_Click" />
-                                </ListViewItem>
-
-                                <ListViewItem HorizontalContentAlignment="Center" Padding="0">
-                                    <Button x:Name="ProductionLessBtn" Height="40" Background="{x:Null}"
-                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Production"
-                                            HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
-                                            Click="ProductionLessBtn_Click" />
-                                </ListViewItem>
-
-                                <ListViewItem HorizontalContentAlignment="Center" Padding="0">
-                                    <Button x:Name="ProductionContentsBtn" Height="40" Background="{x:Null}"
-                                            BorderBrush="{x:Null}" Padding="0" Margin="0" Content="Production contents"
-                                            HorizontalAlignment="Stretch" Width="400" FontFamily="Comic Sans MS"
-                                            Click="ProductionContentsBtn_Click" />
-                                </ListViewItem>
-                            </ListView>
-                        </Grid>
-                    </StackPanel>
-                </ListViewItem>-->
 
                 <ListViewItem HorizontalContentAlignment="Center" Padding="0">
                     <StackPanel>

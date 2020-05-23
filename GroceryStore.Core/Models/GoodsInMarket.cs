@@ -3,7 +3,7 @@ using GroceryStore.Core.Models.Base;
 
 namespace GroceryStore.Core.Models
 {
-    public partial class GoodsInMarket : IBaseEntity
+    public class GoodsInMarket : IBaseEntity
     {
         public GoodsInMarket()
         {
@@ -12,7 +12,7 @@ namespace GroceryStore.Core.Models
             GoodsWriteOff = new HashSet<GoodsWriteOff>();
             ProductionContents = new HashSet<ProductionContents>();
         }
-        public int Id { get; set; }
+
         public double? Amount { get; set; }
         public int? IdMarket { get; set; }
         public int? IdGoods { get; set; }
@@ -23,5 +23,7 @@ namespace GroceryStore.Core.Models
         public virtual ICollection<DeliveryShipment> DeliveryShipment { get; set; }
         public virtual ICollection<GoodsWriteOff> GoodsWriteOff { get; set; }
         public virtual ICollection<ProductionContents> ProductionContents { get; set; }
+
+        public int Id { get; set; }
     }
 }

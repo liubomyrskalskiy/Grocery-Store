@@ -8,22 +8,19 @@ using AutoMapper;
 using GroceryStore.Core.Abstractions;
 using GroceryStore.Core.Abstractions.IServices;
 using GroceryStore.Core.DTO;
-using GroceryStore.Core.Mapping;
 using GroceryStore.Core.Models;
 using Microsoft.Extensions.Options;
 
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for RolesPage.xaml
+    ///     Interaction logic for RolesPage.xaml
     /// </summary>
     public partial class RolesPage : Page, IActivable
     {
-        private readonly IRoleService _roleService;
-        private AppSettings _settings;
         private readonly IMapper _mapper;
-
-        public List<RoleDTO> RoleDtos { get; set; }
+        private readonly IRoleService _roleService;
+        private readonly AppSettings _settings;
 
         public RolesPage(IRoleService roleService, IOptions<AppSettings> settings, IMapper mapper)
         {
@@ -34,6 +31,13 @@ namespace GroceryStore.Views
             InitializeComponent();
 
             UpdateDataGrid();
+        }
+
+        public List<RoleDTO> RoleDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -62,11 +66,6 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
@@ -79,10 +78,12 @@ namespace GroceryStore.Views
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Role role = new Role();
-            role.Id = RoleDtos[^1]?.Id + 1 ?? 1;
-            role.Title = TitleTextBox.Text;
-            role.Salary = Convert.ToInt32(SalaryTextBox.Text);
+            var role = new Role
+            {
+                Id = RoleDtos[^1]?.Id + 1 ?? 1,
+                Title = TitleTextBox.Text,
+                Salary = Convert.ToInt32(SalaryTextBox.Text)
+            };
             _roleService.Create(role);
             UpdateDataGrid();
         }
@@ -91,10 +92,12 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Role role = new Role();
-            role.Id = RoleDtos[DataGrid.SelectedIndex].Id;
-            role.Title = TitleTextBox.Text;
-            role.Salary = Convert.ToInt32(SalaryTextBox.Text);
+            var role = new Role
+            {
+                Id = RoleDtos[DataGrid.SelectedIndex].Id,
+                Title = TitleTextBox.Text,
+                Salary = Convert.ToInt32(SalaryTextBox.Text)
+            };
             _roleService.Update(role);
             UpdateDataGrid();
         }

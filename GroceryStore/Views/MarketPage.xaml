@@ -12,7 +12,7 @@
             <Setter Property="Foreground" Value="#FF393D47" />
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="Padding" Value="10, 0, 100, 0" />
+            <Setter Property="Padding" Value="10, 0" />
             <Setter Property='HorizontalContentAlignment' Value="Left" />
         </Style>
 
@@ -53,114 +53,114 @@
                     <StackPanel VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Address
                         </Label>
 
                         <TextBox x:Name="AddressTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             Phone Number
                         </Label>
 
                         <TextBox x:Name="PhoneNumberTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
-                                         VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                         VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
-                                         SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
-                                         BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                                 BorderThickness="2" Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </TextBox.Effect>
                         </TextBox>
 
                         <Label Foreground="#FF393D47" FontSize="15" VerticalAlignment="Top"
-                                       FontFamily="Comic Sans MS">
+                               FontFamily="Comic Sans MS">
                             City Title
                         </Label>
 
                         <ComboBox x:Name="CityComboBox" ItemsSource="{Binding Path=CityDtos}"
-                                          DisplayMemberPath="Title" SelectedValuePath="Title"
-                                          SelectedValue="{Binding Path=CityDTO}"
-                                          Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
-                                          FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                                          VerticalContentAlignment="Center" BorderThickness="2">
+                                  DisplayMemberPath="FullTitle" SelectedValuePath="FullTitle"
+                                  SelectedValue="{Binding Path=CityDTO}"
+                                  Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
+                                  FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
+                                  VerticalContentAlignment="Center" BorderThickness="2">
                             <ComboBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  BlurRadius="20" />
                             </ComboBox.Effect>
                         </ComboBox>
 
                         <Button x:Name="CreateBtn"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        Height="40"
-                                        BorderBrush="{x:Null}"
-                                        Padding="0"
-                                        Content="Create"
-                                        Background="#FF393D47"
-                                        Foreground="#FFFFFFFF"
-                                        FontFamily="Comic Sans MS"
-                                        Click="CreateBtn_OnClick">
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Stretch"
+                                Height="40"
+                                BorderBrush="{x:Null}"
+                                Padding="0"
+                                Content="Create"
+                                Background="#FF393D47"
+                                Foreground="#FFFFFFFF"
+                                FontFamily="Comic Sans MS"
+                                Click="CreateBtn_OnClick">
 
                             <Button.Effect>
                                 <DropShadowEffect ShadowDepth="4"
-                                                          Direction="-90"
-                                                          Color="Black"
-                                                          Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  Direction="-90"
+                                                  Color="Black"
+                                                  Opacity="0.5"
+                                                  BlurRadius="20" />
                             </Button.Effect>
                         </Button>
 
                         <Button x:Name="UpdateBtn"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        Height="40"
-                                        BorderBrush="{x:Null}"
-                                        Padding="0"
-                                        Content="Update"
-                                        Background="#FF393D47"
-                                        Foreground="#FFFFFFFF"
-                                        FontFamily="Comic Sans MS"
-                                        Click="UpdateBtn_OnClick">
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Stretch"
+                                Height="40"
+                                BorderBrush="{x:Null}"
+                                Padding="0"
+                                Content="Update"
+                                Background="#FF393D47"
+                                Foreground="#FFFFFFFF"
+                                FontFamily="Comic Sans MS"
+                                Click="UpdateBtn_OnClick">
 
                             <Button.Effect>
                                 <DropShadowEffect ShadowDepth="4"
-                                                          Direction="-90"
-                                                          Color="Black"
-                                                          Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  Direction="-90"
+                                                  Color="Black"
+                                                  Opacity="0.5"
+                                                  BlurRadius="20" />
                             </Button.Effect>
                         </Button>
 
                         <Button x:Name="DeleteBtn"
-                                        Margin="0,10,0,0"
-                                        HorizontalAlignment="Stretch"
-                                        Height="40"
-                                        BorderBrush="{x:Null}"
-                                        Padding="0"
-                                        Content="Delete"
-                                        Background="#FF393D47"
-                                        Foreground="#FFFFFFFF"
-                                        FontFamily="Comic Sans MS"
-                                        Click="DeleteBtn_OnClick">
+                                Margin="0,10,0,0"
+                                HorizontalAlignment="Stretch"
+                                Height="40"
+                                BorderBrush="{x:Null}"
+                                Padding="0"
+                                Content="Delete"
+                                Background="#FF393D47"
+                                Foreground="#FFFFFFFF"
+                                FontFamily="Comic Sans MS"
+                                Click="DeleteBtn_OnClick">
 
                             <Button.Effect>
                                 <DropShadowEffect ShadowDepth="4"
-                                                          Direction="-90"
-                                                          Color="Black"
-                                                          Opacity="0.5"
-                                                          BlurRadius="20" />
+                                                  Direction="-90"
+                                                  Color="Black"
+                                                  Opacity="0.5"
+                                                  BlurRadius="20" />
                             </Button.Effect>
                         </Button>
                     </StackPanel>

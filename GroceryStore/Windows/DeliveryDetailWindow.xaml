@@ -31,7 +31,8 @@
                       AutoGenerateColumns="False" ItemsSource="{Binding Path=CurrentConsignmentDtos}"
                       HorizontalGridLinesBrush="White" Foreground="White" Background="Transparent"
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
-                      ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True" MouseDoubleClick="DataGrid_OnMouseDoubleClick">
+                      ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True"
+                      MouseDoubleClick="DataGrid_OnMouseDoubleClick">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Code" Binding="{Binding Path=ProductCode}" />
                     <DataGridTextColumn Header="Producer" Binding="{Binding Path=ProducerTitle}" />
@@ -55,9 +56,9 @@
             <Grid HorizontalAlignment="Stretch">
                 <StackPanel Margin="10,0" VerticalAlignment="Center">
                     <Label x:Name="DeliveryLabel" Foreground="White" FontSize="20" VerticalAlignment="Top"
-                       FontFamily="Comic Sans MS" Content="Order number: " HorizontalAlignment="Left" />
+                           FontFamily="Comic Sans MS" Content="Order number: " HorizontalAlignment="Left" />
                     <Label x:Name="DateLabel" Foreground="White" FontSize="15" VerticalAlignment="Top"
-                       FontFamily="Comic Sans MS" Content="Order Date: " HorizontalAlignment="Left" />
+                           FontFamily="Comic Sans MS" Content="Order Date: " HorizontalAlignment="Left" />
                 </StackPanel>
 
                 <StackPanel Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Right">
@@ -69,9 +70,10 @@
             </Grid>
         </Grid>
 
-        <Button x:Name="DoneGoodBtn" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                Width="200" Height="40" BorderBrush="{x:Null}" Padding="0" Content="Close" Background="#FFD18143"
-                Foreground="#FFFFFFFF" FontFamily="Comic Sans MS" Click="BtnClose">
+        <Button x:Name="BtnPrintInvoice" Margin="0,0,20,20" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Width="200" Height="40" BorderBrush="{x:Null}" Padding="0" Content="Print Invoice"
+                Background="#FFD18143"
+                Foreground="#FFFFFFFF" FontFamily="Comic Sans MS" Click="BtnPrintInvoice_Click">
             <Button.Effect>
                 <DropShadowEffect ShadowDepth="4"
                                   Direction="-90"

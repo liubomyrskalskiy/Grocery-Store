@@ -15,18 +15,14 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for GoodsOwnPage.xaml
+    ///     Interaction logic for GoodsOwnPage.xaml
     /// </summary>
     public partial class GoodsOwnPage : Page, IActivable
     {
-        private readonly IGoodsOwnService _goodsOwnService;
         private readonly ICategoryService _categoryService;
-        private readonly AppSettings _settings;
+        private readonly IGoodsOwnService _goodsOwnService;
         private readonly IMapper _mapper;
-
-        public List<GoodsOwnDTO> GoodsOwnDtos { get; set; }
-        public List<GoodsOwnDTO> FilteredGoodsOwnDtos { get; set; }
-        public List<CategoryDTO> CategoryDtos { get; set; }
+        private readonly AppSettings _settings;
 
         public GoodsOwnPage(IGoodsOwnService goodsOwnService, ICategoryService categoryService,
             IOptions<AppSettings> settings, IMapper mapper)
@@ -36,8 +32,20 @@ namespace GroceryStore.Views
             _settings = settings.Value;
             _mapper = mapper;
             InitializeComponent();
+        }
 
+        public List<GoodsOwnDTO> GoodsOwnDtos { get; set; }
+        public List<GoodsOwnDTO> FilteredGoodsOwnDtos { get; set; }
+        public List<CategoryDTO> CategoryDtos { get; set; }
 
+        public Task ActivateAsync(object parameter)
+        {
+            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
+            CategoryComboBox.ItemsSource = CategoryDtos;
+            CategoryFilterComboBox.ItemsSource = CategoryDtos;
+            UpdateDataGrid();
+
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -47,19 +55,19 @@ namespace GroceryStore.Views
 
             if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
             {
-                var tempList = FilteredGoodsOwnDtos.Where(item => item.Title.Contains(TitleFilterTextBox.Text)).ToList();
+                var tempList = FilteredGoodsOwnDtos.Where(item => item.Title.Contains(TitleFilterTextBox.Text))
+                    .ToList();
                 FilteredGoodsOwnDtos = tempList;
             }
 
             if (CategoryFilterComboBox.SelectedItem != null)
             {
-                var tempCategoty = (CategoryDTO)CategoryFilterComboBox.SelectedItem;
+                var tempCategoty = (CategoryDTO) CategoryFilterComboBox.SelectedItem;
                 var tempList = FilteredGoodsOwnDtos.Where(item => item.Category == tempCategoty.Title).ToList();
                 FilteredGoodsOwnDtos = tempList;
             }
 
             DataGrid.ItemsSource = FilteredGoodsOwnDtos;
-
         }
 
         private bool ValidateForm()
@@ -101,16 +109,6 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
-            CategoryComboBox.ItemsSource = CategoryDtos;
-            CategoryFilterComboBox.ItemsSource = CategoryDtos;
-            UpdateDataGrid();
-
-            return Task.CompletedTask;
-        }
-
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
@@ -127,7 +125,7 @@ namespace GroceryStore.Views
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            GoodsOwn goodsOwn = new GoodsOwn();
+            var goodsOwn = new GoodsOwn();
             CategoryDTO tempCategory;
             goodsOwn.Id = GoodsOwnDtos[^1]?.Id + 1 ?? 1;
             goodsOwn.Title = TitleTextBox.Text;
@@ -135,7 +133,7 @@ namespace GroceryStore.Views
             goodsOwn.Components = ComponentnsTextBox.Text;
             goodsOwn.Price = Convert.ToDouble(PriceTextBox.Text);
             goodsOwn.ProductCode = goodsOwn.Id.ToString("D5");
-            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            tempCategory = (CategoryDTO) CategoryComboBox.SelectedItem;
             goodsOwn.IdCategory = tempCategory.Id;
 
             _goodsOwnService.Create(goodsOwn);
@@ -146,7 +144,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            GoodsOwn goodsOwn = new GoodsOwn();
+            var goodsOwn = new GoodsOwn();
             CategoryDTO tempCategory;
             goodsOwn.Id = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Id;
             goodsOwn.Title = TitleTextBox.Text;
@@ -154,7 +152,7 @@ namespace GroceryStore.Views
             goodsOwn.Components = ComponentnsTextBox.Text;
             goodsOwn.Price = Convert.ToDouble(PriceTextBox.Text);
             goodsOwn.ProductCode = FilteredGoodsOwnDtos[DataGrid.SelectedIndex].ProductCode;
-            tempCategory = (CategoryDTO)CategoryComboBox.SelectedItem;
+            tempCategory = (CategoryDTO) CategoryComboBox.SelectedItem;
             goodsOwn.IdCategory = tempCategory.Id;
 
             _goodsOwnService.Update(goodsOwn);
@@ -170,10 +168,7 @@ namespace GroceryStore.Views
 
         private void CategoryFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (CategoryFilterComboBox.SelectedItem != null)
-            {
-                UpdateDataGrid();
-            }
+            if (CategoryFilterComboBox.SelectedItem != null) UpdateDataGrid();
         }
 
         private void ClearCategoryFilterBtn_OnClick(object sender, RoutedEventArgs e)
@@ -198,7 +193,6 @@ namespace GroceryStore.Views
             {
                 MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
                 TitleFilterTextBox.Focus();
-                return;
             }
         }
     }

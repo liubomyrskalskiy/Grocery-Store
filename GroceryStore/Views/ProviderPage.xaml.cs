@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,17 +13,14 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for ProviderPage.xaml
+    ///     Interaction logic for ProviderPage.xaml
     /// </summary>
     public partial class ProviderPage : Page, IActivable
     {
-        private readonly IProviderService _providerService;
         private readonly ICityService _cityService;
-        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-
-        public List<ProviderDTO> ProviderDtos { get; set; }
-        public List<CityDTO> CityDtos { get; set; }
+        private readonly IProviderService _providerService;
+        private readonly AppSettings _settings;
 
         public ProviderPage(IProviderService providerService, ICityService cityService, IOptions<AppSettings> settings,
             IMapper mapper)
@@ -35,6 +31,16 @@ namespace GroceryStore.Views
             _settings = settings.Value;
 
             InitializeComponent();
+        }
+
+        public List<ProviderDTO> ProviderDtos { get; set; }
+        public List<CityDTO> CityDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
+            UpdateDataGrid();
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -78,17 +84,10 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
-            UpdateDataGrid();
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Provider provider = new Provider();
+            var provider = new Provider();
             CityDTO tempCity;
             provider.Id = ProviderDtos[^1]?.Id + 1 ?? 1;
             provider.CompanyTitle = TitleTextBox.Text;
@@ -100,18 +99,9 @@ namespace GroceryStore.Views
                 MessageBox.Show("Please select city");
                 return;
             }
-            else
-            {
-                tempCity = (CityDTO) CityComboBox.SelectedItem;
-                provider.IdCity = tempCity.Id;
-            }
-            //if ((tempCity = _cityService.GetAll().FirstOrDefault(city => city.Title == CityTitleTextBox.Text)) == null)
-            //{
-            //    MessageBox.Show("There is no such city title!");
-            //    return;
-            //}
-            //else
-            //    provider.IdCity = tempCity.Id;
+
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
+            provider.IdCity = tempCity.Id;
 
             _providerService.Create(provider);
             UpdateDataGrid();
@@ -121,7 +111,7 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            Provider provider = new Provider();
+            var provider = new Provider();
             CityDTO tempCity;
             provider.Id = ProviderDtos[DataGrid.SelectedIndex].Id;
             provider.CompanyTitle = TitleTextBox.Text;
@@ -133,11 +123,9 @@ namespace GroceryStore.Views
                 MessageBox.Show("Please select city");
                 return;
             }
-            else
-            {
-                tempCity = (CityDTO)CityComboBox.SelectedItem;
-                provider.IdCity = tempCity.Id;
-            }
+
+            tempCity = (CityDTO) CityComboBox.SelectedItem;
+            provider.IdCity = tempCity.Id;
 
             _providerService.Update(provider);
             UpdateDataGrid();

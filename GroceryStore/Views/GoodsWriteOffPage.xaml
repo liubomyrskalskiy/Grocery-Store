@@ -28,6 +28,99 @@
     </Page.Resources>
 
     <Grid Background="Transparent">
+        <Grid VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="500,50,800,0" Height="200">
+            <Border CornerRadius="20">
+                <Border.Background>
+                    <ImageBrush ImageSource="/src/category_grid_background.png" Stretch="None" />
+                </Border.Background>
+            </Border>
+            <StackPanel VerticalAlignment="Center" Margin="25, 0">
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Title:</Label>
+                    <TextBox x:Name="TitleFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
+                             Margin="100,0,80,5"
+                             TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                             SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                             BorderThickness="2" Background="#26FFFFFF">
+                        <TextBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </TextBox.Effect>
+                    </TextBox>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearTitleFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="SearchTitleBtn_OnClick" Margin="0,0,40,0">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Date From:</Label>
+
+                    <TextBox x:Name="DateFromFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
+                             Margin="100,0,80,5"
+                             TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                             SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                             BorderThickness="2" Background="#26FFFFFF">
+                        <TextBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </TextBox.Effect>
+                    </TextBox>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearDateFromFilterFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="SearchDateFromFilterBtn_OnClick"
+                            Margin="0,0,40,0">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Date To:</Label>
+
+                    <TextBox x:Name="DateToFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
+                             Margin="100,0,80,5"
+                             TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                             SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                             BorderThickness="2" Background="#26FFFFFF">
+                        <TextBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </TextBox.Effect>
+                    </TextBox>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearDateToFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="SearchDateToFilterBtn_OnClick"
+                            Margin="0,0,40,0">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+            </StackPanel>
+        </Grid>
         <Grid Margin="0,300,50,0">
             <Border CornerRadius="0,20,0,0">
                 <Border.Background>
@@ -40,8 +133,8 @@
                       CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False"
                       ColumnHeaderStyle="{StaticResource ColumnHeaderStyle1}" IsReadOnly="True">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Good" Binding="{Binding Path=GoodTitle}" />
                     <DataGridTextColumn Header="Code" Binding="{Binding Path=ProductCode}" />
+                    <DataGridTextColumn Header="Good" Binding="{Binding Path=GoodTitle}" />
                     <DataGridTextColumn Header="Shipment Date" Binding="{Binding Path=ShipmentDateTime}" />
                     <DataGridTextColumn Header="Amount" Binding="{Binding Path=Amount}" />
                     <DataGridTextColumn Header="Date" Binding="{Binding Path=Date}" />
@@ -68,8 +161,10 @@
 
                         <TextBox x:Name="ProductCodeTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF" TextChanged="ProductCodeTextBox_OnTextChanged">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF" TextChanged="ProductCodeTextBox_OnTextChanged">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />
@@ -95,8 +190,10 @@
 
                         <TextBox x:Name="AmountTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
                                  VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
-                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47" SelectionTextBrush="#FF393D47"
-                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2" Background="#26FFFFFF">
+                                 VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                                 SelectionTextBrush="#FF393D47"
+                                 CaretBrush="#FF393D47" BorderBrush="#FF393D47" BorderThickness="2"
+                                 Background="#26FFFFFF">
                             <TextBox.Effect>
                                 <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                                   BlurRadius="20" />

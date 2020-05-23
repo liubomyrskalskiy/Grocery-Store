@@ -13,15 +13,13 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for CountryPage.xaml
+    ///     Interaction logic for CountryPage.xaml
     /// </summary>
     public partial class CountryPage : Page, IActivable
     {
         private readonly ICountryService _countryService;
-        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-
-        public List<CountryDTO> CountryDtos { get; set; }
+        private readonly AppSettings _settings;
 
         public CountryPage(ICountryService countryService, IOptions<AppSettings> settings, IMapper mapper)
         {
@@ -32,6 +30,13 @@ namespace GroceryStore.Views
             InitializeComponent();
 
             UpdateDataGrid();
+        }
+
+        public List<CountryDTO> CountryDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -53,17 +58,14 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            Country country = new Country();
-            country.Id = CountryDtos[^1]?.Id + 1 ?? 1;
-            country.Title = TitleTextBox.Text;
+            var country = new Country
+            {
+                Id = CountryDtos[^1]?.Id + 1 ?? 1,
+                Title = TitleTextBox.Text
+            };
 
             _countryService.Create(country);
             UpdateDataGrid();
@@ -74,9 +76,11 @@ namespace GroceryStore.Views
             if (DataGrid.SelectedIndex != -1)
             {
                 if (!ValidateForm()) return;
-                Country country = new Country();
-                country.Id = CountryDtos[DataGrid.SelectedIndex].Id;
-                country.Title = TitleTextBox.Text;
+                var country = new Country
+                {
+                    Id = CountryDtos[DataGrid.SelectedIndex].Id,
+                    Title = TitleTextBox.Text
+                };
 
                 _countryService.Update(country);
                 UpdateDataGrid();
@@ -85,10 +89,7 @@ namespace GroceryStore.Views
 
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (DataGrid.SelectedIndex != -1)
-            {
-                TitleTextBox.Text = CountryDtos[DataGrid.SelectedIndex].Title;
-            }
+            if (DataGrid.SelectedIndex != -1) TitleTextBox.Text = CountryDtos[DataGrid.SelectedIndex].Title;
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)

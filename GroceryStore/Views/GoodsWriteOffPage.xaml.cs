@@ -15,22 +15,18 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for GoodsWriteOffPage.xaml
+    ///     Interaction logic for GoodsWriteOffPage.xaml
     /// </summary>
     public partial class GoodsWriteOffPage : Page, IActivable
     {
-        private readonly IGoodsWriteOffService _goodsWriteOffService;
-        private readonly IWriteOffReasonService _writeOffReasonService;
         private readonly IDeliveryShipmentService _deliveryShipmentService;
         private readonly IGoodsInMarketService _goodsInMarketService;
         private readonly IGoodsService _goodsService;
-        private readonly AppSettings _settings;
+        private readonly IGoodsWriteOffService _goodsWriteOffService;
         private readonly IMapper _mapper;
+        private readonly AppSettings _settings;
+        private readonly IWriteOffReasonService _writeOffReasonService;
         private EmployeeDTO _currentEmployee;
-
-        public List<GoodsWriteOffDTO> GoodsWriteOffDtos { get; set; }
-        public List<WriteOffReasonDTO> WriteOffReasonDtos { get; set; }
-        public List<DeliveryShipmentDTO> DeliveryShipmentDtos { get; set; }
 
         public GoodsWriteOffPage(IGoodsWriteOffService goodsWriteOffService,
             IWriteOffReasonService writeOffReasonService,
@@ -52,12 +48,52 @@ namespace GroceryStore.Views
             ShipmentDateComboBox.IsEnabled = false;
         }
 
+        public List<GoodsWriteOffDTO> GoodsWriteOffDtos { get; set; }
+        public List<GoodsWriteOffDTO> FilteredGoodsWriteOffDtos { get; set; }
+        public List<WriteOffReasonDTO> WriteOffReasonDtos { get; set; }
+        public List<DeliveryShipmentDTO> DeliveryShipmentDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            _currentEmployee = (EmployeeDTO) parameter;
+            WriteOffReasonDtos =
+                _mapper.Map<List<WriteOffReason>, List<WriteOffReasonDTO>>(_writeOffReasonService.GetAll());
+            ReasonComboBox.ItemsSource = WriteOffReasonDtos;
+            UpdateDataGrid();
+            return Task.CompletedTask;
+        }
+
         private void UpdateDataGrid()
         {
             GoodsWriteOffDtos =
                 _mapper.Map<List<GoodsWriteOff>, List<GoodsWriteOffDTO>>(_goodsWriteOffService.GetAll());
 
-            DataGrid.ItemsSource = GoodsWriteOffDtos;
+            FilteredGoodsWriteOffDtos = GoodsWriteOffDtos;
+
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                var tempList = FilteredGoodsWriteOffDtos.Where(item => item.GoodTitle.Contains(TitleFilterTextBox.Text))
+                    .ToList();
+                FilteredGoodsWriteOffDtos = tempList;
+            }
+
+            if (DateFromFilterTextBox.Text != "")
+            {
+                var tempDate = DateTime.Parse(DateFromFilterTextBox.Text);
+                var tempList = FilteredGoodsWriteOffDtos
+                    .Where(item => DateTime.Compare(item.Date ?? default, tempDate) >= 0).ToList();
+                FilteredGoodsWriteOffDtos = tempList;
+            }
+
+            if (DateToFilterTextBox.Text != "")
+            {
+                var tempDate = DateTime.Parse(DateToFilterTextBox.Text);
+                var tempList = FilteredGoodsWriteOffDtos
+                    .Where(item => DateTime.Compare(item.Date ?? default, tempDate) <= 0).ToList();
+                FilteredGoodsWriteOffDtos = tempList;
+            }
+
+            DataGrid.ItemsSource = FilteredGoodsWriteOffDtos;
         }
 
         private bool ValidateForm()
@@ -91,24 +127,16 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            _currentEmployee = (EmployeeDTO)parameter;
-            WriteOffReasonDtos =
-                _mapper.Map<List<WriteOffReason>, List<WriteOffReasonDTO>>(_writeOffReasonService.GetAll());
-            ReasonComboBox.ItemsSource = WriteOffReasonDtos;
-            UpdateDataGrid();
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            GoodsWriteOff goodsWriteOff = new GoodsWriteOff();
-            goodsWriteOff.Id = GoodsWriteOffDtos[^1]?.Id + 1 ?? 1;
-            goodsWriteOff.Amount = Convert.ToDouble(AmountTextBox.Text);
-            goodsWriteOff.Date = DateTime.Now;
-            goodsWriteOff.IdEmployee = _currentEmployee.Id;
+            var goodsWriteOff = new GoodsWriteOff
+            {
+                Id = GoodsWriteOffDtos[^1]?.Id + 1 ?? 1,
+                Amount = Convert.ToDouble(AmountTextBox.Text),
+                Date = DateTime.Now,
+                IdEmployee = _currentEmployee.Id
+            };
             var tempShipment = (DeliveryShipmentDTO) ShipmentDateComboBox.SelectedItem;
             goodsWriteOff.IdDeliveryShipment = tempShipment.Id;
             var shipment = _deliveryShipmentService.GetId(tempShipment.Id);
@@ -118,14 +146,12 @@ namespace GroceryStore.Views
 
             _goodsWriteOffService.Create(goodsWriteOff);
             UpdateDataGrid();
-
-           
         }
 
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            _goodsWriteOffService.Delete(GoodsWriteOffDtos[DataGrid.SelectedIndex].Id);
+            _goodsWriteOffService.Delete(FilteredGoodsWriteOffDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
 
@@ -142,13 +168,14 @@ namespace GroceryStore.Views
                     WeightLabel.Content = "Unit weight: " + tempGoodsDto.Weight;
                     PriceLabel.Content = "Price: " + $"{tempGoodsDto.Price,0:C2}";
 
-                    GoodsInMarketDTO tempGimo = _mapper.Map<GoodsInMarket, GoodsInMarketDTO>(_goodsInMarketService
+                    var tempGimo = _mapper.Map<GoodsInMarket, GoodsInMarketDTO>(_goodsInMarketService
                         .GetAll().FirstOrDefault(item =>
                             item.IdGoods == tempGoodsDto.Id &&
                             item.IdMarketNavigation.Address == _currentEmployee.MarketAddress));
                     if ((DeliveryShipmentDtos =
-                        _mapper.Map<List<DeliveryShipment>, List<DeliveryShipmentDTO>>(_deliveryShipmentService.GetAll()
-                            .Where(item => item.IdGoodsInMarket == tempGimo.Id).ToList())).Count > 0)
+                            _mapper.Map<List<DeliveryShipment>, List<DeliveryShipmentDTO>>(_deliveryShipmentService
+                                .GetAll()
+                                .Where(item => item.IdGoodsInMarket == tempGimo.Id).ToList())).Count > 0)
                     {
                         ShipmentDateComboBox.ItemsSource = DeliveryShipmentDtos;
                         ShipmentDateComboBox.IsEnabled = true;
@@ -182,7 +209,66 @@ namespace GroceryStore.Views
                 AmountLabel.Content = "Amount: " + tempDeliveryShipment.Amount;
             }
             else
+            {
                 AmountLabel.Content = "";
+            }
+        }
+
+        private void ClearTitleFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            TitleFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchTitleBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Title must consist of at least 1 character and not exceed 20 characters!");
+                TitleFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearDateFromFilterFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            DateFromFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchDateFromFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DateTime.TryParse(DateFromFilterTextBox.Text, out _))
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Cannot parse date you've entered! Please check data you've entered");
+                DateFromFilterTextBox.Focus();
+            }
+        }
+
+        private void ClearDateToFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            DateToFilterTextBox.Text = "";
+            UpdateDataGrid();
+        }
+
+        private void SearchDateToFilterBtn_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (DateTime.TryParse(DateToFilterTextBox.Text, out _))
+            {
+                UpdateDataGrid();
+            }
+            else
+            {
+                MessageBox.Show("Cannot parse date you've entered! Please check data you've entered");
+                DateToFilterTextBox.Focus();
+            }
         }
     }
 }

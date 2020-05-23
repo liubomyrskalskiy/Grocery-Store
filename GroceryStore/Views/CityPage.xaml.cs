@@ -14,17 +14,14 @@ using Microsoft.Extensions.Options;
 namespace GroceryStore.Views
 {
     /// <summary>
-    /// Interaction logic for CityPage.xaml
+    ///     Interaction logic for CityPage.xaml
     /// </summary>
     public partial class CityPage : Page, IActivable
     {
         private readonly ICityService _cityService;
         private readonly ICountryService _countryService;
-        private readonly AppSettings _settings;
         private readonly IMapper _mapper;
-
-        public List<CityDTO> CityDtos { get; set; }
-        public List<CountryDTO> CountryDtos { get; set; }
+        private readonly AppSettings _settings;
 
         public CityPage(ICityService cityService, ICountryService countryService, IOptions<AppSettings> settings,
             IMapper mapper)
@@ -37,6 +34,16 @@ namespace GroceryStore.Views
             InitializeComponent();
 
             UpdateDataGrid();
+        }
+
+        public List<CityDTO> CityDtos { get; set; }
+        public List<CountryDTO> CountryDtos { get; set; }
+
+        public Task ActivateAsync(object parameter)
+        {
+            CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
+            CountryComboBox.ItemsSource = CountryDtos;
+            return Task.CompletedTask;
         }
 
         private void UpdateDataGrid()
@@ -64,21 +71,14 @@ namespace GroceryStore.Views
             return true;
         }
 
-        public Task ActivateAsync(object parameter)
-        {
-            CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
-            CountryComboBox.ItemsSource = CountryDtos;
-            return Task.CompletedTask;
-        }
-
         private void CreateBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (!ValidateForm()) return;
-            City city = new City();
+            var city = new City();
             CountryDTO tempCountry;
             city.Id = CityDtos[^1]?.Id + 1 ?? 1;
             city.Title = TitleTextBox.Text;
-            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            tempCountry = (CountryDTO) CountryComboBox.SelectedItem;
             city.IdCountry = tempCountry.Id;
 
 
@@ -90,11 +90,11 @@ namespace GroceryStore.Views
         {
             if (DataGrid.SelectedIndex == -1) return;
             if (!ValidateForm()) return;
-            City city = new City();
+            var city = new City();
             CountryDTO tempCountry;
             city.Id = CityDtos[DataGrid.SelectedIndex].Id;
             city.Title = TitleTextBox.Text;
-            tempCountry = (CountryDTO)CountryComboBox.SelectedItem;
+            tempCountry = (CountryDTO) CountryComboBox.SelectedItem;
             city.IdCountry = tempCountry.Id;
 
             _cityService.Update(city);

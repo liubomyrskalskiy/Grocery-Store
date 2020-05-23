@@ -5,6 +5,5 @@ namespace GroceryStore.Core.Abstractions.Repositories
 {
     public interface IEmployeeRepository : IBaseRepository<Employee>
     {
-        
     }
 }

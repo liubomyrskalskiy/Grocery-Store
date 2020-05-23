@@ -18,7 +18,11 @@ namespace GroceryStore.Services
         public List<Sale> GetAll()
         {
             unitOfWork.SaveChanges();
-            return unitOfWork.SaleRepository.GetAll().Include(s => s.IdEmployeeNavigation).Include(s => s.IdClientNavigation).ToList();
+            return unitOfWork.SaleRepository.GetAll()
+                .Include(s => s.IdEmployeeNavigation)
+                .Include(s => s.IdEmployeeNavigation.IdMarketNavigation)
+                .Include(s => s.IdClientNavigation)
+                .ToList();
         }
 
         public Sale GetId(int id)

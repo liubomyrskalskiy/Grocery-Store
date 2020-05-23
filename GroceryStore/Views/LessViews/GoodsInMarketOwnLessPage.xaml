@@ -29,19 +29,46 @@
             <StackPanel VerticalAlignment="Center" Margin="25, 0">
 
                 <Grid HorizontalAlignment="Stretch">
+                    <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Title:</Label>
+                    <TextBox x:Name="TitleFilterTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
+                             VerticalAlignment="Top" FontSize="20" FontFamily="Consolas" MaxLines="1"
+                             Margin="125,0,80,5"
+                             TextAlignment="Left" VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
+                             SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"
+                             BorderThickness="2" Background="#26FFFFFF">
+                        <TextBox.Effect>
+                            <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
+                                              BlurRadius="20" />
+                        </TextBox.Effect>
+                    </TextBox>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="ClearTitleFilterBtn_OnClick">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
+                    </Button>
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
+                            BorderBrush="Transparent" Padding="0" Click="SearchTitleBtn_OnClick" Margin="0,0,40,0">
+                        <materialDesign:PackIcon Foreground="#FF393D47" Kind="Search" Width="30" Height="30" />
+                    </Button>
+                </Grid>
+
+                <Grid HorizontalAlignment="Stretch">
                     <Label Foreground="#FF393D47" FontSize="17" VerticalAlignment="Center" FontFamily="Comic Sans MS">Category:</Label>
                     <ComboBox x:Name="CategoryFilterComboBox" ItemsSource="{Binding Path=ProducerDtos}"
                               DisplayMemberPath="Title" SelectedValuePath="Title"
                               SelectedValue="{Binding Path=ProducerDTO}" Margin="125,0,40,5"
                               Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
                               FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
+                              VerticalContentAlignment="Center" BorderThickness="2"
+                              SelectionChanged="CategoryFilterComboBox_OnSelectionChanged">
                         <ComboBox.Effect>
                             <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                               BlurRadius="20" />
                         </ComboBox.Effect>
                     </ComboBox>
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="ClearCategoryFilterBtn_OnClick">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
                     </Button>
@@ -54,13 +81,15 @@
                               SelectedValue="{Binding Path=ProductionDTO}" Margin="125,0,40,0"
                               Padding="5,0,0,0" Height="40" Foreground="#FF393D47" BorderBrush="#FF393D47"
                               FontSize="20" FontFamily="Consolas" Background="#26FFFFFF"
-                              VerticalContentAlignment="Center" BorderThickness="2" SelectionChanged="ManufactureDateFilterComboBox_OnSelectionChanged">
+                              VerticalContentAlignment="Center" BorderThickness="2"
+                              SelectionChanged="ManufactureDateFilterComboBox_OnSelectionChanged">
                         <ComboBox.Effect>
                             <DropShadowEffect ShadowDepth="4" Direction="-90" Color="Black" Opacity="0.5"
                                               BlurRadius="20" />
                         </ComboBox.Effect>
                     </ComboBox>
-                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40" Background="Transparent"
+                    <Button VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="40" Height="40"
+                            Background="Transparent"
                             BorderBrush="Transparent" Padding="0" Click="ClearManufactureDateFilterBtn_OnClick">
                         <materialDesign:PackIcon Foreground="#FF393D47" Kind="Backspace" Width="30" Height="30" />
                     </Button>
@@ -136,7 +165,8 @@
                                     Product Code
                                 </Label>
 
-                                <TextBox x:Name="ProductCodeTextBox" Foreground="#FF393D47" Padding="5,0,0,0" Height="40"
+                                <TextBox x:Name="ProductCodeTextBox" Foreground="#FF393D47" Padding="5,0,0,0"
+                                         Height="40"
                                          VerticalAlignment="Top" FontSize="20" FontFamily="Consolas"
                                          VerticalContentAlignment="Center" SelectionBrush="#FF393D47"
                                          SelectionTextBrush="#FF393D47" CaretBrush="#FF393D47" BorderBrush="#FF393D47"

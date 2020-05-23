@@ -17,7 +17,10 @@ namespace GroceryStore.Services
 
         public List<Client> GetAll()
         {
-            return unitOfWork.ClientRepository.GetAll().Include(city => city.IdCityNavigation).ToList();
+            return unitOfWork.ClientRepository.GetAll()
+                .Include(city => city.IdCityNavigation)
+                .Include(city => city.IdCityNavigation.IdCountryNavigation)
+                .ToList();
         }
 
         public Client GetId(int id)
