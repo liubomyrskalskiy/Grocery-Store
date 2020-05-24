@@ -25,6 +25,8 @@ namespace GroceryStore.Views
         private readonly ICategoryService _categoryService;
         private readonly IEmployeeService _employeeService;
         private readonly IGoodsOwnService _goodsOwnService;
+        private readonly IGoodsInMarketOwnService _goodsInMarketOwnService;
+        private readonly IGoodsWriteOffOwnService _goodsWriteOffOwnService;
         private readonly IMapper _mapper;
         private readonly SimpleNavigationService _navigationService;
         private readonly IProductionContentsService _productionContentsService;
@@ -36,7 +38,7 @@ namespace GroceryStore.Views
         public ProductionPage(IProductionService productionService, IEmployeeService employeeService,
             IGoodsOwnService goodsOwnService, IOptions<AppSettings> settings, IMapper mapper,
             SimpleNavigationService navigationService, IProductionContentsService productionContentsService,
-            ICategoryService categoryService)
+            ICategoryService categoryService, IGoodsInMarketOwnService goodsInMarketOwnService, IGoodsWriteOffOwnService goodsWriteOffOwnService)
         {
             _productionService = productionService;
             _employeeService = employeeService;
@@ -46,6 +48,8 @@ namespace GroceryStore.Views
             _productionContentsService = productionContentsService;
             _settings = settings.Value;
             _categoryService = categoryService;
+            _goodsInMarketOwnService = goodsInMarketOwnService;
+            _goodsWriteOffOwnService = goodsWriteOffOwnService;
             InitializeComponent();
 
             UpdateDataGrid();
@@ -194,6 +198,17 @@ namespace GroceryStore.Views
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
+            if (_goodsInMarketOwnService.GetAll().FirstOrDefault(item => item.IdProduction == FilteredProductionDtos[DataGrid.SelectedIndex].Id) != null)
+            {
+                MessageBox.Show("You can only delete recently added rows!");
+                return;
+            }
+
+            if (_goodsWriteOffOwnService.GetAll().FirstOrDefault(item => item.IdProduction == FilteredProductionDtos[DataGrid.SelectedIndex].Id) != null)
+            {
+                MessageBox.Show("You can only delete recently added rows!");
+                return;
+            }
             var productionContents = _productionContentsService.GetAll()
                 .Where(item => item.IdProduction == FilteredProductionDtos[DataGrid.SelectedIndex].Id).ToList();
             foreach (var productionContent in productionContents)

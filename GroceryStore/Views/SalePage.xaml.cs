@@ -133,7 +133,7 @@ namespace GroceryStore.Views
         private void DataGrid_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (DataGrid.SelectedIndex != -1)
-                AccountNumberNumberTextBox.Text = SaleDtos[DataGrid.SelectedIndex].AccountNumber;
+                AccountNumberNumberTextBox.Text = FilteredSaleDtos[DataGrid.SelectedIndex].AccountNumber;
         }
 
         private void MarketFilterComboBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -190,7 +190,7 @@ namespace GroceryStore.Views
         private async void DataGrid_OnMouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
-            await _navigationService.ShowDialogAsync<SaleDetailWindow>(SaleDtos[DataGrid.SelectedIndex]);
+            await _navigationService.ShowDialogAsync<SaleDetailWindow>(FilteredSaleDtos[DataGrid.SelectedIndex]);
         }
 
         private void ClearDateFromFilterFilterBtn_OnClick(object sender, RoutedEventArgs e)

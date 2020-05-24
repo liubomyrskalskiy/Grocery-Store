@@ -21,16 +21,18 @@ namespace GroceryStore.Views
     {
         private readonly ICategoryService _categoryService;
         private readonly IGoodsOwnService _goodsOwnService;
+        private readonly IProductionService _productionService;
         private readonly IMapper _mapper;
         private readonly AppSettings _settings;
 
         public GoodsOwnPage(IGoodsOwnService goodsOwnService, ICategoryService categoryService,
-            IOptions<AppSettings> settings, IMapper mapper)
+            IOptions<AppSettings> settings, IMapper mapper, IProductionService productionService)
         {
             _goodsOwnService = goodsOwnService;
             _categoryService = categoryService;
             _settings = settings.Value;
             _mapper = mapper;
+            _productionService = productionService;
             InitializeComponent();
         }
 
@@ -162,6 +164,11 @@ namespace GroceryStore.Views
         private void DeleteBtn_OnClick(object sender, RoutedEventArgs e)
         {
             if (DataGrid.SelectedIndex == -1) return;
+            if(_productionService.GetAll().FirstOrDefault(item => item.IdGoodsOwn == FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Id) != null)
+            {
+                MessageBox.Show("You can only delete recently added items!");
+                return;
+            }
             _goodsOwnService.Delete(FilteredGoodsOwnDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }

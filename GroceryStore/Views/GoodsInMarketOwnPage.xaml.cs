@@ -172,14 +172,14 @@ namespace GroceryStore.Views
             if (_basketOwnService.GetAll().FirstOrDefault(item =>
                     item.IdGoodsInMarketOwn == FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
             {
-                MessageBox.Show("You can not delete this row because it is referenced by some Sales!");
+                MessageBox.Show("You can only delete recently added rows!");
                 return;
             }
 
             if (_goodsWriteOffOwnService.GetAll().FirstOrDefault(item =>
                     item.IdGoodsInMarketOwn == FilteredGoodsInMarketOwnDtos[DataGrid.SelectedIndex].Id) != null)
             {
-                MessageBox.Show("You can not delete this row because it is referenced by some write-off!");
+                MessageBox.Show("You can only delete recently added rows!");
                 return;
             }
 
