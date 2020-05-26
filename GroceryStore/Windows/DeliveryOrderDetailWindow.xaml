@@ -52,10 +52,5 @@
                                   BlurRadius="20" />
             </Button.Effect>
         </Button>
-
-        <Button VerticalAlignment="Top" HorizontalAlignment="Right" Width="40" Height="40" Background="{x:Null}"
-                BorderBrush="{x:Null}" Padding="0" Click="BtnClose">
-            <materialDesign:PackIcon Foreground="#ffffff" Kind="Close" Width="30" Height="30" />
-        </Button>
     </Grid>
 </Window>
