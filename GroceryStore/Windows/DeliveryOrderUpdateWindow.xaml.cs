@@ -192,5 +192,13 @@ namespace GroceryStore.Windows
             _deliveryShipmentService.Delete(CurrentDeliveryShipmentDtos[DataGrid.SelectedIndex].Id);
             UpdateDataGrid();
         }
+
+        private void MarketComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if(MarketComboBox.SelectedItem != null)
+            {
+                shipmentDateTextBox.Text = DateTime.Now.ToString();
+            }
+        }
     }
 }
