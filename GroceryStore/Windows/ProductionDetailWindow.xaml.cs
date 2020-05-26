@@ -46,6 +46,11 @@ namespace GroceryStore.Windows
             ProductionContentsDtos =
                 _mapper.Map<List<ProductionContents>, List<ProductionContentsDTO>>(_productionContentsService.GetAll());
 
+            ProductionContentsDtos.Sort(delegate (ProductionContentsDTO x, ProductionContentsDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource =
                 ProductionContentsDtos.Where(item => item.ProductionCode == _productionNumber).ToList();
         }

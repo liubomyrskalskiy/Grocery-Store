@@ -63,6 +63,12 @@ namespace GroceryStore.Windows
         private void UpdateDataGrid()
         {
             ConsignmentDtos = _mapper.Map<List<Consignment>, List<ConsignmentDTO>>(_consignmentService.GetAll());
+
+            ConsignmentDtos.Sort(delegate (ConsignmentDTO x, ConsignmentDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             CurrentConsignmentDtos = _mapper.Map<List<Consignment>, List<ConsignmentDTO>>(CurrentConsignments);
             DataGrid.ItemsSource = CurrentConsignmentDtos;
         }

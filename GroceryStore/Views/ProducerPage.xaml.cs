@@ -49,6 +49,11 @@ namespace GroceryStore.Views
         {
             ProducerDtos = _mapper.Map<List<Producer>, List<ProducerDTO>>(_producerService.GetAll());
 
+            ProducerDtos.Sort(delegate (ProducerDTO x, ProducerDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = ProducerDtos;
         }
 

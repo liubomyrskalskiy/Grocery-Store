@@ -81,6 +81,11 @@ namespace GroceryStore.Views
         {
             SaleDtos = _mapper.Map<List<Sale>, List<SaleDTO>>(_saleService.GetAll());
 
+            SaleDtos.Sort(delegate (SaleDTO x, SaleDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             FilteredSaleDtos = SaleDtos;
 
             if (MarketFilterComboBox.SelectedItem != null)

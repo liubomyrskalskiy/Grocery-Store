@@ -64,6 +64,11 @@ namespace GroceryStore.Views
             GoodsWriteOffOwnDtos =
                 _mapper.Map<List<GoodsWriteOffOwn>, List<GoodsWriteOffOwnDTO>>(_goodsWriteOffOwnService.GetAll());
 
+            GoodsWriteOffOwnDtos.Sort(delegate (GoodsWriteOffOwnDTO x, GoodsWriteOffOwnDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             FilteredGoodsWriteOffOwnDtos = GoodsWriteOffOwnDtos;
 
             if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
@@ -107,9 +112,10 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if (!Regex.Match(AmountTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success)
+            var tempProduction = (GoodsInMarketOwnDTO)GoodsInMarketComboBox.SelectedItem;
+            if (!Regex.Match(AmountTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success || Convert.ToDouble(AmountTextBox.Text) > tempProduction.DoubleAmount)
             {
-                MessageBox.Show("Invalid amount! Check the data you've entered!");
+                MessageBox.Show("Invalid amount! Check the data you've entered! Or you're trying to write off more than it is in stock!");
                 AmountTextBox.Focus();
                 return false;
             }
@@ -141,6 +147,10 @@ namespace GroceryStore.Views
             goodsWriteOffOwn.IdWriteOffReason = reason.Id;
 
             _goodsWriteOffOwnService.Create(goodsWriteOffOwn);
+
+            var goodInMarketOwn = _goodsInMarketOwnService.GetId(goodsWriteOffOwn.IdGoodsInMarketOwn ?? default);
+            _goodsInMarketOwnService.Refresh(goodInMarketOwn);
+
             UpdateDataGrid();
         }
 
@@ -200,7 +210,7 @@ namespace GroceryStore.Views
             if (GoodsInMarketComboBox.SelectedItem != null)
             {
                 var tempProduction = (GoodsInMarketOwnDTO) GoodsInMarketComboBox.SelectedItem;
-                AmountLabel.Content = "Amount: " + tempProduction.Amount;
+                AmountLabel.Content = "In stock: " + tempProduction.Amount;
             }
             else
             {

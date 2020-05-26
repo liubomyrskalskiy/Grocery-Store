@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -69,7 +70,17 @@ namespace GroceryStore.Views
             GoodsInMarketDtos =
                 _mapper.Map<List<GoodsInMarket>, List<GoodsInMarketDTO>>(_goodsInMarketService.GetAll());
 
+            GoodsInMarketDtos.Sort(delegate (GoodsInMarketDTO x, GoodsInMarketDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             FilteredGoodsInMarketDtos = GoodsInMarketDtos;
+
+            FilteredGoodsInMarketDtos.Sort(delegate (GoodsInMarketDTO x, GoodsInMarketDTO y)
+            {
+                return Convert.ToInt32(x.ProductCode).CompareTo(Convert.ToInt32(y.ProductCode));
+            });
 
             if (MarketFilterComboBox.SelectedItem != null)
             {

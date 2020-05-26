@@ -154,6 +154,8 @@
                                    FontFamily="Comic Sans MS" Content="" />
                             <Label x:Name="PriceLabel" Foreground="#FF393D47" FontSize="14" VerticalAlignment="Top"
                                    FontFamily="Comic Sans MS" Content="" />
+                            <Label x:Name="ShipedAmountLabel" Foreground="#FF393D47" FontSize="14" VerticalAlignment="Top"
+                                   FontFamily="Comic Sans MS" Content="" />
                             <Label x:Name="AmountLabel" Foreground="#FF393D47" FontSize="14" VerticalAlignment="Top"
                                    FontFamily="Comic Sans MS" Content="" />
                         </StackPanel>

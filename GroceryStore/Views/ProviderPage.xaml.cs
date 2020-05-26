@@ -47,6 +47,11 @@ namespace GroceryStore.Views
         {
             ProviderDtos = _mapper.Map<List<Provider>, List<ProviderDTO>>(_providerService.GetAll());
 
+            ProviderDtos.Sort(delegate (ProviderDTO x, ProviderDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             CityComboBox.ItemsSource = CityDtos;
             DataGrid.ItemsSource = ProviderDtos;
         }

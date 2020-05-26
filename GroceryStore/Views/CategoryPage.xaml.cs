@@ -43,6 +43,11 @@ namespace GroceryStore.Views
         {
             CategoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(_categoryService.GetAll());
 
+            CategoryDtos.Sort(delegate (CategoryDTO x, CategoryDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = CategoryDtos;
         }
 

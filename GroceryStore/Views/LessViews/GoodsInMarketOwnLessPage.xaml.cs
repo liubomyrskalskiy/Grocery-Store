@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -59,8 +60,19 @@ namespace GroceryStore.Views.LessViews
         {
             GoodsInMarketOwnDtos =
                 _mapper.Map<List<GoodsInMarketOwn>, List<GoodsInMarketOwnDTO>>(_goodsInMarketOwnService.GetAll());
+
+            GoodsInMarketOwnDtos.Sort(delegate (GoodsInMarketOwnDTO x, GoodsInMarketOwnDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             FilteredGoodsInMarketOwnDtos = GoodsInMarketOwnDtos
                 .Where(item => item.Address == _currentEmployee.MarketAddress).ToList();
+
+            FilteredGoodsInMarketOwnDtos.Sort(delegate (GoodsInMarketOwnDTO x, GoodsInMarketOwnDTO y)
+            {
+                return Convert.ToInt32(x.ProductCode).CompareTo(Convert.ToInt32(y.ProductCode));
+            });
 
             if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
             {

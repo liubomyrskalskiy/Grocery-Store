@@ -45,6 +45,11 @@ namespace GroceryStore.Views
             WriteOffReasonDtos =
                 _mapper.Map<List<WriteOffReason>, List<WriteOffReasonDTO>>(_writeOffReasonService.GetAll());
 
+            WriteOffReasonDtos.Sort(delegate (WriteOffReasonDTO x, WriteOffReasonDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = WriteOffReasonDtos;
         }
 

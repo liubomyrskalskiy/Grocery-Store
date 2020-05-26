@@ -266,6 +266,7 @@ namespace GroceryStore.Core.Mapping
                 .ForMember(dest => dest.Price,
                     opts => opts.MapFrom(item => $"{item.IdProductionNavigation.IdGoodsOwnNavigation.Price,0:C2}"))
                 .ForMember(dest => dest.Amount, opts => opts.MapFrom(item => $"{item.Amount,0:0.000}"))
+                .ForMember(dest => dest.DoubleAmount, opts => opts.MapFrom(item => item.Amount))
                 .ForMember(dest => dest.Category,
                     opts => opts.MapFrom(item =>
                         item.IdProductionNavigation.IdGoodsOwnNavigation.IdCategoryNavigation.Title))

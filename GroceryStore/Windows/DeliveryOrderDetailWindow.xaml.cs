@@ -44,6 +44,11 @@ namespace GroceryStore.Windows
             DeliveryShipmentDtos =
                 _mapper.Map<List<DeliveryShipment>, List<DeliveryShipmentDTO>>(_deliveryShipmentService.GetAll());
 
+            DeliveryShipmentDtos.Sort(delegate (DeliveryShipmentDTO x, DeliveryShipmentDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = DeliveryShipmentDtos.Where(item => item.ConsignmentNumber == _currentConsignment)
                 .ToList();
         }

@@ -61,6 +61,12 @@ namespace GroceryStore.Views
         private void UpdateDataGrid()
         {
             EmployeeDtos = _mapper.Map<List<Employee>, List<EmployeeDTO>>(_employeeService.GetAll());
+
+            EmployeeDtos.Sort(delegate (EmployeeDTO x, EmployeeDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             RoleComboBox.ItemsSource = RoleDtos;
             MarketComboBox.ItemsSource = MarketDtos;
             CityComboBox.ItemsSource = CityDtos;

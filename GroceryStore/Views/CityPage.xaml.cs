@@ -50,6 +50,11 @@ namespace GroceryStore.Views
         {
             CityDtos = _mapper.Map<List<City>, List<CityDTO>>(_cityService.GetAll());
 
+            CityDtos.Sort(delegate (CityDTO x, CityDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = CityDtos;
         }
 

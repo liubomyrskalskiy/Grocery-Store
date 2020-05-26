@@ -5,5 +5,6 @@ namespace GroceryStore.Core.Abstractions.IServices
 {
     public interface IGoodsInMarketService : IBaseService<GoodsInMarket>
     {
+        public void Refresh(GoodsInMarket entity);
     }
 }

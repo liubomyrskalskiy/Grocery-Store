@@ -69,6 +69,11 @@ namespace GroceryStore.Views
             DeliveryContentsDtos =
                 _mapper.Map<List<DeliveryContents>, List<DeliveryContentsDTO>>(_deliveryContentsService.GetAll());
 
+            DeliveryContentsDtos.Sort(delegate (DeliveryContentsDTO x, DeliveryContentsDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DeliveryDtos = _mapper.Map<List<Delivery>, List<DeliveryDTO>>(_deliveryService.GetAll());
             foreach (var deliveryDto in DeliveryDtos)
             {

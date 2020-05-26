@@ -61,7 +61,19 @@ namespace GroceryStore.Windows
         private void UpdateDataGrid()
         {
             BasketDtos = _mapper.Map<List<Basket>, List<UniversalBasketDTO>>(_basketService.GetAll());
+
+            BasketDtos.Sort(delegate (UniversalBasketDTO x, UniversalBasketDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             BasketOwnDtos = _mapper.Map<List<BasketOwn>, List<UniversalBasketDTO>>(_basketOwnService.GetAll());
+
+            BasketOwnDtos.Sort(delegate (UniversalBasketDTO x, UniversalBasketDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             UniversalBasketDtos = BasketDtos.Where(item => item.CheckNumber == _currentSale.CheckNumber).ToList();
             UniversalBasketDtos.AddRange(BasketOwnDtos.Where(item => item.CheckNumber == _currentSale.CheckNumber)
                 .ToList());

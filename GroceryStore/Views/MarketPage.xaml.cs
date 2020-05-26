@@ -49,6 +49,11 @@ namespace GroceryStore.Views
         {
             MarketDtos = _mapper.Map<List<Market>, List<MarketDTO>>(_marketService.GetAll());
 
+            MarketDtos.Sort(delegate (MarketDTO x, MarketDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = MarketDtos;
         }
 

@@ -44,6 +44,11 @@ namespace GroceryStore.Views
         {
             RoleDtos = _mapper.Map<List<Role>, List<RoleDTO>>(_roleService.GetAll());
 
+            RoleDtos.Sort(delegate (RoleDTO x, RoleDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = RoleDtos;
         }
 

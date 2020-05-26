@@ -60,6 +60,12 @@ namespace GroceryStore.Windows
         {
             DeliveryShipmentDtos =
                 _mapper.Map<List<DeliveryShipment>, List<DeliveryShipmentDTO>>(_deliveryShipmentService.GetAll());
+
+            DeliveryShipmentDtos.Sort(delegate (DeliveryShipmentDTO x, DeliveryShipmentDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             CurrentDeliveryShipmentDtos = DeliveryShipmentDtos
                 .Where(item => item.ConsignmentNumber == _currentConsignment.ConsignmentNumber).ToList();
             DataGrid.ItemsSource = CurrentDeliveryShipmentDtos;
@@ -159,8 +165,19 @@ namespace GroceryStore.Windows
                         item.IdMarketNavigation.IdCityNavigation.Title == tempMarket.CityTitle)) ==
                 null)
             {
-                MessageBox.Show("There is no such goods in this market! Check Goods in Market page");
-                return;
+                MessageBox.Show("There is no such good in this store! Good added automatically!");
+                GoodsInMarket goodsInMarket = new GoodsInMarket
+                {
+                    IdGoods = _currentConsignment.IdGoods,
+                    Amount = 0,
+                    IdMarket = tempMarket.Id,
+                    Id = _goodsInMarketService.GetAll().Count + 1
+                };
+                _goodsInMarketService.Create(goodsInMarket);
+                tempGoodsInMarket = new GoodsInMarket
+                {
+                    Id = goodsInMarket.Id
+                };
             }
 
             deliveryShipment.IdGoodsInMarket = tempGoodsInMarket.Id;

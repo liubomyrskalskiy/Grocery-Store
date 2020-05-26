@@ -63,6 +63,11 @@ namespace GroceryStore.Windows
             ProductionContentsDtos =
                 _mapper.Map<List<ProductionContents>, List<ProductionContentsDTO>>(_productionContentsService.GetAll());
 
+            ProductionContentsDtos.Sort(delegate (ProductionContentsDTO x, ProductionContentsDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             ProductionLabel.Content = "Production number: " + _currentProduction.ProductionCode;
             DateLabel.Content = "Manufacture Date: " + _currentProduction.ManufactureDate;
             TotalLabel.Content = $"Total: {_currentProduction.TotalCost,0:C2}";

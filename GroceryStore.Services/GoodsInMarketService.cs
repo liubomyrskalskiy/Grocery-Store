@@ -54,5 +54,11 @@ namespace GroceryStore.Services
             unitOfWork.GoodsInMarketRepository.Delete(entity);
             unitOfWork.SaveChanges();
         }
+
+        public void Refresh(GoodsInMarket entity)
+        {
+            unitOfWork.GoodsInMarketRepository.RefreshEntity(entity);
+            unitOfWork.SaveChanges();
+        }
     }
 }

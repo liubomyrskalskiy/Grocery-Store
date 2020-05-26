@@ -43,6 +43,11 @@ namespace GroceryStore.Views
         {
             CountryDtos = _mapper.Map<List<Country>, List<CountryDTO>>(_countryService.GetAll());
 
+            CountryDtos.Sort(delegate (CountryDTO x, CountryDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             DataGrid.ItemsSource = CountryDtos;
         }
 

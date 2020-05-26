@@ -57,6 +57,10 @@ namespace GroceryStore.Windows
         {
             DeliveryContentsDtos =
                 _mapper.Map<List<DeliveryContents>, List<DeliveryContentsDTO>>(_deliveryContentsService.GetAll());
+            DeliveryContentsDtos.Sort(delegate (DeliveryContentsDTO x, DeliveryContentsDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
             FilteredDeliveryContentsDtos = DeliveryContentsDtos
                 .Where(item => item.DeliveryNumber == _currentDelivery.DeliveryNumber).ToList();
             DataGrid.ItemsSource = FilteredDeliveryContentsDtos;

@@ -12,6 +12,7 @@ namespace GroceryStore.Core.DTO
         public string Price { get; set; }
         public string Weight { get; set; }
         public string Amount { get; set; }
+        public double DoubleAmount { get; set; }
         public string ProductionCode { get; set; }
         public string Address { get; set; }
         public string FullAddress { get; set; }

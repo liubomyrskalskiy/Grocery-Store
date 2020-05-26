@@ -51,5 +51,11 @@ namespace GroceryStore.Services
             unitOfWork.DeliveryShipmentRepository.Delete(entity);
             unitOfWork.SaveChanges();
         }
+
+        public void Refresh(DeliveryShipment entity)
+        {
+            unitOfWork.DeliveryShipmentRepository.RefreshEntity(entity);
+            unitOfWork.SaveChanges();
+        }
     }
 }

@@ -59,6 +59,12 @@ namespace GroceryStore.Views
         private void UpdateDataGrid()
         {
             GoodsDtos = _mapper.Map<List<Goods>, List<GoodsDTO>>(_goodsService.GetAll());
+
+            GoodsDtos.Sort(delegate (GoodsDTO x, GoodsDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             FilteredGoodsDtos = GoodsDtos;
             if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
             {

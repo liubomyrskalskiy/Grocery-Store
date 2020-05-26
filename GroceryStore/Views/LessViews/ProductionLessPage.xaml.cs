@@ -45,6 +45,11 @@ namespace GroceryStore.Views.LessViews
         {
             ProductionDtos = _mapper.Map<List<Production>, List<ProductionDTO>>(_productionService.GetAll());
 
+            ProductionDtos.Sort(delegate (ProductionDTO x, ProductionDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             FilteredProductionDtos = ProductionDtos;
 
             if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)

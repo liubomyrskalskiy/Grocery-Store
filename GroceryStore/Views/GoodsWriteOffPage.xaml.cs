@@ -68,6 +68,11 @@ namespace GroceryStore.Views
             GoodsWriteOffDtos =
                 _mapper.Map<List<GoodsWriteOff>, List<GoodsWriteOffDTO>>(_goodsWriteOffService.GetAll());
 
+            GoodsWriteOffDtos.Sort(delegate (GoodsWriteOffDTO x, GoodsWriteOffDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             FilteredGoodsWriteOffDtos = GoodsWriteOffDtos;
 
             if (Regex.Match(TitleFilterTextBox.Text, @"^\D{1,20}$").Success)
@@ -105,16 +110,17 @@ namespace GroceryStore.Views
                 return false;
             }
 
-            if (!Regex.Match(AmountTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success)
-            {
-                MessageBox.Show("Invalid amount! Check the data you've entered!");
-                AmountTextBox.Focus();
-                return false;
-            }
-
             if (ShipmentDateComboBox.SelectedItem == null)
             {
                 MessageBox.Show("Please select Shipment date!");
+                return false;
+            }
+
+            var tempDeliveryShipment = (DeliveryShipmentDTO)ShipmentDateComboBox.SelectedItem;
+            if (!Regex.Match(AmountTextBox.Text, @"^[0-9]*(?:\,[0-9]*)?$").Success || Convert.ToDouble(AmountTextBox.Text) > tempDeliveryShipment.Amount)
+            {
+                MessageBox.Show("Invalid amount! Check the data you've entered! Or you're trying to write off more than it is in stock!");
+                AmountTextBox.Focus();
                 return false;
             }
 
@@ -145,6 +151,12 @@ namespace GroceryStore.Views
             goodsWriteOff.IdWriteOffReason = reason.Id;
 
             _goodsWriteOffService.Create(goodsWriteOff);
+
+            var goodsInMarket = _goodsInMarketService.GetId(goodsWriteOff.IdGoodsInMarket ?? default);
+            _goodsInMarketService.Refresh(goodsInMarket);
+            var deliveryShipment = _deliveryShipmentService.GetId(goodsWriteOff.IdDeliveryShipment ?? default);
+            _deliveryShipmentService.Refresh(deliveryShipment);
+
             UpdateDataGrid();
         }
 
@@ -206,7 +218,9 @@ namespace GroceryStore.Views
             if (ShipmentDateComboBox.SelectedItem != null)
             {
                 var tempDeliveryShipment = (DeliveryShipmentDTO) ShipmentDateComboBox.SelectedItem;
-                AmountLabel.Content = "Amount: " + tempDeliveryShipment.Amount;
+                ShipedAmountLabel.Content = $"Shiped: {tempDeliveryShipment.StringAmount}";
+                var tempGoodInMarket = _goodsInMarketService.GetId(_deliveryShipmentService.GetId(tempDeliveryShipment.Id).IdGoodsInMarket ?? 0);
+                AmountLabel.Content = $"In stock: {tempGoodInMarket.Amount}";
             }
             else
             {

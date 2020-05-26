@@ -78,6 +78,11 @@ namespace GroceryStore.Views
             GoodsInMarketOwnDtos =
                 _mapper.Map<List<GoodsInMarketOwn>, List<GoodsInMarketOwnDTO>>(_goodsInMarketOwnService.GetAll());
 
+            GoodsInMarketOwnDtos.Sort(delegate (GoodsInMarketOwnDTO x, GoodsInMarketOwnDTO y)
+            {
+                return x.Id.CompareTo(y.Id);
+            });
+
             MarketComboBox.ItemsSource = MarketDtos;
             FilteredGoodsInMarketOwnDtos = GoodsInMarketOwnDtos;
 
