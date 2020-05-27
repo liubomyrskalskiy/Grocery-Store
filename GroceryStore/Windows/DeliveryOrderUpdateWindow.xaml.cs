@@ -170,9 +170,16 @@ namespace GroceryStore.Windows
                 {
                     IdGoods = _currentConsignment.IdGoods,
                     Amount = 0,
-                    IdMarket = tempMarket.Id,
-                    Id = _goodsInMarketService.GetAll().Count + 1
+                    IdMarket = tempMarket.Id
                 };
+
+                var tempList = _goodsInMarketService.GetAll();
+                tempList.Sort(delegate (GoodsInMarket x, GoodsInMarket y) {
+                    return x.Id.CompareTo(y.Id);
+                });
+
+                goodsInMarket.Id = tempList[^1]?.Id + 1 ?? 1;
+
                 _goodsInMarketService.Create(goodsInMarket);
                 tempGoodsInMarket = new GoodsInMarket
                 {
